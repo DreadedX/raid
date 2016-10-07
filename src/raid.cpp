@@ -19,15 +19,15 @@ class TextureResource : public BaseResource {
 
 	private:
 		/// Load a texture asset
-		void load(std::string resource_name) override {
+		void load(std::string) override {
 			// auto textureData = fileManager.get_file(resource_name)->get_data();
 		}
 };
 //----------------------------------------------
 int main() {
-	//-Files----------------------------------------
+	//-Graphics-------------------------------------
 	GraphicsKit graphics_kit(std::make_unique<OpenGLImpl>());
-	graphics_kit.create_window();
+	graphics_kit.create_window(1280, 720, "RAID Engine");
 	//----------------------------------------------
 	//-Files----------------------------------------
 	/// @todo Upgrade this thing to use some of the fancy stuff used by resources
@@ -51,6 +51,13 @@ int main() {
 	auto texture33 = Resource::factory<TextureResource>("core/texture3");
 	
 	Resource::debug_list();
+
+	// Basic game loop
+	while(!graphics_kit.should_window_close()) {
+		graphics_kit.poll_events();
+		graphics_kit.swap_buffers();
+	}
+
 	//----------------------------------------------
 	std::cout << "End\n";
 }

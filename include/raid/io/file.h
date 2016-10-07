@@ -28,4 +28,4 @@ namespace raid {
 			std::weak_ptr<std::vector<byte>> data;
 	};
 	//----------------------------------------------
-};
+}

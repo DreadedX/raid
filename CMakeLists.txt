@@ -24,6 +24,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sugar/Sugar)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/engine.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/doxygen.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ycm.cmake)

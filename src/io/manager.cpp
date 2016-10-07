@@ -27,5 +27,5 @@ std::shared_ptr<raid::File> raid::FileManager::get_file(std::string file_name) {
 void raid::FileManager::add_file(std::string file_name) {
 	std::cout << "Adding file: " << file_name << '\n';
 	files.push_back(std::make_shared<File>(file_name));
-};
+}
 //----------------------------------------------

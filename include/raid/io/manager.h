@@ -28,4 +28,4 @@ namespace raid {
 			void add_file(std::string file_name);
 	};
 	//----------------------------------------------
-};
+}
