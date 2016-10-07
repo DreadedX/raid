@@ -8,9 +8,9 @@
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
-	/// @Todo: Implement FLX-container loading
-	/// @Todo: Also allow loading from filesystem while debugging
-	/// @Todo: This should be a static class
+	/// @todo Implement FLX-container loading
+	/// @todo Also allow loading from filesystem while debugging
+	/// @todo This should be a static class
 	class FileManager {
 
 		public:

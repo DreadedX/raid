@@ -7,12 +7,14 @@
 #include "typedef.h"
 #include "raid/resource.h"
 #include "raid/io/manager.h"
+#include "raid/graphics/kit.h"
+#include "raid/graphics/opengl/opengl.h"
 
 using namespace raid;
 //----------------------------------------------
 class TextureResource : public BaseResource {
 	/// Make sure that the factory can access private elements
-	/// @Todo Make this automated somehow
+	/// @todo Make this automated somehow
 	template <class T> friend std::shared_ptr<T> Resource::factory(std::string resource_name);
 
 	private:
@@ -24,7 +26,11 @@ class TextureResource : public BaseResource {
 //----------------------------------------------
 int main() {
 	//-Files----------------------------------------
-	/// @Todo: Upgrade this thing to use some of the fancy stuff used by resources
+	GraphicsKit graphics_kit(std::make_unique<OpenGLImpl>());
+	graphics_kit.create_window();
+	//----------------------------------------------
+	//-Files----------------------------------------
+	/// @todo Upgrade this thing to use some of the fancy stuff used by resources
 	FileManager file_manager;
 
 	auto data1 = file_manager.get_file("core/texture1")->get_data();

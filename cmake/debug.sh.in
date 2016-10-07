@@ -1,0 +1,12 @@
+#!/bin/bash
+export out=$(tty)
+tmux split-window -h
+tmux send-keys 'gdb -q -ex start -tui --tty='$out' --args @CMAKE_BINARY_DIR@/@NAME_@; exit' Enter
+
+sleep 1
+
+export pid=$(ps -A | grep gdb | awk '{print $1}')
+
+while kill -0 $pid 2> /dev/null; do 
+	sleep 1
+done

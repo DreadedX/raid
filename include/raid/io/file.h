@@ -8,8 +8,8 @@
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
-	/// @Todo: Implement FLX-file loading
-	/// @Todo: Also allow loading from filesystem while debugging
+	/// @todo Implement FLX-file loading
+	/// @todo Also allow loading from filesystem while debugging
 	class File {
 		public:
 			/// Set the file name on initialization

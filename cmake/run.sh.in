@@ -1,0 +1,2 @@
+#!/bin/bash
+@CMAKE_BINARY_DIR@/@NAME_@

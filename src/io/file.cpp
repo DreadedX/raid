@@ -5,7 +5,7 @@ raid::File::File(std::string m_name) {
 	name = m_name;
 }
 //----------------------------------------------
-/// @Todo: Check the overhead of this function, maybe weak_ptr stuff is unnecessary.
+/// @todo Check the overhead of this function, maybe weak_ptr stuff is unnecessary.
 std::shared_ptr<std::vector<byte>> raid::File::get_data() {
 	// If the weak ptr is invalid, load the data from disk
 	if (data.expired()) {
@@ -30,7 +30,7 @@ std::shared_ptr<std::vector<byte>> raid::File::get_data() {
 	return data.lock();
 }
 //----------------------------------------------
-/// @Todo: Should only be usedable by the FileManager
+/// @todo Should only be usedable by the FileManager
 std::string raid::File::get_name() {
 	return name;
 }

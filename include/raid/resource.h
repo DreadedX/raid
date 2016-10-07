@@ -6,7 +6,7 @@
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
-	/// @Todo: Allow the reloading of resources
+	/// @todo Allow the reloading of resources
 	class BaseResource {
 		public:
 			BaseResource() {
@@ -24,12 +24,12 @@ namespace raid {
 	//----------------------------------------------
 	class Resource {
 		public:
-			/// @Todo figure out a way to remove unloaded resources from the list automatically
+			/// @todo figure out a way to remove unloaded resources from the list automatically
 			/// List containing all resources that are maybe loaded
 			static std::unordered_map<std::string, std::weak_ptr<raid::BaseResource>> list;
 
 			/// Print list of all loaded assets
-			/// @Todo: This is temporary
+			/// @todo This is temporary
 			static void debug_list();
 
 			/// Create new resource instance of type T and initialize it.
