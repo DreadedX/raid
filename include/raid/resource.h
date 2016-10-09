@@ -7,13 +7,13 @@
 namespace raid {
 	//----------------------------------------------
 	/// @todo Allow the reloading of resources
-	class BaseResource {
+	class Resource {
 		public:
-			BaseResource() {
+			Resource() {
 				std::cout << "Resource constructed\n";
 			}
 
-			~BaseResource() {
+			virtual ~Resource() {
 				std::cout << "Resource Deconstructed\n";
 			}
 
@@ -22,20 +22,17 @@ namespace raid {
 			virtual void load(std::string resource_name) = 0;
 	};
 	//----------------------------------------------
-	class Resource {
+	class ResourceManager {
 		public:
-			/// @todo figure out a way to remove unloaded resources from the list automatically
-			/// List containing all resources that are maybe loaded
-			static std::unordered_map<std::string, std::weak_ptr<raid::BaseResource>> list;
 
 			/// Print list of all loaded assets
 			/// @todo This is temporary
-			static void debug_list();
+			void debug_list();
 
 			/// Create new resource instance of type T and initialize it.
-			template <class T> static std::shared_ptr<T> factory(std::string resource_name) {
-				// Make sure the requested type is derived from BaseResource
-				static_assert(std::is_base_of<BaseResource, T>::value, "T needs to be derived from Resource");
+			template <class T> std::shared_ptr<T> factory(std::string resource_name) {
+				// Make sure the requested type is derived from Resource
+				static_assert(std::is_base_of<Resource, T>::value, "T needs to be derived from Resource");
 
 				// Check if the resource is already loaded and still valid
 				if (list.count(resource_name) == 0 || list.find(resource_name)->second.expired())
@@ -56,8 +53,8 @@ namespace raid {
 					t->load(resource_name);
 
 					// Create a weak ptr to the resource
-					auto ptr = std::weak_ptr<BaseResource>();
-					ptr = std::dynamic_pointer_cast<BaseResource, T>(t);
+					auto ptr = std::weak_ptr<Resource>();
+					ptr = std::dynamic_pointer_cast<Resource, T>(t);
 
 					// Add the weak ptr to the resource list
 					list.insert({resource_name, ptr});
@@ -68,8 +65,12 @@ namespace raid {
 
 				std::cout << "Resource already in memory: " << resource_name << '\n';
 				// The weak ptr was still valid, so we return a shared ptr to the asset
-				return std::dynamic_pointer_cast<T, BaseResource>(list.find(resource_name)->second.lock());
+				return std::dynamic_pointer_cast<T, Resource>(list.find(resource_name)->second.lock());
 			}
+		private:
+			/// @todo figure out a way to remove unloaded resources from the list automatically
+			/// List containing all resources that are maybe loaded
+			std::unordered_map<std::string, std::weak_ptr<raid::Resource>> list;
 	};
 	//----------------------------------------------
 }

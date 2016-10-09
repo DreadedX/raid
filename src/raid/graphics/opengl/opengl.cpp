@@ -15,7 +15,7 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 	}
 }
 //----------------------------------------------
-void raid::OpenGLImpl::create_window(int width, int height, std::string title) {
+void raid::OpenGL::create_window(int width, int height, std::string title) {
 
 	if(!glfwInit()) {
 		std::cout << "Failed to initialize glfw\n";
@@ -61,17 +61,17 @@ void raid::OpenGLImpl::create_window(int width, int height, std::string title) {
 	}
 }
 //----------------------------------------------
-inline bool raid::OpenGLImpl::should_window_close() {
+inline bool raid::OpenGL::should_window_close() {
 
 	return glfwWindowShouldClose(window);
 }
 //----------------------------------------------
-inline void raid::OpenGLImpl::poll_events() {
+inline void raid::OpenGL::poll_events() {
 
 	glfwPollEvents();
 }
 //----------------------------------------------
-inline void raid::OpenGLImpl::swap_buffers() {
+inline void raid::OpenGL::swap_buffers() {
 
 	glfwSwapBuffers(window);
 }

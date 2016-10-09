@@ -1,9 +1,9 @@
 //----------------------------------------------
 #include "raid/resource.h"
 //----------------------------------------------
-std::unordered_map<std::string, std::weak_ptr<raid::BaseResource>> raid::Resource::list;
+// std::unordered_map<std::string, std::weak_ptr<raid::BaseResource>> raid::Resource::list;
 //----------------------------------------------
-void raid::Resource::debug_list() {
+void raid::ResourceManager::debug_list() {
 	for(auto resource : list) {
 		std::cout << '\t' << resource.first;
 

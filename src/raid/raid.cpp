@@ -5,17 +5,18 @@
 #include <unordered_map>
 
 #include "typedef.h"
-#include "raid/resource.h"
-#include "raid/io/manager.h"
-#include "raid/graphics/kit.h"
+#include "raid/engine.h"
+// #include "raid/resource.h"
+// #include "raid/io/manager.h"
+// #include "raid/graphics/manager.h"
 #include "raid/graphics/opengl/opengl.h"
 
 using namespace raid;
 //----------------------------------------------
-class TextureResource : public BaseResource {
+class Texture : public Resource {
 	/// Make sure that the factory can access private elements
 	/// @todo Make this automated somehow
-	template <class T> friend std::shared_ptr<T> Resource::factory(std::string resource_name);
+	template <class T> friend std::shared_ptr<T> ResourceManager::factory(std::string resource_name);
 
 	private:
 		/// Load a texture asset
@@ -26,36 +27,39 @@ class TextureResource : public BaseResource {
 //----------------------------------------------
 int main() {
 	//-Graphics-------------------------------------
-	GraphicsKit graphics_kit(std::make_unique<OpenGLImpl>());
-	graphics_kit.create_window(1280, 720, "RAID Engine");
+	auto graphics = Engine::instance()->get_graphics();
+	graphics->set_impl<OpenGL>();
+	graphics->create_window(1280, 720, "RAID Engine");
 	//----------------------------------------------
 	//-Files----------------------------------------
 	/// @todo Upgrade this thing to use some of the fancy stuff used by resources
-	FileManager file_manager;
+	auto file_manager = Engine::instance()->get_file_manager();
 
-	auto data1 = file_manager.get_file("core/texture1")->get_data();
+	auto data1 = file_manager->get_file("core/texture1")->get_data();
 	for (auto _byte : *data1) {
 		std::cout << int(_byte) << ' ';
 	}
 	std::cout << '\n';
 
-	auto data2 = file_manager.get_file("core/texture1")->get_data();
+	auto resource = Engine::instance()->get_resource();
+
+	auto data2 = file_manager->get_file("core/texture1")->get_data();
 	//----------------------------------------------
 	//-Resources------------------------------------
-	auto texture1 = Resource::factory<TextureResource>("core/texture1");
-	auto texture2 = Resource::factory<TextureResource>("core/texture2");
-	auto texture11 = Resource::factory<TextureResource>("core/texture1");
+	auto texture1 = resource->factory<Texture>("core/texture1");
+	auto texture2 = resource->factory<Texture>("core/texture2");
+	auto texture11 = resource->factory<Texture>("core/texture1");
 	{
-		auto texture3 = Resource::factory<TextureResource>("core/texture3");
+		auto texture3 = resource->factory<Texture>("core/texture3");
 	}
-	auto texture33 = Resource::factory<TextureResource>("core/texture3");
+	auto texture33 = resource->factory<Texture>("core/texture3");
 	
-	Resource::debug_list();
+	resource->debug_list();
 
 	// Basic game loop
-	while(!graphics_kit.should_window_close()) {
-		graphics_kit.poll_events();
-		graphics_kit.swap_buffers();
+	while(!graphics->should_window_close()) {
+		graphics->poll_events();
+		graphics->swap_buffers();
 	}
 
 	//----------------------------------------------

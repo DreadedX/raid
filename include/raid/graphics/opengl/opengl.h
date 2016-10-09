@@ -1,13 +1,16 @@
 #pragma once
 //----------------------------------------------
+#include <iostream>
+#include <cassert>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "raid/graphics/kit.h"
+#include "raid/graphics/manager.h"
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
-	class OpenGLImpl : public GraphicsKit::Impl {
+	class OpenGL : public GraphicsManager::Impl {
 
 		public:
 			/// Create an opengl window
