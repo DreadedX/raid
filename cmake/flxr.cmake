@@ -11,6 +11,12 @@ file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flxr/*.cpp)
 
 add_executable(${PROJECT_NAME} ${CPP_FILES})
 
+find_package (ZLIB REQUIRED)
+if (ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
+endif (ZLIB_FOUND)
+
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
     target_compile_options

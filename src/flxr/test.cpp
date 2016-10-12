@@ -28,6 +28,7 @@ void write_test() {
 	write_header(stream, container);
 	write_index(stream, container);
 	write_data(stream, container);
+	write_compressed_test(stream, container);
 	write_crc(stream);
 
 	stream.close();

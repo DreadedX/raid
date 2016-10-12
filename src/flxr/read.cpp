@@ -21,12 +21,11 @@ std::istream& flxr::read_index(std::istream& stream, Container& container) {
 		std::string file_name;
 		read(stream, file_name);
 		File file(file_name);
-		read(stream, file.offset);
 		read(stream, file.size);
 
 		container.add_file(file);
 
-		std::cout << file.name << "(offset: " << file.offset << ", size: " << file.size << ")\n";
+		std::cout << file.name << "(size: " << file.size << ")\n";
 	}
 
 	return stream;

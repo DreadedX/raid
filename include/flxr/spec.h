@@ -17,7 +17,6 @@ namespace flxr {
 
 		std::string name;
 		/// @todo Calculate this correctly
-		uint64 offset = 30;
 		std::vector<byte> data;
 		uint64 size;
 
