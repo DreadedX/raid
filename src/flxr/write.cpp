@@ -16,47 +16,103 @@ std::ostream& flxr::write_header(std::ostream& stream, Container& container) {
 	return stream;
 }
 //----------------------------------------------
-std::ostream& flxr::write_index(std::ostream& stream, Container& container) {
+std::fstream& flxr::write_index(std::fstream& stream, Container& container) {
+	stream.seekg(sizeof(Container::header), std::ios::beg);
 	for(auto file : container.files) {
-		write(stream, file.name);
-		/// @todo This is just to correctly set the size in the first place
-		file.get_data();
+		write(stream, file.get_name());
 		write(stream, file.get_size());
 	}
+	stream.seekg(0, std::ios::end);
 
 	return stream;
 }
 //----------------------------------------------
-std::ostream& flxr::write_data(std::ostream& stream, Container& container) {
-	for(auto file : container.files) {
-		write(stream, file.get_data());
-	}
-
-	return stream;
-}
-//----------------------------------------------
-std::ostream& flxr::write_compressed_test(std::ostream& stream, Container& container) {
-
-	std::ifstream file("test.txt", std::ios::in | std::ios::binary);
-
-	for (auto file : container.files) {
-		byte* uncompressed_data = file.get_data().data();
-		std::cout << "File: " << file.name << " (size: " << file.get_size() << ")\n";
-		uint64 compressed_size;
-		std::vector<byte> compressed_data;
-		compressed_data.resize(20, 0x00);
-
-		compress(compressed_data.data(), &compressed_size, uncompressed_data, file.get_size());
-		compressed_data.resize(compressed_size);
-
-		std::cout << "Compressed content: (size: " << compressed_data.size() << ")\n";
-		for (auto dat : compressed_data) {
-			assert(typeid(dat) == typeid(byte));
-			std::cout << int(dat) << '\n';
+/// @todo Move this to a seperate thing
+void draw_progress_bar(const std::string& tag, float progress) {
+	int bar_width = 70;
+	std::cout << tag << "\t[";
+	int pos = bar_width * progress;
+	for (int i = 0; i < bar_width; ++i) {
+		if (i < pos) {
+			std::cout << "=";
+		} else if (i == pos) {
+			std::cout << ">";
+		} else {
+			std::cout << " ";
 		}
 	}
+	std::cout << "] " << int(progress * 100) << "%\r";
+	std::cout.flush();
+}
+//----------------------------------------------
+#define CHUNK 16384
+std::ostream& flxr::write_data(std::ostream& stream, Container& container, int level) {
 
+	std::cout << "Compressing files\n";
+	for (auto& file : container.files) {
+		/// @todo This does not, at all, check if the file is correctly opened
+		/// @todo Make this a std::fstream
+		/// @todo Get this from the file in the container (maybe)
+		FILE *source = fopen(file.get_name().c_str(), "r+");
 
+		int ret, flush;
+		unsigned have;
+		z_stream strm;
+		unsigned char in[CHUNK];
+		unsigned char out[CHUNK];
+
+		/* allocate deflate state */
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		ret = deflateInit(&strm, level);
+		if (ret != Z_OK) {
+			exit(-1);
+		}
+
+		fseek(source, 0, SEEK_END);
+		uint64 total_size = ftell(source);
+		fseek(source, 0, SEEK_SET);
+		uint64 total_read = 0;
+
+		/// @todo Replace this with some kind of callback function so that people can hook in there own progress report
+		draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
+
+		/* compress until end of file */
+		do {
+			strm.avail_in = fread(in, 1, CHUNK, source);
+			total_read += strm.avail_in;
+			draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
+			if (ferror(source)) {
+				(void)deflateEnd(&strm);
+				exit(Z_ERRNO);
+			}
+			flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
+			strm.next_in = in;
+
+			/* run deflate() on input until output buffer not full, finish
+			   compression if all of source has been read in */
+			do {
+				strm.avail_out = CHUNK;
+				strm.next_out = out;
+				ret = deflate(&strm, flush);    /* no bad return value */
+				assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+				have = CHUNK - strm.avail_out;
+				std::vector<byte> out_vector(out, out+have);
+				write(stream, out_vector);
+				file.set_size(file.get_size() + have);
+			} while (strm.avail_out == 0);
+			assert(strm.avail_in == 0);     /* all input will be used */
+
+			/* done when last data in file processed */
+		} while (flush != Z_FINISH);
+		assert(ret == Z_STREAM_END);        /* stream will be complete */
+
+		/* clean up and return */
+		(void)deflateEnd(&strm);
+
+		std::cout << '\n';
+	}
 	return stream;
 }
 //----------------------------------------------
@@ -65,8 +121,6 @@ std::fstream& flxr::write_crc(std::fstream& stream) {
 	stream.clear();
 	stream.seekg(0, std::ios::beg);
 	uint32 chunk_size = 1024;
-
-	std::cout << "size: " << size << '\n';
 
 	crc_t crc = crc_init();
 	while(size > 0) {
@@ -81,8 +135,6 @@ std::fstream& flxr::write_crc(std::fstream& stream) {
 	crc = crc_finalize(crc);
 
 	write(stream, crc);
-
-	std::cout << "crc: " << crc << '\n';
 
 	return stream;
 }

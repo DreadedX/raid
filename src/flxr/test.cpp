@@ -12,8 +12,8 @@ void write_test() {
 	Container container;
 	container.name = "test.flx";
 
-	container.add_file(File("test1"));
-	container.add_file(File("test2"));
+	container.add_file(File("test.txt"));
+	container.add_file(File("sponza.obj"));
 
 	container.configure(COMPRESSION::ZLIB);
 
@@ -27,8 +27,8 @@ void write_test() {
 
 	write_header(stream, container);
 	write_index(stream, container);
-	write_data(stream, container);
-	write_compressed_test(stream, container);
+	write_data(stream, container, 9);
+	write_index(stream, container);
 	write_crc(stream);
 
 	stream.close();

@@ -12,24 +12,26 @@ namespace flxr {
 		ZLIB,
 	};
 	//----------------------------------------------
-	struct File {
-		File(std::string m_name) : name(m_name) {}
+	class Container;
+	class File {
 
-		std::string name;
-		/// @todo Calculate this correctly
-		std::vector<byte> data;
-		uint64 size;
+		friend std::istream& flxr::read_index(std::istream& stream, flxr::Container& container);
 
-		auto get_size() {
-			size = reinterpret_cast<uint64>(data.size());
-			return size;
-		}
+		public:
+			File(std::string m_name) : name(m_name) {}
 
-		auto get_data() {
-			data = {0x44,0x41,0x54,0x41};
+			const std::string& get_name() { return name; }
 
-			return data;
-		}
+			const uint64 get_size() {
+				return size;
+			}
+			auto set_size(uint64 m_size) {
+				size = m_size;
+			}
+
+		private:
+			std::string name;
+			uint64 size;
 	};
 	//----------------------------------------------
 	struct Container {

@@ -25,7 +25,7 @@ std::istream& flxr::read_index(std::istream& stream, Container& container) {
 
 		container.add_file(file);
 
-		std::cout << file.name << "(size: " << file.size << ")\n";
+		std::cout << file.name << " (size: " << file.size << ")\n";
 	}
 
 	return stream;
@@ -38,8 +38,6 @@ std::fstream& flxr::check_crc(std::fstream& stream) {
 	stream.clear();
 	stream.seekg(0, std::ios::beg);
 	uint32 chunk_size = 1024;
-
-	std::cout << "size: " << size << '\n';
 
 	crc_t crc = crc_init();
 	while(size > 0) {
@@ -55,8 +53,6 @@ std::fstream& flxr::check_crc(std::fstream& stream) {
 		crc = crc_update(crc, buffer, chunk_size);
 	}
 	crc = crc_finalize(crc);
-
-	std::cout << "crc: " << crc << '\n';
 
 	crc_t provided_crc;
 	read(stream, provided_crc);
