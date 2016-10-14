@@ -1,5 +1,6 @@
 //----------------------------------------------
 #include <iostream>
+#include <iomanip>
 
 #include "flxr/write.h"
 #include "flxr/read.h"
@@ -27,7 +28,7 @@ namespace Progress {
 				std::cout << " ";
 			}
 		}
-		std::cout << "] " << int(progress * 100) << "%\r";
+		std::cout << "] " << int(progress * 100) << "%\t " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(total_read)/1000/1000 << " MB / " << float(total_size)/1000/1000 << " MB\r";
 		std::cout.flush();
 	}
 
@@ -38,8 +39,9 @@ namespace Progress {
 		draw(0);
 	}
 
-	void finish() {
+	void finish(uint64 compressed_size) {
 		std::cout << '\n';
+		std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(compressed_size)/1000/1000 << " MB compressed (" << float(compressed_size)/float(total_size)*100 << "%)\n";
 	}
 }
 //----------------------------------------------
@@ -49,7 +51,7 @@ void write_test() {
 	Container container("test.flx");
 
 	container.add_file(File("test.txt"));
-	// container.add_file(File("sponza.obj"));
+	container.add_file(File("sponza.obj"));
 
 	container.configure(COMPRESSION::ZLIB, 9);
 
@@ -66,9 +68,9 @@ void read_test() {
 
 	Container read_container("test.flx");
 
-	check_crc(read_container.get_stream());
-	read_header(read_container.get_stream(), read_container);
-	read_index(read_container.get_stream(), read_container);
+	check_crc(read_container);
+	read_header(read_container);
+	read_index(read_container);
 }
 //----------------------------------------------
 int main() {

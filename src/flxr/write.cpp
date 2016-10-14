@@ -23,7 +23,7 @@ void flxr::write_index(Container& container) {
 //----------------------------------------------
 /// @todo This function is kind of ugly, refactor
 #define CHUNK 16384
-void flxr::write_data(Container& container, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
+void flxr::write_data(Container& container, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = container.get_stream();
 
 	std::cout << "[D] " << "Compressing files\n";
@@ -95,10 +95,8 @@ void flxr::write_data(Container& container, std::function<void(const std::string
 		(void)deflateEnd(&strm);
 
 		if (on_finish != nullptr) {
-			on_finish();
+			on_finish(file.get_size());
 		}
-
-		std::cout << "[D] " << file.get_size() << '\n';
 	}
 }
 //----------------------------------------------

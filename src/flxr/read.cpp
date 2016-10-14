@@ -1,37 +1,40 @@
 //----------------------------------------------
+#include <iomanip>
 #include "flxr/binary_helper.h"
 #include "flxr/read.h"
 #include "flxr/crc.h"
 //----------------------------------------------
-/// @todo This is just for testing
-std::istream& flxr::read_header(std::istream& stream, Container& container) {
-	read(stream, container.get_header());
+void flxr::read_header(Container& container) {
+	read(container.get_stream(), container.get_header());
 
 	if (container.get_header().magic != MAGIC) {
-		std::cout << "Invalid magic number\n";
+		std::cerr << "Invalid magic number\n";
 		exit(-1);
 	}
-
-	return stream;
 }
 //----------------------------------------------
-std::istream& flxr::read_index(std::istream& stream, Container& container) {
+void flxr::read_index(Container& container) {
+	auto& stream = container.get_stream();
+
 	for (uint64 i = 0; i < container.get_header().file_count; i++) {
 
 		std::string file_name;
 		read(stream, file_name);
 		File file(file_name);
-		read(stream, file.size);
+		uint64 size;
+		read(stream, size);
+		file.set_size(size);
 
 		container.add_file(file);
 
-		std::cout << file.name << " (size: " << file.size << ")\n";
+		/// @todo This needs to be replaced with a callback
+		std::cout << file.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(file.get_size())/1000/1000 << " MB compressed\n";
 	}
-
-	return stream;
 }
 //----------------------------------------------
-std::fstream& flxr::check_crc(std::fstream& stream) {
+void flxr::check_crc(Container& container) {
+	auto& stream = container.get_stream();
+
 	stream.seekg(0, std::ios::end);
 	uint64 size = stream.tellg();
 	size -= sizeof(crc_t);
@@ -63,7 +66,5 @@ std::fstream& flxr::check_crc(std::fstream& stream) {
 
 	stream.clear();
 	stream.seekg(0, std::ios::beg);
-
-	return stream;
 }
 //----------------------------------------------

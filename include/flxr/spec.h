@@ -15,23 +15,15 @@ namespace flxr {
 		ZLIB,
 	};
 	//----------------------------------------------
-	class Container;
 	class File {
-
-		friend std::istream& flxr::read_index(std::istream& stream, flxr::Container& container);
 
 		public:
 			File(std::string m_name) : name(m_name) {}
 
 			const auto& get_name() { return name; }
+			const auto get_size() { return size; }
 
-			const auto get_size() {
-				return size;
-			}
-
-			void set_size(uint64 m_size) {
-				size = m_size;
-			}
+			void set_size(uint64 m_size) { size = m_size; }
 
 		private:
 			std::string name;
