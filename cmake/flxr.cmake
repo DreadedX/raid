@@ -7,7 +7,8 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
-file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flxr/*.cpp)
+file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flxr/*.cpp ${CMAKE_SOURCE_DIR}/src/shared/*.cpp)
+# file(GLOB_RECURSE CPP_FILES )
 
 add_executable(${PROJECT_NAME} ${CPP_FILES})
 

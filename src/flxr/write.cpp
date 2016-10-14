@@ -1,7 +1,8 @@
 //----------------------------------------------
-#include <typeinfo>
 #include <cassert>
 #include <zlib.h>
+
+#include "shared/logger.h"
 
 #include "flxr/binary_helper.h"
 #include "flxr/write.h"
@@ -27,28 +28,10 @@ std::fstream& flxr::write_index(std::fstream& stream, Container& container) {
 	return stream;
 }
 //----------------------------------------------
-/// @todo Move this to a seperate thing
-void draw_progress_bar(const std::string& tag, float progress) {
-	int bar_width = 70;
-	std::cout << tag << "\t[";
-	int pos = bar_width * progress;
-	for (int i = 0; i < bar_width; ++i) {
-		if (i < pos) {
-			std::cout << "=";
-		} else if (i == pos) {
-			std::cout << ">";
-		} else {
-			std::cout << " ";
-		}
-	}
-	std::cout << "] " << int(progress * 100) << "%\r";
-	std::cout.flush();
-}
-//----------------------------------------------
 #define CHUNK 16384
-std::ostream& flxr::write_data(std::ostream& stream, Container& container, int level) {
+std::ostream& flxr::write_data(std::ostream& stream, Container& container, int level, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
 
-	std::cout << "Compressing files\n";
+	debug << "Compressing files\n";
 	for (auto& file : container.files) {
 		/// @todo This does not, at all, check if the file is correctly opened
 		/// @todo Make this a std::fstream
@@ -76,13 +59,18 @@ std::ostream& flxr::write_data(std::ostream& stream, Container& container, int l
 		uint64 total_read = 0;
 
 		/// @todo Replace this with some kind of callback function so that people can hook in there own progress report
-		draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
+		if (on_init != nullptr) {
+			on_init(file.get_name(), total_size);
+		}
+		// draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
 
 		/* compress until end of file */
 		do {
 			strm.avail_in = fread(in, 1, CHUNK, source);
 			total_read += strm.avail_in;
-			draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
+			if (on_update != nullptr) {
+				on_update(total_read);
+			}
 			if (ferror(source)) {
 				(void)deflateEnd(&strm);
 				exit(Z_ERRNO);
@@ -111,7 +99,9 @@ std::ostream& flxr::write_data(std::ostream& stream, Container& container, int l
 		/* clean up and return */
 		(void)deflateEnd(&strm);
 
-		std::cout << '\n';
+		if (on_finish != nullptr) {
+			on_finish();
+		}
 	}
 	return stream;
 }

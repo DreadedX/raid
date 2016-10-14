@@ -1,13 +1,52 @@
 //----------------------------------------------
 #include <iostream>
 
+#include "shared/logger.h"
+
 #include "flxr/write.h"
 #include "flxr/read.h"
 
 using namespace flxr;
 //----------------------------------------------
+/// @todo This is terrible, for the actual tool this needs some work
+namespace Progress {
+	std::string name;
+	uint64 total_size;
+
+	void draw(uint64 total_read) {
+
+		float progress = float(total_read)/float(total_size);
+
+		int bar_width = 70;
+		std::cout << name << "\t[";
+		int pos = bar_width * progress;
+		for (int i = 0; i < bar_width; ++i) {
+			if (i < pos) {
+				std::cout << "=";
+			} else if (i == pos) {
+				std::cout << ">";
+			} else {
+				std::cout << " ";
+			}
+		}
+		std::cout << "] " << int(progress * 100) << "%\r";
+		std::cout.flush();
+	}
+
+	void setup(const std::string& m_name, uint64 m_total_size) {
+		name = m_name;
+		total_size = m_total_size;
+
+		draw(0);
+	}
+
+	void finish() {
+		std::cout << '\n';
+	}
+}
+//----------------------------------------------
 void write_test() {
-	std::cout << "WRITE TEST\n";
+	debug << "WRITE TEST\n";
 
 	Container container;
 	container.name = "test.flx";
@@ -21,13 +60,13 @@ void write_test() {
 	stream.open(container.name, std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
 
 	if(!stream.is_open()) {
-		std::cout << "Failed to open file: " << container.name << '\n';
+		error << "Failed to open file: " << container.name << '\n';
 		exit(-1);
 	}
 
 	write_header(stream, container);
 	write_index(stream, container);
-	write_data(stream, container, 9);
+	write_data(stream, container, 9, Progress::setup, Progress::draw, Progress::finish);
 	write_index(stream, container);
 	write_crc(stream);
 
@@ -35,7 +74,7 @@ void write_test() {
 }
 //----------------------------------------------
 void read_test() {
-	std::cout << "READ TEST\n";
+	debug << "READ TEST\n";
 
 	Container read_container;
 	read_container.name = "test.flx";
