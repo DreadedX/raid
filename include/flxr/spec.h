@@ -1,5 +1,6 @@
 #pragma once
 //----------------------------------------------
+#include <iostream>
 #include <vector>
 #include <fstream>
 
@@ -56,10 +57,12 @@ namespace flxr {
 				stream.open(name, std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
 			}
 
-			void configure(COMPRESSION m_compression) {
+			void configure(COMPRESSION m_compression, int m_compression_level) {
 				header.magic = MAGIC;
 				header.compression = m_compression;
 				header.file_count = reinterpret_cast<uint64>(files.size());
+
+				compression_level = m_compression_level;
 			}
 
 			void add_file(File file) {
@@ -67,10 +70,9 @@ namespace flxr {
 			}
 
 			auto& get_stream() { return stream; }
-
 			auto& get_files() { return files; }
-
 			auto& get_header() { return header; }
+			auto& get_compression_level() { return compression_level; }
 
 			#pragma pack(1)
 			struct Header {
@@ -83,6 +85,7 @@ namespace flxr {
 			std::string name;
 			std::fstream stream;
 			std::vector<File> files;
+			int compression_level;
 
 			Header header;
 	};

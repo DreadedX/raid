@@ -6,26 +6,25 @@
 #include "flxr/write.h"
 #include "flxr/crc.h"
 //----------------------------------------------
-std::fstream& flxr::write_header(std::fstream& stream, Container& container) {
-	write(stream, container.get_header());
-
-	return stream;
+void flxr::write_header(Container& container) {
+	write(container.get_stream(), container.get_header());
 }
 //----------------------------------------------
-std::fstream& flxr::write_index(std::fstream& stream, Container& container) {
+void flxr::write_index(Container& container) {
+	auto& stream = container.get_stream();
+
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
 	for(auto file : container.get_files()) {
 		write(stream, file.get_name());
 		write(stream, file.get_size());
 	}
 	stream.seekg(0, std::ios::end);
-
-	return stream;
 }
 //----------------------------------------------
 /// @todo This function is kind of ugly, refactor
 #define CHUNK 16384
-std::fstream& flxr::write_data(std::fstream& stream, Container& container, int level, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
+void flxr::write_data(Container& container, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
+	auto& stream = container.get_stream();
 
 	std::cout << "[D] " << "Compressing files\n";
 	for (auto& file : container.get_files()) {
@@ -44,7 +43,7 @@ std::fstream& flxr::write_data(std::fstream& stream, Container& container, int l
 		strm.zalloc = Z_NULL;
 		strm.zfree = Z_NULL;
 		strm.opaque = Z_NULL;
-		ret = deflateInit(&strm, level);
+		ret = deflateInit(&strm, container.get_compression_level());
 		if (ret != Z_OK) {
 			exit(-1);
 		}
@@ -101,10 +100,11 @@ std::fstream& flxr::write_data(std::fstream& stream, Container& container, int l
 
 		std::cout << "[D] " << file.get_size() << '\n';
 	}
-	return stream;
 }
 //----------------------------------------------
-std::fstream& flxr::write_crc(std::fstream& stream) {
+void flxr::write_crc(Container& container) {
+	auto& stream = container.get_stream();
+
 	uint64 size = stream.tellg();
 	stream.clear();
 	stream.seekg(0, std::ios::beg);
@@ -123,7 +123,5 @@ std::fstream& flxr::write_crc(std::fstream& stream) {
 	crc = crc_finalize(crc);
 
 	write(stream, crc);
-
-	return stream;
 }
 //----------------------------------------------

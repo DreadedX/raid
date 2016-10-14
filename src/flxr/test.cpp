@@ -51,14 +51,14 @@ void write_test() {
 	container.add_file(File("test.txt"));
 	// container.add_file(File("sponza.obj"));
 
-	container.configure(COMPRESSION::ZLIB);
+	container.configure(COMPRESSION::ZLIB, 9);
 
 	container.clear_file();
-	write_header(container.get_stream(), container);
-	write_index(container.get_stream(), container);
-	write_data(container.get_stream(), container, 9, Progress::setup, Progress::draw, Progress::finish);
-	write_index(container.get_stream(), container);
-	write_crc(container.get_stream());
+	write_header(container);
+	write_index(container);
+	write_data(container, Progress::setup, Progress::draw, Progress::finish);
+	write_index(container);
+	write_crc(container);
 }
 //----------------------------------------------
 void read_test() {

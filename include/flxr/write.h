@@ -7,12 +7,12 @@
 //----------------------------------------------
 namespace flxr {
 	//----------------------------------------------
-	std::fstream& write_header(std::fstream& stream, Container& container);
-	std::fstream& write_index(std::fstream& stream, Container& container);
-	std::fstream& write_data(std::fstream& stream, Container& container, int level,
+	void write_header(Container& container);
+	void write_index(Container& container);
+	void write_data(Container& container,
 			std::function<void(const std::string&, const uint64)> on_init = nullptr,
 			std::function<void(const uint64)> on_update = nullptr,
 			std::function<void()> on_finish = nullptr);
-	std::fstream& write_crc(std::fstream& stream);
+	void write_crc(Container& container);
 	//----------------------------------------------
 }
