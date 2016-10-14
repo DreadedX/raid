@@ -5,9 +5,9 @@
 //----------------------------------------------
 /// @todo This is just for testing
 std::istream& flxr::read_header(std::istream& stream, Container& container) {
-	read(stream, container.header);
+	read(stream, container.get_header());
 
-	if (container.header.magic != MAGIC) {
+	if (container.get_header().magic != MAGIC) {
 		std::cout << "Invalid magic number\n";
 		exit(-1);
 	}
@@ -16,7 +16,7 @@ std::istream& flxr::read_header(std::istream& stream, Container& container) {
 }
 //----------------------------------------------
 std::istream& flxr::read_index(std::istream& stream, Container& container) {
-	for (uint64 i = 0; i < container.header.file_count; i++) {
+	for (uint64 i = 0; i < container.get_header().file_count; i++) {
 
 		std::string file_name;
 		read(stream, file_name);

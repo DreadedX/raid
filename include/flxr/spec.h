@@ -1,6 +1,8 @@
 #pragma once
 //----------------------------------------------
 #include <vector>
+#include <fstream>
+
 #include "typedef.h"
 //----------------------------------------------
 namespace flxr {
@@ -20,12 +22,13 @@ namespace flxr {
 		public:
 			File(std::string m_name) : name(m_name) {}
 
-			const std::string& get_name() { return name; }
+			const auto& get_name() { return name; }
 
-			const uint64 get_size() {
+			const auto get_size() {
 				return size;
 			}
-			auto set_size(uint64 m_size) {
+
+			void set_size(uint64 m_size) {
 				size = m_size;
 			}
 
@@ -34,24 +37,53 @@ namespace flxr {
 			uint64 size;
 	};
 	//----------------------------------------------
-	struct Container {
-		std::string name;
-		std::vector<File> files;
-		#pragma pack(1)
-		struct {
-			int32 magic;
-			COMPRESSION compression;
-			int64 file_count;
-		} header;
+	class Container {
+		public:
+			Container(std::string m_name) : name(m_name) {
+				stream.open(m_name, std::ios::out | std::ios::in | std::ios::binary);
 
-		void configure(COMPRESSION m_compression) {
-			header.magic = MAGIC;
-			header.compression = m_compression;
-			header.file_count = reinterpret_cast<uint64>(files.size());
-		}
+				if(!stream.is_open()) {
+					std::cerr << "Failed to open file: " << m_name << '\n';
+					exit(-1);
+				}
+			}
+			~Container() {
+				stream.close();
+			}
+			
+			void clear_file() {
+				stream.close();
+				stream.open(name, std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
+			}
 
-		void add_file(File file) {
-			files.push_back(std::move(file));
-		}
+			void configure(COMPRESSION m_compression) {
+				header.magic = MAGIC;
+				header.compression = m_compression;
+				header.file_count = reinterpret_cast<uint64>(files.size());
+			}
+
+			void add_file(File file) {
+				files.push_back(std::move(file));
+			}
+
+			auto& get_stream() { return stream; }
+
+			auto& get_files() { return files; }
+
+			auto& get_header() { return header; }
+
+			#pragma pack(1)
+			struct Header {
+				int32 magic;
+				COMPRESSION compression;
+				int64 file_count;
+			};
+
+		private:
+			std::string name;
+			std::fstream stream;
+			std::vector<File> files;
+
+			Header header;
 	};
 }

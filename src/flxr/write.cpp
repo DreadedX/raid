@@ -2,24 +2,19 @@
 #include <cassert>
 #include <zlib.h>
 
-#include "shared/logger.h"
-
 #include "flxr/binary_helper.h"
 #include "flxr/write.h"
 #include "flxr/crc.h"
 //----------------------------------------------
-std::ostream& flxr::write_header(std::ostream& stream, Container& container) {
-	// write(stream, container.get_header().magic);
-	// write(stream, container.get_header().compression);
-	// write(stream, container.get_header().file_count);
-	write(stream, container.header);
+std::fstream& flxr::write_header(std::fstream& stream, Container& container) {
+	write(stream, container.get_header());
 
 	return stream;
 }
 //----------------------------------------------
 std::fstream& flxr::write_index(std::fstream& stream, Container& container) {
-	stream.seekg(sizeof(Container::header), std::ios::beg);
-	for(auto file : container.files) {
+	stream.seekg(sizeof(Container::Header), std::ios::beg);
+	for(auto file : container.get_files()) {
 		write(stream, file.get_name());
 		write(stream, file.get_size());
 	}
@@ -28,11 +23,12 @@ std::fstream& flxr::write_index(std::fstream& stream, Container& container) {
 	return stream;
 }
 //----------------------------------------------
+/// @todo This function is kind of ugly, refactor
 #define CHUNK 16384
-std::ostream& flxr::write_data(std::ostream& stream, Container& container, int level, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
+std::fstream& flxr::write_data(std::fstream& stream, Container& container, int level, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void()> on_finish) {
 
-	debug << "Compressing files\n";
-	for (auto& file : container.files) {
+	std::cout << "[D] " << "Compressing files\n";
+	for (auto& file : container.get_files()) {
 		/// @todo This does not, at all, check if the file is correctly opened
 		/// @todo Make this a std::fstream
 		/// @todo Get this from the file in the container (maybe)
@@ -102,6 +98,8 @@ std::ostream& flxr::write_data(std::ostream& stream, Container& container, int l
 		if (on_finish != nullptr) {
 			on_finish();
 		}
+
+		std::cout << "[D] " << file.get_size() << '\n';
 	}
 	return stream;
 }
