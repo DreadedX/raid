@@ -39,8 +39,12 @@ namespace flxr {
 				stream.open(m_name, std::ios::out | std::ios::in | std::ios::binary);
 
 				if(!stream.is_open()) {
-					std::cerr << "Failed to open file: " << m_name << '\n';
-					exit(-1);
+					std::cout << "Trying to create: " << m_name << '\n';
+					stream.open(name, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
+					if(!stream.is_open()) {
+						std::cerr << "Failed to open file: " << m_name << '\n';
+						exit(-1);
+					}
 				}
 			}
 			~Container() {
@@ -49,7 +53,7 @@ namespace flxr {
 			
 			void clear_file() {
 				stream.close();
-				stream.open(name, std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
+				stream.open(name, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
 			}
 
 			void configure(COMPRESSION m_compression, int m_compression_level) {

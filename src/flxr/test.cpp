@@ -50,7 +50,7 @@ void write_test() {
 
 	Container container("test.flx");
 
-	container.add_file(File("test.txt"));
+	container.add_file(File("musketeers.txt"));
 	container.add_file(File("sponza.obj"));
 
 	container.configure(COMPRESSION::ZLIB, 9);
@@ -75,6 +75,8 @@ void read_test() {
 	for(auto file : container.get_files()) {
 		std::cout << file.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(file.get_size())/1000/1000 << " MB compressed\n";
 	}
+
+	read_data(container);
 }
 //----------------------------------------------
 int main() {

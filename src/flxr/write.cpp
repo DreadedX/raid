@@ -16,6 +16,7 @@ void flxr::write_index(Container& container) {
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
 	for(auto file : container.get_files()) {
 		write(stream, file.get_name());
+		/// @todo This should be calculated by the reader
 		write(stream, file.get_offset());
 		write(stream, file.get_size());
 	}
@@ -68,12 +69,12 @@ void flxr::write_data(Container& container, std::function<void(const std::string
 		do {
 			strm.avail_in = source.readsome(reinterpret_cast<char*>(in), CHUNK);
 			total_read += strm.avail_in;
-			if (on_update != nullptr) {
-				on_update(total_read);
-			}
 			if (source.fail()) {
 				(void)deflateEnd(&strm);
 				exit(Z_ERRNO);
+			}
+			if (on_update != nullptr) {
+				on_update(total_read);
 			}
 			/// @todo This can be better
 			// flush = source_file.eof() ? Z_FINISH : Z_NO_FLUSH;
