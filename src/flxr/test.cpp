@@ -66,11 +66,15 @@ void write_test() {
 void read_test() {
 	std::cout << "[D] " << "READ TEST\n";
 
-	Container read_container("test.flx");
+	Container container("test.flx");
 
-	check_crc(read_container);
-	read_header(read_container);
-	read_index(read_container);
+	check_crc(container);
+	read_header(container);
+	read_index(container);
+
+	for(auto file : container.get_files()) {
+		std::cout << file.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(file.get_size())/1000/1000 << " MB compressed\n";
+	}
 }
 //----------------------------------------------
 int main() {

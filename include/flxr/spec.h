@@ -21,13 +21,16 @@ namespace flxr {
 			File(std::string m_name) : name(m_name) {}
 
 			const auto& get_name() { return name; }
+			const auto get_offset() { return offset; }
 			const auto get_size() { return size; }
 
 			void set_size(uint64 m_size) { size = m_size; }
+			void set_offset(uint64 m_offset) { offset = m_offset; }
 
 		private:
 			std::string name;
 			uint64 size;
+			uint64 offset;
 	};
 	//----------------------------------------------
 	class Container {

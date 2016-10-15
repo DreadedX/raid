@@ -16,6 +16,7 @@ void flxr::write_index(Container& container) {
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
 	for(auto file : container.get_files()) {
 		write(stream, file.get_name());
+		write(stream, file.get_offset());
 		write(stream, file.get_size());
 	}
 	stream.seekg(0, std::ios::end);
@@ -28,10 +29,16 @@ void flxr::write_data(Container& container, std::function<void(const std::string
 
 	std::cout << "[D] " << "Compressing files\n";
 	for (auto& file : container.get_files()) {
-		/// @todo This does not, at all, check if the file is correctly opened
-		/// @todo Make this a std::fstream
+		file.set_offset(stream.tellg());
+
 		/// @todo Get this from the file in the container (maybe)
-		FILE *source = fopen(file.get_name().c_str(), "r+");
+		/// @todo Get this from a plugin that might preprocess the file
+		std::fstream source;
+		source.open(file.get_name(), std::ios::out | std::ios::in | std::ios::binary);
+
+		if (!source.is_open()) {
+			std::cerr << "Failed to open: " << file.get_name() << '\n';
+		}
 
 		int ret, flush;
 		unsigned have;
@@ -48,29 +55,29 @@ void flxr::write_data(Container& container, std::function<void(const std::string
 			exit(-1);
 		}
 
-		fseek(source, 0, SEEK_END);
-		uint64 total_size = ftell(source);
-		fseek(source, 0, SEEK_SET);
+		source.seekg(0, std::ios::end);
+		uint64 total_size = source.tellg();
+		source.seekg(0, std::ios::beg);
 		uint64 total_read = 0;
 
-		/// @todo Replace this with some kind of callback function so that people can hook in there own progress report
 		if (on_init != nullptr) {
 			on_init(file.get_name(), total_size);
 		}
-		// draw_progress_bar(file.get_name(), float(total_read)/float(total_size));
 
 		/* compress until end of file */
 		do {
-			strm.avail_in = fread(in, 1, CHUNK, source);
+			strm.avail_in = source.readsome(reinterpret_cast<char*>(in), CHUNK);
 			total_read += strm.avail_in;
 			if (on_update != nullptr) {
 				on_update(total_read);
 			}
-			if (ferror(source)) {
+			if (source.fail()) {
 				(void)deflateEnd(&strm);
 				exit(Z_ERRNO);
 			}
-			flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
+			/// @todo This can be better
+			// flush = source_file.eof() ? Z_FINISH : Z_NO_FLUSH;
+			flush = source.tellg() == total_size ? Z_FINISH : Z_NO_FLUSH;
 			strm.next_in = in;
 
 			/* run deflate() on input until output buffer not full, finish
@@ -93,6 +100,8 @@ void flxr::write_data(Container& container, std::function<void(const std::string
 
 		/* clean up and return */
 		(void)deflateEnd(&strm);
+
+		source.close();
 
 		if (on_finish != nullptr) {
 			on_finish(file.get_size());
