@@ -28,7 +28,7 @@ namespace flxr {
 			void set_offset(uint64 m_offset) { offset = m_offset; }
 
 		private:
-			std::string name;
+			const std::string name;
 			uint64 size;
 			uint64 offset;
 	};
@@ -81,7 +81,7 @@ namespace flxr {
 			};
 
 		private:
-			std::string name;
+			const std::string name;
 			std::fstream stream;
 			std::vector<File> files;
 			int compression_level;

@@ -58,7 +58,18 @@ void write_test() {
 	container.clear_file();
 	write_header(container);
 	write_index(container);
-	write_data(container, Progress::setup, Progress::draw, Progress::finish);
+	for(auto& file : container.get_files()) {
+		std::fstream stream;
+		stream.open(file.get_name(), std::ios::out | std::ios::in | std::ios::binary);
+
+		if (!stream.is_open()) {
+			std::cerr << "Failed to open: " << file.get_name() << '\n';
+		}
+
+		write_data(container, file, stream, Progress::setup, Progress::draw, Progress::finish);
+
+		stream.close();
+	}
 	write_index(container);
 	write_crc(container);
 }
@@ -72,11 +83,14 @@ void read_test() {
 	read_header(container);
 	read_index(container);
 
-	for(auto file : container.get_files()) {
+	for(auto& file : container.get_files()) {
 		std::cout << file.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(file.get_size())/1000/1000 << " MB compressed\n";
 	}
 
-	read_data(container);
+	for(auto& file : container.get_files()) {
+		std::stringstream stream;
+		read_data(container, file, stream);
+	}
 }
 //----------------------------------------------
 int main() {
