@@ -1,0 +1,13 @@
+packages
+	core
+		path ./assets/
+	demo
+		path ./assets/
+
+plugins
+	png
+		use png2bin
+	obj
+		use objectifier
+	glsl
+		use pre-glsl

@@ -42,7 +42,6 @@ void flxr::read_data(Container& container, File& file, std::iostream& dest) {
 	std::cout << "[D] " << "Decompressing: " << file.get_name() << "\n";
 	/// @todo This should be calculated
 	stream.seekg(file.get_offset(), std::ios::beg);
-	std::cout << "Moving to offset: " << file.get_offset() << '\n';
 
 	int ret;
 	unsigned have;

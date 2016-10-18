@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "flxr/ValTree.h"
+
 #include "flxr/write.h"
 #include "flxr/read.h"
 
@@ -48,10 +50,9 @@ namespace Progress {
 void write_test() {
 	std::cout << "[D] " << "WRITE TEST\n";
 
-	Container container("test.flx");
+	Container container("../../assets/test.flx");
 
-	container.add_file(File("musketeers.txt"));
-	container.add_file(File("sponza.obj"));
+	container.add_file(File("../../assets/test/musketeers.txt"));
 
 	container.configure(COMPRESSION::ZLIB, 9);
 
@@ -77,7 +78,7 @@ void write_test() {
 void read_test() {
 	std::cout << "[D] " << "READ TEST\n";
 
-	Container container("test.flx");
+	Container container("../../assets/test.flx");
 
 	check_crc(container);
 	read_header(container);
@@ -96,4 +97,19 @@ void read_test() {
 int main() {
 	write_test();
 	read_test();
+
+	// ValTree v;
+	// v.parse("../../assets/config.flxr");
+    //
+	// auto& name = v.query("plugins.fbx.use");
+    //
+	// for (auto test : v.getChild("packages")) {
+	// 	std::cout << test.getKey() << ": path=" << test.getChild("path").getStr() << '\n';
+	// }
+    //
+	// if (name.isNull()) {
+	// 	std::cout << "No plugin found for this file\n";
+	// } else {
+	// 	std::cout << name.getStr() << '\n';
+	// }
 }
