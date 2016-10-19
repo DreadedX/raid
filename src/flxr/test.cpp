@@ -48,37 +48,53 @@ namespace Progress {
 }
 //----------------------------------------------
 void write_test() {
-	std::cout << "[D] " << "WRITE TEST\n";
 
-	Container container("../../assets/test.flx");
+	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
+	std::string base_path = "../../";
 
-	container.add_file(File("../../assets/test/musketeers.txt"));
+	ValTree v;
+	v.parse(base_path + "assets/config.flxr");
 
-	container.configure(COMPRESSION::ZLIB, 9);
+	for (auto package : v.getChild("packages")) {
 
-	container.clear_file();
-	write_header(container);
-	write_index(container);
-	for(auto& file : container.get_files()) {
-		std::fstream stream;
-		stream.open(file.get_name(), std::ios::out | std::ios::in | std::ios::binary);
+		std::cout << "[D] " << "WRITE TEST\n";
 
-		if (!stream.is_open()) {
-			std::cerr << "Failed to open: " << file.get_name() << '\n';
+		Container container(package.getKey() + ".flx");
+
+		for (auto file : package.getChild("files")) {
+			container.add_file( File(package.getKey() + "/" + file.getKey()) );
 		}
 
-		write_data(container, file, stream, Progress::setup, Progress::draw, Progress::finish);
+		container.configure(COMPRESSION::ZLIB, 9);
 
-		stream.close();
+		container.clear_file();
+		write_header(container);
+		write_index(container);
+		for(auto& file : container.get_files()) {
+			std::fstream stream;
+			std::string file_path = base_path + package.getChild("path").getStr() + "/" + file.get_name();
+			stream.open(file_path, std::ios::out | std::ios::in | std::ios::binary);
+
+			std::cout << "[D] " << file_path << " -> " << file.get_name() << '\n';
+
+			if (!stream.is_open()) {
+				std::cerr << "Failed to open: " << file_path << '\n';
+				exit(-1);
+			}
+
+			write_data(container, file, stream, Progress::setup, Progress::draw, Progress::finish);
+
+			stream.close();
+		}
+		write_index(container);
+		write_crc(container);
 	}
-	write_index(container);
-	write_crc(container);
 }
 //----------------------------------------------
 void read_test() {
 	std::cout << "[D] " << "READ TEST\n";
 
-	Container container("../../assets/test.flx");
+	Container container("test.flx");
 
 	check_crc(container);
 	read_header(container);
@@ -98,18 +114,4 @@ int main() {
 	write_test();
 	read_test();
 
-	// ValTree v;
-	// v.parse("../../assets/config.flxr");
-    //
-	// auto& name = v.query("plugins.fbx.use");
-    //
-	// for (auto test : v.getChild("packages")) {
-	// 	std::cout << test.getKey() << ": path=" << test.getChild("path").getStr() << '\n';
-	// }
-    //
-	// if (name.isNull()) {
-	// 	std::cout << "No plugin found for this file\n";
-	// } else {
-	// 	std::cout << name.getStr() << '\n';
-	// }
 }

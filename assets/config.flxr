@@ -1,8 +1,9 @@
 packages
-	core
-		path ./assets/
-	demo
-		path ./assets/
+	test
+		path assets/
+		files
+			musketeers.txt
+			textures/grass.png
 
 plugins
 	png
