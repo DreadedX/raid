@@ -22,6 +22,13 @@ namespace flxr {
 		return stream;
 	}
 	//----------------------------------------------
+	/// Simplify writing other streams
+	template<>
+	inline std::ostream& write(std::ostream& stream, const std::iostream& value){
+		stream << value.rdbuf();
+		return stream;
+	}
+	//----------------------------------------------
 	/// Simplify writing vectors
 	template<typename T>
 	inline std::ostream& write(std::ostream& stream, const std::vector<T>& value){

@@ -13,6 +13,9 @@ namespace flxr {
 	//----------------------------------------------
 	enum COMPRESSION : byte {
 		ZLIB,
+		RAW,
+
+		ON_DISK = 255,
 	};
 	//----------------------------------------------
 	class File {
@@ -29,8 +32,8 @@ namespace flxr {
 
 		private:
 			const std::string name;
-			uint64 size;
-			uint64 offset;
+			uint64 size = 0;
+			uint64 offset = 0;
 	};
 	//----------------------------------------------
 	class Container {
