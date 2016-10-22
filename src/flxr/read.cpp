@@ -4,6 +4,7 @@
 #include "flxr/crc.h"
 #include "flxr/compression/zlib.h"
 #include "flxr/compression/raw.h"
+#include "flxr/compression/on_disk.h"
 //----------------------------------------------
 void flxr::read_header(Container& container) {
 	read(container.get_stream(), container.get_header());
@@ -17,29 +18,33 @@ void flxr::read_header(Container& container) {
 void flxr::read_index(Container& container) {
 	auto& stream = container.get_stream();
 
-	for (uint64 i = 0; i < container.get_header().file_count; i++) {
+	for (uint64 i = 0; i < container.get_header().index_size; i++) {
 
 		std::string file_name;
 		read(stream, file_name);
-		File file(file_name);
+		MetaData meta_data(file_name);
 		uint64 offset;
 		read(stream, offset);
-		file.set_offset(offset);
+		meta_data.set_offset(offset);
 		uint64 size;
 		read(stream, size);
-		file.set_size(size);
+		meta_data.set_size(size);
 
-		container.add_file(std::move(file));
+		container.add_file(std::move(meta_data));
 	}
 }
 //----------------------------------------------
-void flxr::read_data(Container& container, File& file, std::iostream& dest) {
+/// @todo There must be a better way to do this
+void flxr::read_data(Container& container, MetaData& meta_data, std::iostream& dest) {
 	switch(container.get_header().compression) {
 		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::read_data(container, file, dest);
+			flxr::zlib::read_data(container, meta_data, dest);
 			break;
 		case flxr::COMPRESSION::RAW:
-			flxr::raw::read_data(container, file, dest);
+			flxr::raw::read_data(container, meta_data, dest);
+			break;
+		case flxr::COMPRESSION::ON_DISK:
+			flxr::on_disk::read_data(container, meta_data, dest);
 			break;
 		default:
 			std::cerr << "Selected compression algorithm is not implemented\n";

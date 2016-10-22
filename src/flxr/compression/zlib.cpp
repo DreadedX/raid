@@ -9,12 +9,12 @@
 #define CHUNK 16384
 //----------------------------------------------
 /// @todo This function is kind of ugly, refactor
-void flxr::zlib::write_data(Container& container, File& file, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::zlib::write_data(Container& container, MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = container.get_stream();
 
-	std::cout << "[D] " << "Compressing: " << file.get_name() << "\n";
+	std::cout << "[D] " << "Compressing: " << meta_data.get_name() << "\n";
 
-	file.set_offset(stream.tellg());
+	meta_data.set_offset(stream.tellg());
 
 	int ret, flush;
 	unsigned have;
@@ -37,7 +37,7 @@ void flxr::zlib::write_data(Container& container, File& file, std::iostream& sou
 	uint64 total_read = 0;
 
 	if (on_init != nullptr) {
-		on_init(file.get_name(), total_size);
+		on_init(meta_data.get_name(), total_size);
 	}
 
 	/* compress until end of file */
@@ -66,7 +66,7 @@ void flxr::zlib::write_data(Container& container, File& file, std::iostream& sou
 			have = CHUNK - strm.avail_out;
 			std::vector<byte> out_vector(out, out+have);
 			write(stream, out_vector);
-			file.set_size(file.get_size() + have);
+			meta_data.set_size(meta_data.get_size() + have);
 		} while (strm.avail_out == 0);
 		assert(strm.avail_in == 0);     /* all input will be used */
 
@@ -78,16 +78,16 @@ void flxr::zlib::write_data(Container& container, File& file, std::iostream& sou
 	(void)deflateEnd(&strm);
 
 	if (on_finish != nullptr) {
-		on_finish(file.get_size());
+		on_finish(meta_data.get_size());
 	}
 }
 //----------------------------------------------
-void flxr::zlib::read_data(Container& container, File& file, std::iostream& dest) {
+void flxr::zlib::read_data(Container& container, MetaData& meta_data, std::iostream& dest) {
 	auto& stream = container.get_stream();
 
-	std::cout << "[D] " << "Decompressing: " << file.get_name() << "\n";
+	std::cout << "[D] " << "Decompressing: " << meta_data.get_name() << "\n";
 	/// @todo This should be calculated
-	stream.seekg(file.get_offset(), std::ios::beg);
+	stream.seekg(meta_data.get_offset(), std::ios::beg);
 
 	int ret;
 	unsigned have;

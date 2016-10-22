@@ -2,6 +2,7 @@ packages
 	test
 		path assets/
 		files
+			hello.txt
 			musketeers.txt
 			textures/grass.png
 

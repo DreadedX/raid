@@ -5,6 +5,7 @@
 
 #include "flxr/compression/zlib.h"
 #include "flxr/compression/raw.h"
+#include "flxr/compression/on_disk.h"
 //----------------------------------------------
 void flxr::write_header(Container& container) {
 	write(container.get_stream(), container.get_header());
@@ -14,25 +15,28 @@ void flxr::write_index(Container& container) {
 	auto& stream = container.get_stream();
 
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
-	for(auto file : container.get_files()) {
-		write(stream, file.get_name());
+	for(auto meta_data : container.get_index()) {
+		write(stream, meta_data.get_name());
 		/// @todo This should be calculated by the reader
-		write(stream, file.get_offset());
-		write(stream, file.get_size());
+		write(stream, meta_data.get_offset());
+		write(stream, meta_data.get_size());
 
-		std::cout << "[D] offset: " << file.get_offset() << '\n';
+		std::cout << "[D] offset: " << meta_data.get_offset() << '\n';
 	}
 	stream.seekg(0, std::ios::end);
 }
 //----------------------------------------------
-/// @todo This function is kind of ugly, refactor
-void flxr::write_data(Container& container, File& file, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+/// @todo There must be a better way to do this
+void flxr::write_data(Container& container, MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	switch(container.get_header().compression) {
 		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::write_data(container, file, source, on_init, on_update, on_finish);
+			flxr::zlib::write_data(container, meta_data, source, on_init, on_update, on_finish);
 			break;
 		case flxr::COMPRESSION::RAW:
-			flxr::raw::write_data(container, file, source, on_init, on_update, on_finish);
+			flxr::raw::write_data(container, meta_data, source, on_init, on_update, on_finish);
+			break;
+		case flxr::COMPRESSION::ON_DISK:
+			flxr::on_disk::write_data(container, meta_data, source, on_init, on_update, on_finish);
 			break;
 		default:
 			std::cerr << "Selected compression algorithm is not implemented\n";

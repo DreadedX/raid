@@ -62,27 +62,28 @@ void write_test() {
 		Container container(package.getKey() + ".flx");
 
 		for (auto file : package.getChild("files")) {
-			container.add_file( File(package.getKey() + "/" + file.getKey()) );
+			container.add_file( MetaData(package.getKey() + "/" + file.getKey()) );
 		}
 
-		container.configure(COMPRESSION::ZLIB, 9);
+		container.configure(COMPRESSION::ON_DISK, 9);
 
 		container.clear_file();
 		write_header(container);
 		write_index(container);
-		for(auto& file : container.get_files()) {
+		for(auto& meta_data : container.get_index()) {
 			std::fstream stream;
-			std::string file_path = base_path + package.getChild("path").getStr() + "/" + file.get_name();
+			std::string file_path = base_path + package.getChild("path").getStr() + "/" + meta_data.get_name();
+			meta_data.set_path(file_path);
 			stream.open(file_path, std::ios::out | std::ios::in | std::ios::binary);
 
-			std::cout << "[D] " << file_path << " -> " << file.get_name() << '\n';
+			std::cout << "[D] " << file_path << " -> " << meta_data.get_name() << '\n';
 
 			if (!stream.is_open()) {
 				std::cerr << "Failed to open: " << file_path << '\n';
 				exit(-1);
 			}
 
-			write_data(container, file, stream, Progress::setup, Progress::draw, Progress::finish);
+			write_data(container, meta_data, stream, Progress::setup, Progress::draw, Progress::finish);
 
 			stream.close();
 		}
@@ -100,18 +101,17 @@ void read_test() {
 	read_header(container);
 	read_index(container);
 
-	for(auto& file : container.get_files()) {
-		std::cout << file.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(file.get_size())/1000/1000 << " MB compressed\n";
+	for(auto& meta_data : container.get_index()) {
+		std::cout << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
 	}
 
-	for(auto& file : container.get_files()) {
+	for(auto& meta_data : container.get_index()) {
 		std::stringstream stream;
-		read_data(container, file, stream);
+		read_data(container, meta_data, stream);
 	}
 }
 //----------------------------------------------
 int main() {
 	write_test();
 	read_test();
-
 }

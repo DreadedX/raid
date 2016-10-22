@@ -18,22 +18,26 @@ namespace flxr {
 		ON_DISK = 255,
 	};
 	//----------------------------------------------
-	class File {
+	class MetaData {
 
 		public:
-			File(std::string m_name) : name(m_name) {}
+			MetaData(std::string m_name) : name(m_name) {}
 
 			const auto& get_name() { return name; }
 			const auto get_offset() { return offset; }
 			const auto get_size() { return size; }
+			const auto& get_path() { return path; }
 
 			void set_size(uint64 m_size) { size = m_size; }
 			void set_offset(uint64 m_offset) { offset = m_offset; }
+			void set_path(const std::string& m_path) { path = m_path; }
 
 		private:
 			const std::string name;
 			uint64 size = 0;
 			uint64 offset = 0;
+			/// @todo I do not like this being in something that can use other sources than files
+			std::string path;
 	};
 	//----------------------------------------------
 	class Container {
@@ -62,17 +66,17 @@ namespace flxr {
 			void configure(COMPRESSION m_compression, int m_compression_level) {
 				header.magic = MAGIC;
 				header.compression = m_compression;
-				header.file_count = reinterpret_cast<uint64>(files.size());
+				header.index_size = reinterpret_cast<uint64>(index.size());
 
 				compression_level = m_compression_level;
 			}
 
-			void add_file(File file) {
-				files.push_back(std::move(file));
+			void add_file(MetaData meta_data) {
+				index.push_back(std::move(meta_data));
 			}
 
 			auto& get_stream() { return stream; }
-			auto& get_files() { return files; }
+			auto& get_index() { return index; }
 			auto& get_header() { return header; }
 			auto& get_compression_level() { return compression_level; }
 
@@ -80,13 +84,13 @@ namespace flxr {
 			struct Header {
 				int32 magic;
 				COMPRESSION compression;
-				int64 file_count;
+				int64 index_size;
 			};
 
 		private:
 			const std::string name;
 			std::fstream stream;
-			std::vector<File> files;
+			std::vector<MetaData> index;
 			int compression_level;
 
 			Header header;

@@ -4,7 +4,7 @@
 
 #include "flxr/spec.h"
 //----------------------------------------------
-namespace flxr { namespace raw {
+namespace flxr { namespace on_disk {
 	//----------------------------------------------
 	void write_data(Container& container, MetaData& meta_data, std::iostream& source,
 			std::function<void(const std::string&, const uint64)> on_init = nullptr,
