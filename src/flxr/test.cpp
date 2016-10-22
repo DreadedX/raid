@@ -47,6 +47,21 @@ namespace Progress {
 	}
 }
 //----------------------------------------------
+COMPRESSION get_compression_type(ValTree package) {
+	const std::string compression = package.query("compression.type").getStr();
+
+	if (compression.compare("ZLIB") == 0) {
+		return COMPRESSION::ZLIB;
+	} else if (compression.compare("RAW") == 0) {
+		return COMPRESSION::RAW;
+	} else if (compression.compare("ON_DISK") == 0) {
+		return COMPRESSION::ON_DISK;
+	} else {
+		std::cerr << "Invalid compression type\n";
+		exit(-1);
+	}
+}
+//----------------------------------------------
 void write_test() {
 
 	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
@@ -55,7 +70,7 @@ void write_test() {
 	ValTree v;
 	v.parse(base_path + "assets/config.flxr");
 
-	for (auto package : v.getChild("packages")) {
+	for (const auto& package : v.getChild("packages")) {
 
 		std::cout << "[D] " << "WRITE TEST\n";
 
@@ -65,14 +80,15 @@ void write_test() {
 			container.add_file( MetaData(package.getKey() + "/" + file.getKey()) );
 		}
 
-		container.configure(COMPRESSION::ON_DISK, 9);
+		container.configure(get_compression_type(package), package.query("compression.level").getInt());
+		std::cout << "[D] " << "Compression type: " << get_compression_type(package) << ", level: " << package.query("compression.level").getInt() << '\n';
 
 		container.clear_file();
 		write_header(container);
 		write_index(container);
-		for(auto& meta_data : container.get_index()) {
+		for (auto& meta_data : container.get_index()) {
 			std::fstream stream;
-			std::string file_path = base_path + package.getChild("path").getStr() + "/" + meta_data.get_name();
+			std::string file_path = base_path + package.getChild("path").getStr() + "/" + meta_data.get_name().substr(meta_data.get_name().find_first_of('/')+1);
 			meta_data.set_path(file_path);
 			stream.open(file_path, std::ios::out | std::ios::in | std::ios::binary);
 
@@ -89,29 +105,35 @@ void write_test() {
 		}
 		write_index(container);
 		write_crc(container);
+
+		std::cout << "==============================\n";
 	}
 }
 //----------------------------------------------
-void read_test() {
+void read_test(std::string container_name) {
 	std::cout << "[D] " << "READ TEST\n";
 
-	Container container("test.flx");
+	Container container(container_name);
 
 	check_crc(container);
 	read_header(container);
 	read_index(container);
 
-	for(auto& meta_data : container.get_index()) {
+	for (auto& meta_data : container.get_index()) {
 		std::cout << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
 	}
 
-	for(auto& meta_data : container.get_index()) {
+	for (auto& meta_data : container.get_index()) {
 		std::stringstream stream;
 		read_data(container, meta_data, stream);
 	}
+
+	std::cout << "==============================\n";
 }
 //----------------------------------------------
 int main() {
 	write_test();
-	read_test();
+	read_test("test-zlib.flx");
+	read_test("test-raw.flx");
+	read_test("test-on-disk.flx");
 }

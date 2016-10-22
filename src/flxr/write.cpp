@@ -20,8 +20,6 @@ void flxr::write_index(Container& container) {
 		/// @todo This should be calculated by the reader
 		write(stream, meta_data.get_offset());
 		write(stream, meta_data.get_size());
-
-		std::cout << "[D] offset: " << meta_data.get_offset() << '\n';
 	}
 	stream.seekg(0, std::ios::end);
 }

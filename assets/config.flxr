@@ -1,11 +1,35 @@
 packages
-	test
-		path assets/
+	test-zlib
+		// We should provide some kind of default if you do not specify this
+		compression
+			type ZLIB
+			level 9
+		path assets/test
+		// Maybe have some kind of include function so you can put this in a seperate file
 		files
 			hello.txt
 			musketeers.txt
 			textures/grass.png
 
+	test-raw
+		compression
+			type RAW
+		path assets/test
+		files
+			hello.txt
+			musketeers.txt
+			textures/grass.png
+
+	test-on-disk
+		compression
+			type ON_DISK
+		path assets/test
+		files
+			hello.txt
+			musketeers.txt
+			textures/grass.png
+
+// Maybe have some kind of include function so you can put this in a seperate file
 plugins
 	png
 		use png2bin
