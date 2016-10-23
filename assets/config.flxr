@@ -10,6 +10,7 @@ packages
 			hello.txt
 			musketeers.txt
 			textures/grass.png
+			file
 
 	test-raw
 		compression
@@ -19,7 +20,8 @@ packages
 			hello.txt
 			musketeers.txt
 			textures/grass.png
-
+	
+	// This will have problems with plugins, figure out something
 	test-on-disk
 		compression
 			type ON_DISK
@@ -31,9 +33,4 @@ packages
 
 // Maybe have some kind of include function so you can put this in a seperate file
 plugins
-	png
-		use png2bin
-	obj
-		use objectifier
-	glsl
-		use pre-glsl
+	png png2bin

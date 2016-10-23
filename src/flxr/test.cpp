@@ -94,6 +94,14 @@ void write_test() {
 
 			std::cout << "[D] " << file_path << " -> " << meta_data.get_name() << '\n';
 
+			// Find the file extension
+			std::string extension = "";
+			if (meta_data.get_name().substr(meta_data.get_name().find_last_of('/')).find_last_of('.') != std::string::npos) {
+				extension = meta_data.get_name().substr(meta_data.get_name().find_last_of('.'));
+			}
+			std::cout << "[D] " << extension << '\n';
+			std::cout << "[D] " << "Using plugin: " << v.query("plugins" + extension).getStr() << '\n';
+
 			if (!stream.is_open()) {
 				std::cerr << "Failed to open: " << file_path << '\n';
 				exit(-1);
