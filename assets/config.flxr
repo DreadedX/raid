@@ -12,24 +12,24 @@ packages
 			textures/grass.png
 			file
 
-	test-raw
-		compression
-			type RAW
-		path assets/test
-		files
-			hello.txt
-			musketeers.txt
-			textures/grass.png
-	
-	// This will have problems with plugins, figure out something
-	test-on-disk
-		compression
-			type ON_DISK
-		path assets/test
-		files
-			hello.txt
-			musketeers.txt
-			textures/grass.png
+//	test-raw
+//		compression
+//			type RAW
+//		path assets/test
+//		files
+//			hello.txt
+//			musketeers.txt
+//			textures/grass.png
+//	
+//	// This will have problems with plugins, figure out something
+//	test-on-disk
+//		compression
+//			type ON_DISK
+//		path assets/test
+//		files
+//			hello.txt
+//			musketeers.txt
+//			textures/grass.png
 
 // Maybe have some kind of include function so you can put this in a seperate file
 plugins

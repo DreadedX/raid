@@ -2,7 +2,7 @@
 // ValTree
 //
 
-#include "flxr/ValTree.h"
+#include "flexy/ValTree.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

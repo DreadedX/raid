@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "flxr/ValTree.h"
+#include "flexy/ValTree.h"
 
 #include "flxr/write.h"
 #include "flxr/read.h"
@@ -99,7 +99,6 @@ void write_test() {
 			if (meta_data.get_name().substr(meta_data.get_name().find_last_of('/')).find_last_of('.') != std::string::npos) {
 				extension = meta_data.get_name().substr(meta_data.get_name().find_last_of('.'));
 			}
-			std::cout << "[D] " << extension << '\n';
 			std::cout << "[D] " << "Using plugin: " << v.query("plugins" + extension).getStr() << '\n';
 
 			if (!stream.is_open()) {
@@ -118,30 +117,37 @@ void write_test() {
 	}
 }
 //----------------------------------------------
-void read_test(std::string container_name) {
-	std::cout << "[D] " << "READ TEST\n";
+void read_test() {
+	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
+	std::string base_path = "../../";
 
-	Container container(container_name);
+	ValTree v;
+	v.parse(base_path + "assets/config.flxr");
 
-	check_crc(container);
-	read_header(container);
-	read_index(container);
+	for (const auto& package : v.getChild("packages")) {
 
-	for (auto& meta_data : container.get_index()) {
-		std::cout << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
+		std::cout << "[D] " << "READ TEST\n";
+
+		Container container(package.getKey() + ".flx");
+
+		check_crc(container);
+		read_header(container);
+		read_index(container);
+
+		for (auto& meta_data : container.get_index()) {
+			std::cout << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
+		}
+
+		for (auto& meta_data : container.get_index()) {
+			std::stringstream stream;
+			read_data(container, meta_data, stream);
+		}
+
+		std::cout << "==============================\n";
 	}
-
-	for (auto& meta_data : container.get_index()) {
-		std::stringstream stream;
-		read_data(container, meta_data, stream);
-	}
-
-	std::cout << "==============================\n";
 }
 //----------------------------------------------
 int main() {
 	write_test();
-	read_test("test-zlib.flx");
-	read_test("test-raw.flx");
-	read_test("test-on-disk.flx");
+	read_test();
 }
