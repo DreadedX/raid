@@ -10,7 +10,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flexy/*.cpp)
 
 add_executable(${PROJECT_NAME} ${CPP_FILES})
-target_link_libraries(${PROJECT_NAME} flxr)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS} flxr)
 
 find_package (ZLIB REQUIRED)
 if (ZLIB_FOUND)

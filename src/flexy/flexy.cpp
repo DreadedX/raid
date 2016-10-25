@@ -1,6 +1,7 @@
 //----------------------------------------------
 #include <iostream>
 #include <iomanip>
+#include <dlfcn.h>
 
 #include "flexy/ValTree.h"
 
@@ -62,6 +63,31 @@ COMPRESSION get_compression_type(ValTree package) {
 	}
 }
 //----------------------------------------------
+void process(std::string plugin_name) {
+	std::string base_path = "../bin/";
+	plugin_name = base_path + "lib" + plugin_name + ".so";
+	void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
+	char* error = dlerror();
+	if (error) {
+		std::cerr << error << '\n';
+		exit(-1);
+	}
+	delete[] error;
+	error = nullptr;
+
+	typedef void (*process_pointer)();
+	process_pointer process = (process_pointer)dlsym(handle, "process");
+	error = dlerror();
+	if (error) {
+		std::cerr << error << '\n';
+		exit(-1);
+	}
+	delete[] error;
+	error = nullptr;
+
+	process();
+}
+//----------------------------------------------
 void write_test() {
 
 	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
@@ -94,16 +120,21 @@ void write_test() {
 
 			std::cout << "[D] " << file_path << " -> " << meta_data.get_name() << '\n';
 
-			// Find the file extension
-			std::string extension = "";
-			if (meta_data.get_name().substr(meta_data.get_name().find_last_of('/')).find_last_of('.') != std::string::npos) {
-				extension = meta_data.get_name().substr(meta_data.get_name().find_last_of('.'));
-			}
-			std::cout << "[D] " << "Using plugin: " << v.query("plugins" + extension).getStr() << '\n';
-
 			if (!stream.is_open()) {
 				std::cerr << "Failed to open: " << file_path << '\n';
 				exit(-1);
+			}
+
+			// Find the file extension
+			/// @todo This is disgusting
+			std::string extension = "";
+			if (meta_data.get_name().substr(meta_data.get_name().find_last_of('/')).find_last_of('.') != std::string::npos) {
+				extension = meta_data.get_name().substr(meta_data.get_name().find_last_of('.'));
+
+				ValTree plugin = v.query("plugins" + extension);
+				if (!plugin.isNull()) {
+					process(plugin.getStr());
+				}
 			}
 
 			write_data(container, meta_data, stream, Progress::setup, Progress::draw, Progress::finish);
