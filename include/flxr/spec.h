@@ -58,7 +58,7 @@ namespace flxr {
 				stream.close();
 			}
 			
-			void clear_file() {
+			void empty_file() {
 				stream.close();
 				stream.open(name, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
 			}
