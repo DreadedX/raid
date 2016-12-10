@@ -8,7 +8,7 @@ packages
 		// Maybe have some kind of include function so you can put this in a seperate file
 		files
 			hello.txt
-			musketeers.txt
+			//musketeers.txt
 			textures/grass.png
 			file
 
@@ -33,4 +33,4 @@ packages
 
 // Maybe have some kind of include function so you can put this in a seperate file
 plugins
-	png png2bin
+	png reference

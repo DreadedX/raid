@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(png2bin)
+project(reference)
 
 set(NAME_ ${PROJECT_NAME})
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
@@ -7,15 +7,9 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
-file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/png2bin/*.cpp)
+file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/plugins/reference/*.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
-
-find_package (ZLIB REQUIRED)
-if (ZLIB_FOUND)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
-endif (ZLIB_FOUND)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
