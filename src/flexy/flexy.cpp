@@ -6,8 +6,8 @@
 
 #include "flexy/ValTree.h"
 #include "flexy/helper.h"
-#include "flexy/config.h"
 #include "flexy/interface.h"
+#include "flexy/plugin.h"
 
 /// @note Do not put this above flext includes, somehow breaks
 /// @todo Figure this out
@@ -17,7 +17,7 @@
 using namespace flxr;
 //----------------------------------------------
 // @todo Add abstraction for plugin loading
-auto process(std::string plugin_name, std::shared_ptr<std::iostream> stream) {
+auto process(std::string plugin_name, std::string file_path) {
 	std::string base_path = "../bin/";
 	plugin_name = base_path + "lib" + plugin_name + ".so";
 	void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
@@ -29,7 +29,7 @@ auto process(std::string plugin_name, std::shared_ptr<std::iostream> stream) {
 	delete[] error;
 	error = nullptr;
 
-	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::shared_ptr<std::iostream> stream);
+	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
 	process_pointer process = (process_pointer)dlsym(handle, "process");
 	error = dlerror();
 	if (error) {
@@ -39,7 +39,7 @@ auto process(std::string plugin_name, std::shared_ptr<std::iostream> stream) {
 	delete[] error;
 	error = nullptr;
 
-	return process(stream);
+	return process(file_path);
 }
 //----------------------------------------------
 void write_test() {
@@ -70,28 +70,24 @@ void write_test() {
 		write_index(container);
 
 		for (auto& meta_data : container.get_index()) {
-			std::shared_ptr<std::iostream> stream = std::make_shared<std::fstream>();
-			std::string file_path = base_path + package.getChild("path").getStr() + "/" + get_file_name(meta_data.get_name());
-			meta_data.set_path(file_path);
-			std::static_pointer_cast<std::fstream>(stream)->open(file_path, std::ios::out | std::ios::in | std::ios::binary);
+			meta_data.set_path(base_path + package.getChild("path").getStr() + "/" + get_file_name(meta_data.get_name()));
 
-			std::cout << "[D] " << file_path << " -> " << meta_data.get_name() << '\n';
+			std::cout << "[D] " << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
 
-			if (!std::static_pointer_cast<std::fstream>(stream)->is_open()) {
-				std::cerr << "Failed to open: " << file_path << '\n';
-				exit(-1);
+			// Find the file extension and corresponding plugin
+			ValTree plugin;
+			if (has_file_extension(meta_data.get_name())) {
+				plugin = v.query("plugins" + get_file_extension(meta_data.get_name()));
 			}
 
-			// Find the file extension
-			/// @todo This is disgusting
-			std::string extension = "";
-			if (has_file_extension(meta_data.get_name())) {
-				extension = get_file_extension(meta_data.get_name());
+			// If a plugin was found run it, otherwise just load the file
+			std::shared_ptr<std::iostream> stream;
+			if (!plugin.isNull()) {
+				stream = process(plugin.getStr(), meta_data.get_path());
+			} else {
 
-				ValTree plugin = v.query("plugins" + extension);
-				if (!plugin.isNull()) {
-					stream = process(plugin.getStr(), stream);
-				}
+				stream = open_file(meta_data.get_path());
+				std::cout << "[D] " << "No plugin\n";
 			}
 
 			write_data(container, meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);

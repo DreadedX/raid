@@ -1,19 +1,18 @@
 //----------------------------------------------
-#include "flexy/config.h"
+#include "flexy/helper.h"
 //----------------------------------------------
-using namespace flxr;
-//----------------------------------------------
-COMPRESSION get_compression_type(ValTree package) {
+flxr::COMPRESSION get_compression_type(ValTree package) {
 	const std::string compression = package.query("compression.type").getStr();
 
 	if (compression.compare("ZLIB") == 0) {
-		return COMPRESSION::ZLIB;
+		return flxr::COMPRESSION::ZLIB;
 	} else if (compression.compare("RAW") == 0) {
-		return COMPRESSION::RAW;
+		return flxr::COMPRESSION::RAW;
 	} else if (compression.compare("ON_DISK") == 0) {
-		return COMPRESSION::ON_DISK;
+		return flxr::COMPRESSION::ON_DISK;
 	} else {
 		std::cerr << "Invalid compression type\n";
 		exit(-1);
 	}
 }
+//----------------------------------------------

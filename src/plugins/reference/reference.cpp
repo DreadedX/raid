@@ -1,34 +1,35 @@
 //----------------------------------------------
-#include <iostream>
-#include <memory>
 #include "flxr/binary_helper.h"
 #include "flxr/memstream.h"
-#include "typedef.h"
+#include "flexy/helper.h"
+#include "flexy/plugin.h"
 //----------------------------------------------
-extern "C" {
-	std::shared_ptr<std::iostream> process(std::shared_ptr<std::iostream> stream) {
-		std::cout << "Hello world, from png2bin\n";
+class Reference : public Plugin {
+	public:
+		virtual std::shared_ptr<std::iostream> process(std::string file_path) override {
 
-		// Test to see if we can actually load the file from stream
-		int test = 0;
-		flxr::read(*stream, test);
-		stream->seekg(0, std::ios::beg);
+			std::cout << "[D] " << "Hello world, from png2bin\n";
+			std::cout << "[D] " << file_path << '\n';
 
-		std::cout << "[D] " << test << '\n';
+			// Prints the first four bytes in hex as a demonstration
+			auto stream = open_file(file_path);
+			byte magic[4];
+			flxr::read(*stream, magic);
+			stream->seekg(0, std::ios::beg);
+			std::cout << "[D] " << std::hex << (int)magic[0] << (int)magic[1] << (int)magic[2] << (int)magic[3] << '\n';
 
-		byte buffer[] = "This is something really awesome!";
-		std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<char*>>((char*)buffer, sizeof(buffer));
+			// Demonstates how to return an array
+			byte buffer[] = {72, 101, 108, 108, 111};
+			std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<char*>>((char*)buffer, sizeof(buffer));
 
-		// std::string data = "Shoutcraft Kings 2016!";
-		// std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<std::string>>(data);
+			// Demonstates how to return a string
+			// std::string data = "This is an example text";
+			// std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<std::string>>(data);
 
-		/// @note Somehow this break everything...
-		// std::string line;
-		// while (std::getline(*final_stream, line, ' ')) {
-		// 	std::cout << "line: " << line << '\n';
-		// }
-		
-		return final_stream;
-	}
-}
+			return final_stream;
+		}
+};
 //----------------------------------------------
+share_plugin(Reference);
+//----------------------------------------------
+
