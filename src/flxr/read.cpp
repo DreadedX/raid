@@ -22,7 +22,7 @@ void flxr::read_index(Container& container) {
 
 		std::string file_name;
 		read(stream, file_name);
-		MetaData meta_data(file_name);
+		MetaData meta_data(file_name, "", container);
 		uint64 offset;
 		read(stream, offset);
 		meta_data.set_offset(offset);
@@ -35,16 +35,13 @@ void flxr::read_index(Container& container) {
 }
 //----------------------------------------------
 /// @todo There must be a better way to do this
-void flxr::read_data(Container& container, MetaData& meta_data, std::iostream& dest) {
-	switch(container.get_header().compression) {
+void flxr::read_data(MetaData& meta_data, std::iostream& dest) {
+	switch(meta_data.get_container().get_header().compression) {
 		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::read_data(container, meta_data, dest);
+			flxr::zlib::read_data(meta_data, dest);
 			break;
 		case flxr::COMPRESSION::RAW:
-			flxr::raw::read_data(container, meta_data, dest);
-			break;
-		case flxr::COMPRESSION::ON_DISK:
-			flxr::on_disk::read_data(container, meta_data, dest);
+			flxr::raw::read_data(meta_data, dest);
 			break;
 		default:
 			std::cerr << "Selected compression algorithm is not implemented\n";

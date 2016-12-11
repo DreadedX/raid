@@ -2,7 +2,8 @@ packages
 	test
 		// We should provide some kind of default if you do not specify this
 		compression
-			type RAW
+			type ZLIB
+			level 9
 		path assets/test
 		// Maybe have some kind of include function so you can put this in a seperate file
 		files

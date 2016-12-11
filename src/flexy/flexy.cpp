@@ -43,7 +43,6 @@ auto process(std::string plugin_name, std::string file_path) {
 }
 //----------------------------------------------
 void write_test() {
-
 	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
 	std::string base_path = "../../";
 
@@ -58,7 +57,9 @@ void write_test() {
 		Container container(package.getKey() + ".flx");
 		{
 			for (auto file : package.getChild("files")) {
-				container.add_file( MetaData(package.getKey() + "/" + file.getKey()) );
+				std::string name = package.getKey() + "/" + file.getKey();
+				std::string path = base_path + package.getChild("path").getStr() + "/" + get_file_name(name);
+				container.add_file( MetaData(name, path, container) );
 			}
 
 			container.configure(get_compression_type(package), package.query("compression.level").getInt());
@@ -70,8 +71,6 @@ void write_test() {
 		write_index(container);
 
 		for (auto& meta_data : container.get_index()) {
-			meta_data.set_path(base_path + package.getChild("path").getStr() + "/" + get_file_name(meta_data.get_name()));
-
 			std::cout << "[D] " << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
 
 			// Find the file extension and corresponding plugin
@@ -90,7 +89,7 @@ void write_test() {
 				std::cout << "[D] " << "No plugin\n";
 			}
 
-			write_data(container, meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
+			write_data(meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
 		}
 		write_index(container);
 		write_crc(container);
@@ -122,8 +121,8 @@ void read_test() {
 
 		for (auto& meta_data : container.get_index()) {
 			std::stringstream stream;
-			read_data(container, meta_data, stream);
-			// std::cout << stream.str() << '\n';
+			read_data(meta_data, stream);
+			std::cout << stream.str() << '\n';
 		}
 
 		std::cout << "==============================\n";

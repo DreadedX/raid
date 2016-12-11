@@ -18,26 +18,29 @@ namespace flxr {
 		ON_DISK = 255,
 	};
 	//----------------------------------------------
+	class Container;
 	class MetaData {
 
 		public:
-			MetaData(std::string m_name) : name(m_name) {}
+			MetaData(const std::string name, const std::string path, Container& container) : _name(name), _path(path), _container(container) {}
 
-			const auto& get_name() { return name; }
-			const auto get_offset() { return offset; }
-			const auto get_size() { return size; }
-			const auto& get_path() { return path; }
+			const auto& get_name() { return _name; }
+			const auto get_offset() { return _offset; }
+			const auto get_size() { return _size; }
+			const auto& get_path() { return _path; }
+			auto& get_container() { return _container; }
 
-			void set_size(uint64 m_size) { size = m_size; }
-			void set_offset(uint64 m_offset) { offset = m_offset; }
-			void set_path(const std::string& m_path) { path = m_path; }
+			void set_size(uint64 size) { _size = size; }
+			void set_offset(uint64 offset) { _offset = offset; }
+			// void set_path(const std::string& path) { _path = path; }
 
 		private:
-			const std::string name;
-			uint64 size = 0;
-			uint64 offset = 0;
+			const std::string _name;
+			uint64 _size = 0;
+			uint64 _offset = 0;
 			/// @todo I do not like this being in something that can use other sources than files
-			std::string path;
+			const std::string _path;
+			Container& _container;
 	};
 	//----------------------------------------------
 	class Container {

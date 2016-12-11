@@ -9,8 +9,8 @@
 #define CHUNK 16384
 //----------------------------------------------
 /// @todo This function is kind of ugly, refactor
-void flxr::zlib::write_data(Container& container, MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
-	auto& stream = container.get_stream();
+void flxr::zlib::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+	auto& stream = meta_data.get_container().get_stream();
 
 	std::cout << "[D] " << "Compressing: " << meta_data.get_name() << "\n";
 
@@ -26,7 +26,7 @@ void flxr::zlib::write_data(Container& container, MetaData& meta_data, std::iost
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = Z_NULL;
-	ret = deflateInit(&strm, container.get_compression_level());
+	ret = deflateInit(&strm, meta_data.get_container().get_compression_level());
 	if (ret != Z_OK) {
 		exit(-1);
 	}
@@ -82,8 +82,8 @@ void flxr::zlib::write_data(Container& container, MetaData& meta_data, std::iost
 	}
 }
 //----------------------------------------------
-void flxr::zlib::read_data(Container& container, MetaData& meta_data, std::iostream& dest) {
-	auto& stream = container.get_stream();
+void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
+	auto& stream = meta_data.get_container().get_stream();
 
 	std::cout << "[D] " << "Decompressing: " << meta_data.get_name() << "\n";
 	/// @todo This should be calculated
@@ -144,4 +144,4 @@ void flxr::zlib::read_data(Container& container, MetaData& meta_data, std::iostr
 
 	/* clean up and return */
 	(void)inflateEnd(&strm);
-	}
+}

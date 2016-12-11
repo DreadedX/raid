@@ -17,7 +17,6 @@ void flxr::write_index(Container& container) {
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
 	for(auto meta_data : container.get_index()) {
 		write(stream, meta_data.get_name());
-		/// @todo This should be calculated by the reader
 		write(stream, meta_data.get_offset());
 		write(stream, meta_data.get_size());
 	}
@@ -25,16 +24,14 @@ void flxr::write_index(Container& container) {
 }
 //----------------------------------------------
 /// @todo There must be a better way to do this
-void flxr::write_data(Container& container, MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
-	switch(container.get_header().compression) {
+/// @todo Create a list that stores possible compression techniques, to which the user can add
+void flxr::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+	switch(meta_data.get_container().get_header().compression) {
 		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::write_data(container, meta_data, source, on_init, on_update, on_finish);
+			flxr::zlib::write_data(meta_data, source, on_init, on_update, on_finish);
 			break;
 		case flxr::COMPRESSION::RAW:
-			flxr::raw::write_data(container, meta_data, source, on_init, on_update, on_finish);
-			break;
-		case flxr::COMPRESSION::ON_DISK:
-			flxr::on_disk::write_data(container, meta_data, source, on_init, on_update, on_finish);
+			flxr::raw::write_data(meta_data, source, on_init, on_update, on_finish);
 			break;
 		default:
 			std::cerr << "Selected compression algorithm is not implemented\n";

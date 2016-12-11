@@ -1,31 +1,47 @@
 //----------------------------------------------
 #include "typedef.h"
 #include "raid/io/manager.h"
+#include "flxr/spec.h"
+#include "flxr/read.h"
 //----------------------------------------------
 raid::FileManager::FileManager() {
-	add_file("core/texture1");
-	add_file("core/texture2");
+	// Create en pointer to a container
+	std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("test.flx");
+
+	flxr::check_crc(*container);
+	flxr::read_header(*container);
+	flxr::read_index(*container);
+    //
+	std::cout << "Files in 'test.flx'\n";
+	for(auto& meta_data : (*container).get_index()) {
+		std::cout << meta_data.get_name() << '\n';
+		add_file(meta_data);
+	}
+
+	containers.emplace_back(std::move(container));
+
+	// add_file("core/texture1");
+	// add_file("core/texture2");
 }
 //----------------------------------------------
-std::shared_ptr<raid::File> raid::FileManager::get_file(std::string file_name) {
+flxr::MetaData& raid::FileManager::get_file(std::string file_name) {
 	/// @todo Optimize this
 	// Search for file and return it
-	for (std::shared_ptr<File> file : files) {
-		if (file->get_name() == file_name) {
+	for (auto& file : files) {
+		if (file.get_name() == file_name) {
 			return file;
 		}
 	}
 
 	std::cout << "Unable to find file: " << file_name << '\n';
 
-	/// @todo Maybe do something with exceptions
-	// If the file was not found, return nullptr
-	return nullptr;
+	/// @todo This should be an exception, maybe even return a default object or something
+	exit(-1);
 }
 //----------------------------------------------
 /// @todo Prevent duplication
-void raid::FileManager::add_file(std::string file_name) {
-	std::cout << "Adding file: " << file_name << '\n';
-	files.push_back(std::make_shared<File>(file_name));
+void raid::FileManager::add_file(flxr::MetaData& meta_data) {
+	std::cout << "Adding file: " << meta_data.get_name() << '\n';
+	files.push_back(meta_data);
 }
 //----------------------------------------------

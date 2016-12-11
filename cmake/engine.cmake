@@ -32,6 +32,13 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} glew32 glfw3 opengl32 imm32)
 endif(WIN32)
 
+find_package (ZLIB REQUIRED)
+if (ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
+endif (ZLIB_FOUND)
+target_link_libraries (${PROJECT_NAME} flxr)
+
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
     target_compile_options

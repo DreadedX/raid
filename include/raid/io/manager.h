@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "raid/io/file.h"
+#include "flxr/spec.h"
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
@@ -17,15 +17,17 @@ namespace raid {
 			/// Create a list of all the files
 			FileManager();
 
-			// Returns ptr to file
-			std::shared_ptr<File> get_file(std::string file_name);
+			// Returns reference to file, DO NO STORE THIS, when reloading this can become invalid on reload or addition of more files
+			flxr::MetaData& get_file(std::string file_name);
 
 		private:
+			/// List of all containers
+			std::vector<std::unique_ptr<flxr::Container>> containers;
 			/// List of all known files
-			std::vector< std::shared_ptr<File> > files;
+			std::vector<flxr::MetaData> files;
 
 			/// Add file to list of known files
-			void add_file(std::string file_name);
+			void add_file(flxr::MetaData& meta_data);
 	};
 	//----------------------------------------------
 }
