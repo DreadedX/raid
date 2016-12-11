@@ -14,5 +14,5 @@ class Plugin {
 		};
 };
 //----------------------------------------------
-#define share_plugin(plugin) extern "C" {std::shared_ptr<std::iostream> process(std::string file_path) { return plugin().process(file_path); }}
+#define share_plugin(plugin) extern "C" {std::shared_ptr<std::iostream> process(std::string file_path) { return plugin ().process(file_path); }}
 //----------------------------------------------

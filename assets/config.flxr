@@ -8,7 +8,8 @@ packages
 		files
 			hello.txt
 			//musketeers.txt
-			textures/grass.png
+			//textures/grass.png
+			textures/test.png
 			file
 
 //	test-zlib
@@ -37,4 +38,5 @@ packages
 
 // Maybe have some kind of include function so you can put this in a seperate file
 plugins
-	png reference
+	png png
+	// png reference

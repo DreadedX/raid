@@ -33,6 +33,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/flexy.cmake)
 
 # Plugins
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/plugin_reference.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/plugin_png.cmake)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/doxygen.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ycm.cmake)

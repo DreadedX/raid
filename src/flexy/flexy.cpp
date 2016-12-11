@@ -123,7 +123,7 @@ void read_test() {
 		for (auto& meta_data : container.get_index()) {
 			std::stringstream stream;
 			read_data(container, meta_data, stream);
-			std::cout << stream.str() << '\n';
+			// std::cout << stream.str() << '\n';
 		}
 
 		std::cout << "==============================\n";
