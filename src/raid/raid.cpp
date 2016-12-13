@@ -13,6 +13,10 @@
 #include "raid/graphics/opengl/opengl.h"
 
 #include "flxr/read.h"
+#include "flxr/binary_helper.h"
+#include "flxr/exceptions.h"
+
+#include "logger.h"
 
 using namespace raid;
 //----------------------------------------------
@@ -23,8 +27,15 @@ class Texture : public Resource {
 
 	private:
 		/// Load a texture asset
-		void load(std::string) override {
-			// auto textureData = fileManager.get_file(resource_name)->get_data();
+		void load(std::string resource_name) override {
+			std::stringstream stream;
+			auto& file_manager = Engine::instance().get_file_manager();
+			auto& data = file_manager.get_file(resource_name);
+			try {
+				flxr::read_data(data, stream);
+			} catch(flxr::bad_compression_type& e) {
+				warning << e.what() << '\n';
+			}
 		}
 };
 //----------------------------------------------
@@ -38,29 +49,36 @@ int main() {
 	/// @todo Upgrade this thing to use some of the fancy stuff used by resources
 	auto& file_manager = Engine::instance().get_file_manager();
 
-	std::cout << file_manager.get_file("test/textures/test.png").get_name() << '\n';
-	// auto data1 = file_manager.get_file("core/texture1")->get_data();
-	// for (auto _byte : *data1) {
-	// 	std::cout << int(_byte) << ' ';
-	// }
-	// std::cout << '\n';
+	debug << file_manager.get_file("test/textures/test.png").get_name() << '\n';
+	auto data1 = file_manager.get_file("test/textures/test.png");
+	// We might want to add a version of read data that reads to an array/vector...
+	// Or improve memstream to also be written to...
+	std::stringstream stream1;
+	flxr::read_data(data1, stream1);
+	for (uint i = 0; i < stream1.str().length(); ++i) {
+		byte dat;
+		flxr::read(stream1, dat);
+		debug << std::hex << (int)dat << ' ';
+	}
+	debug << '\n';
 
 	auto& resource = Engine::instance().get_resource();
 
 	auto& data2 = file_manager.get_file("test/hello.txt");
-	std::cout << data2.get_name() << '\n';
-	std::stringstream stream;
-	flxr::read_data(data2, stream);
-	std::cout << stream.str() << '\n';
+	debug << data2.get_name() << '\n';
+	std::stringstream stream2;
+	flxr::read_data(data2, stream2);
+	debug << stream2.str() << '\n';
 	//----------------------------------------------
 	//-Resources------------------------------------
-	auto texture1 = resource.factory<Texture>("core/texture1");
-	auto texture2 = resource.factory<Texture>("core/texture2");
-	auto texture11 = resource.factory<Texture>("core/texture1");
+	auto texture1 = resource.factory<Texture>("test/textures/test.png");
+	auto texture2 = resource.factory<Texture>("test/hello.txt");
+	auto texture11 = resource.factory<Texture>("test/textures/test.png");
 	{
-		auto texture3 = resource.factory<Texture>("core/texture3");
+		auto texture3 = resource.factory<Texture>("test/file");
 	}
-	auto texture33 = resource.factory<Texture>("core/texture3");
+	resource.debug_list();
+	auto texture33 = resource.factory<Texture>("test/file");
 	
 	resource.debug_list();
 
@@ -71,6 +89,6 @@ int main() {
 	}
 
 	//----------------------------------------------
-	std::cout << "End\n";
+	debug << "End\n";
 }
 //----------------------------------------------

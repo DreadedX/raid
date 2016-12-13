@@ -1,5 +1,6 @@
 //----------------------------------------------
 #include "flexy/helper.h"
+#include "flxr/exceptions.h"
 //----------------------------------------------
 flxr::COMPRESSION get_compression_type(ValTree package) {
 	const std::string compression = package.query("compression.type").getStr();
@@ -11,8 +12,7 @@ flxr::COMPRESSION get_compression_type(ValTree package) {
 	} else if (compression.compare("ON_DISK") == 0) {
 		return flxr::COMPRESSION::ON_DISK;
 	} else {
-		std::cerr << "Invalid compression type\n";
-		exit(-1);
+		throw flxr::bad_compression_type();
 	}
 }
 //----------------------------------------------

@@ -5,6 +5,8 @@
 
 #include "flxr/binary_helper.h"
 #include "flxr/compression/zlib.h"
+
+#include "logger.h"
 //----------------------------------------------
 #define CHUNK 16384
 //----------------------------------------------
@@ -12,7 +14,7 @@
 void flxr::zlib::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
-	std::cout << "[D] " << "Compressing: " << meta_data.get_name() << "\n";
+	debug << "Compressing: " << meta_data.get_name() << "\n";
 
 	meta_data.set_offset(stream.tellg());
 
@@ -85,7 +87,7 @@ void flxr::zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 	auto& stream = meta_data.get_container().get_stream();
 
-	std::cout << "[D] " << "Decompressing: " << meta_data.get_name() << "\n";
+	debug << "Decompressing: " << meta_data.get_name() << "\n";
 	/// @todo This should be calculated
 	stream.seekg(meta_data.get_offset(), std::ios::beg);
 
@@ -103,7 +105,7 @@ void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 	strm.next_in = Z_NULL;
 	ret = inflateInit(&strm);
 	if (ret != Z_OK) {
-		std::cerr << "Failed inflateInit\n";
+		warning << "Failed inflateInit\n";
 		exit(-1);
 	}
 
@@ -112,8 +114,8 @@ void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 		strm.avail_in = stream.readsome(reinterpret_cast<char*>(in), CHUNK);
 		if (stream.fail()) {
 			(void)inflateEnd(&strm);
-			std::cerr << "Stream fail\n";
-			exit(Z_ERRNO);
+			warning << "Stream fail\n";
+			exit(-1);
 		}
 		if (strm.avail_in == 0)
 			break;
@@ -131,8 +133,8 @@ void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 				case Z_DATA_ERROR:
 				case Z_MEM_ERROR:
 					(void)inflateEnd(&strm);
-					std::cerr << "Z_MEM_ERROR\n";
-					exit(ret);
+					warning << "Z_MEM_ERROR\n";
+					exit(-1);
 			}
 			have = CHUNK - strm.avail_out;
 			std::vector<byte> out_vector(out, out+have);

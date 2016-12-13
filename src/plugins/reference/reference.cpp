@@ -3,20 +3,22 @@
 #include "flxr/memstream.h"
 #include "flexy/helper.h"
 #include "flexy/plugin.h"
+
+#include "logger.h"
 //----------------------------------------------
 class Reference : public Plugin {
 	public:
 		virtual std::shared_ptr<std::iostream> process(std::string file_path) override {
 
-			std::cout << "[D] " << "Hello world, from png2bin\n";
-			std::cout << "[D] " << file_path << '\n';
+			debug << "Hello world, from png2bin\n";
+			debug << file_path << '\n';
 
 			// Prints the first four bytes in hex as a demonstration
 			auto stream = open_file(file_path);
 			byte magic[4];
 			flxr::read(*stream, magic);
 			stream->seekg(0, std::ios::beg);
-			std::cout << "[D] " << std::hex << (int)magic[0] << (int)magic[1] << (int)magic[2] << (int)magic[3] << '\n';
+			debug << std::hex << (int)magic[0] << (int)magic[1] << (int)magic[2] << (int)magic[3] << '\n';
 
 			// Demonstates how to return an array
 			byte buffer[] = {72, 101, 108, 108, 111};

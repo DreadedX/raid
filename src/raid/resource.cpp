@@ -1,16 +1,18 @@
 //----------------------------------------------
 #include "raid/resource.h"
+
+#include "logger.h"
 //----------------------------------------------
 // std::unordered_map<std::string, std::weak_ptr<raid::BaseResource>> raid::Resource::list;
 //----------------------------------------------
 void raid::ResourceManager::debug_list() {
 	for(auto resource : list) {
-		std::cout << '\t' << resource.first;
+		debug << '\t' << resource.first;
 
 		if (!resource.second.expired()) {
-			std::cout << " [valid]\n";
+			debug << " [valid]\n";
 		} else {
-			std::cout << " [expired]\n";
+			debug << " [expired]\n";
 		}
 	}
 }

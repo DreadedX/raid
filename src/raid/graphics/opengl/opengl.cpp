@@ -2,10 +2,12 @@
 #include <iostream>
 
 #include "raid/graphics/opengl/opengl.h"
+
+#include "logger.h"
 //----------------------------------------------
 void error_callback(int error, const char *description) {
 
-	std::cout << description << " (" << error << ")\n";
+	warning << description << " (" << error << ")\n";
 }
 //----------------------------------------------
 void key_callback(GLFWwindow* window, int key, int, int action, int) {
@@ -18,8 +20,8 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 void raid::OpenGL::create_window(int width, int height, std::string title) {
 
 	if(!glfwInit()) {
-		std::cout << "Failed to initialize glfw\n";
-		/// @todo Create a better way to exit
+		warning << "Failed to initialize glfw\n";
+		/// @todo This should be an exception
 		exit(-1);
 	}
 
@@ -36,8 +38,8 @@ void raid::OpenGL::create_window(int width, int height, std::string title) {
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
 	if (window == nullptr) {
-		std::cout << "Failed to create window\n";
-		/// @todo Create a better way to exit
+		warning << "Failed to create window\n";
+		/// @todo This should be an exception
 		exit(-1);
 	}
 
@@ -50,14 +52,18 @@ void raid::OpenGL::create_window(int width, int height, std::string title) {
 	glewExperimental = GL_TRUE;
 	GLenum glew_status = glewInit();
 	if (glew_status != GLEW_OK) {
-		std::cout << "Failed to initialize glew: " << glewGetErrorString(glew_status) << '\n';
+		warning << "Failed to initialize glew: " << glewGetErrorString(glew_status) << '\n';
+		/// @todo This should be an exception
+		exit(-1);
 	}
 
 	glfwSwapInterval(0);
 	glfwSetKeyCallback(window, key_callback);
 
 	if (glGetError() != GL_NO_ERROR) {
-		std::cout << "Something went wrong\n";
+		warning << "Something went wrong\n";
+		/// @todo This should be an exception
+		exit(-1);
 	}
 }
 //----------------------------------------------

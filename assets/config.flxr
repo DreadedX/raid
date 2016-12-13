@@ -8,8 +8,8 @@ packages
 		// Maybe have some kind of include function so you can put this in a seperate file
 		files
 			hello.txt
-			//musketeers.txt
-			//textures/grass.png
+			musketeers.txt
+			textures/grass.png
 			textures/test.png
 			file
 

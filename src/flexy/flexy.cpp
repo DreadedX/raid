@@ -13,6 +13,9 @@
 /// @todo Figure this out
 #include "flxr/write.h"
 #include "flxr/read.h"
+#include "flxr/exceptions.h"
+
+#include "logger.h"
 
 using namespace flxr;
 //----------------------------------------------
@@ -23,7 +26,7 @@ auto process(std::string plugin_name, std::string file_path) {
 	void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
 	char* error = dlerror();
 	if (error) {
-		std::cerr << error << '\n';
+		warning << error << '\n';
 		exit(-1);
 	}
 	delete[] error;
@@ -33,7 +36,7 @@ auto process(std::string plugin_name, std::string file_path) {
 	process_pointer process = (process_pointer)dlsym(handle, "process");
 	error = dlerror();
 	if (error) {
-		std::cerr << error << '\n';
+		warning << error << '\n';
 		exit(-1);
 	}
 	delete[] error;
@@ -51,7 +54,7 @@ void write_test() {
 
 	for (const auto& package : v.getChild("packages")) {
 
-		std::cout << "[D] " << "WRITE TEST\n";
+		debug << "WRITE TEST\n";
 
 		// Refactor to setup function
 		Container container(package.getKey() + ".flx");
@@ -62,8 +65,15 @@ void write_test() {
 				container.add_file( MetaData(name, path, container) );
 			}
 
-			container.configure(get_compression_type(package), package.query("compression.level").getInt());
-			std::cout << "[D] " << "Compression type: " << get_compression_type(package) << ", level: " << package.query("compression.level").getInt() << '\n';
+			COMPRESSION compression_type = COMPRESSION::RAW;
+			try {
+				compression_type = get_compression_type(package);
+			} catch(bad_compression_type& e) {
+				warning << e.what() << "\nUsing RAW...\n";
+			}
+
+			container.configure(compression_type, package.query("compression.level").getInt());
+			debug << "Compression type: " << compression_type << ", level: " << package.query("compression.level").getInt() << '\n';
 
 			container.empty_file();
 		}
@@ -71,7 +81,7 @@ void write_test() {
 		write_index(container);
 
 		for (auto& meta_data : container.get_index()) {
-			std::cout << "[D] " << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
+			debug << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
 
 			// Find the file extension and corresponding plugin
 			ValTree plugin;
@@ -86,15 +96,13 @@ void write_test() {
 			} else {
 
 				stream = open_file(meta_data.get_path());
-				std::cout << "[D] " << "No plugin\n";
+				debug << "No plugin\n";
 			}
 
 			write_data(meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
 		}
 		write_index(container);
 		write_crc(container);
-
-		std::cout << "==============================\n";
 	}
 }
 //----------------------------------------------
@@ -107,25 +115,33 @@ void read_test() {
 
 	for (const auto& package : v.getChild("packages")) {
 
-		std::cout << "[D] " << "READ TEST\n";
+		debug << "READ TEST\n";
 
 		Container container(package.getKey() + ".flx");
 
-		check_crc(container);
-		read_header(container);
-		read_index(container);
+		try {
+			check_crc(container);
+			read_header(container);
+			read_index(container);
 
-		for (auto& meta_data : container.get_index()) {
-			std::cout << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
+			for (auto& meta_data : container.get_index()) {
+				debug << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
+			}
+
+			for (auto& meta_data : container.get_index()) {
+				std::stringstream stream;
+				try {
+					read_data(meta_data, stream);
+				} catch(flxr::bad_compression_type& e) {
+					warning << e.what() << '\n';
+				}
+				// debug << stream.str() << '\n';
+			}
+
+			debug << "==============================\n";
+		} catch(flxr::bad_file& e) {
+			warning << e.what() << '\n';
 		}
-
-		for (auto& meta_data : container.get_index()) {
-			std::stringstream stream;
-			read_data(meta_data, stream);
-			std::cout << stream.str() << '\n';
-		}
-
-		std::cout << "==============================\n";
 	}
 }
 //----------------------------------------------

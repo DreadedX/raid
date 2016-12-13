@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.4)
-project(png)
+project(logger)
+
+set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
 set(NAME_ ${PROJECT_NAME})
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
@@ -7,16 +9,9 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
-file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/plugins/png/*.cpp)
+file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/logger.cpp)
 
-add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
-
-find_package(PNG REQUIRED)
-if(PNG_FOUND)
-	include_directories(${PNG_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} ${PNG_LIBRARIES})
-endif(PNG_FOUND)
-target_link_libraries(${PROJECT_NAME} logger)
+add_library(${PROJECT_NAME} STATIC ${CPP_FILES})
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(

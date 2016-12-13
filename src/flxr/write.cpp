@@ -6,6 +6,8 @@
 #include "flxr/compression/zlib.h"
 #include "flxr/compression/raw.h"
 #include "flxr/compression/on_disk.h"
+
+#include "flxr/exceptions.h"
 //----------------------------------------------
 void flxr::write_header(Container& container) {
 	write(container.get_stream(), container.get_header());
@@ -34,8 +36,8 @@ void flxr::write_data(MetaData& meta_data, std::iostream& source, std::function<
 			flxr::raw::write_data(meta_data, source, on_init, on_update, on_finish);
 			break;
 		default:
-			std::cerr << "Selected compression algorithm is not implemented\n";
-			break;
+			/// @note This should never get thrown, unless you specify a compression type without implementing
+			throw flxr::not_implemented();
 	}
 }
 //----------------------------------------------

@@ -5,13 +5,14 @@
 #include "flxr/compression/zlib.h"
 #include "flxr/compression/raw.h"
 #include "flxr/compression/on_disk.h"
+
+#include "flxr/exceptions.h"
 //----------------------------------------------
 void flxr::read_header(Container& container) {
 	read(container.get_stream(), container.get_header());
 
 	if (container.get_header().magic != MAGIC) {
-		std::cerr << "Invalid magic number\n";
-		exit(-1);
+		throw flxr::bad_magic_type();
 	}
 }
 //----------------------------------------------
@@ -44,8 +45,9 @@ void flxr::read_data(MetaData& meta_data, std::iostream& dest) {
 			flxr::raw::read_data(meta_data, dest);
 			break;
 		default:
-			std::cerr << "Selected compression algorithm is not implemented\n";
-			break;
+			// We need to check beforehand if the compression type is even valid
+			/// @todo Add function to check if compression type is valid, and maybe check other header stuff
+			throw flxr::not_implemented();
 	}
 }
 //----------------------------------------------
@@ -77,8 +79,7 @@ void flxr::check_crc(Container& container) {
 	crc_t provided_crc;
 	read(stream, provided_crc);
 	if (crc != provided_crc) {
-		std::cout << "File is corrupt\n";
-		exit(-1);
+		throw flxr::bad_file();
 	}
 
 	stream.clear();

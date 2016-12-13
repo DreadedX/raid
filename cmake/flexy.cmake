@@ -18,6 +18,8 @@ if (ZLIB_FOUND)
 	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
 endif (ZLIB_FOUND)
 
+target_link_libraries (${PROJECT_NAME} logger)
+
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
     target_compile_options

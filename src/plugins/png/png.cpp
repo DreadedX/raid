@@ -6,6 +6,8 @@
 #include "flexy/plugin.h"
 #include "flxr/memstream.h"
 
+// #include "logger.h"
+
 namespace png {
 
     struct Data {
@@ -95,7 +97,7 @@ class PNG : public Plugin {
 			png::Data image = png::read(file_path.c_str());
 
 			byte data[image.size + 2*sizeof(int) + sizeof(byte)];
-			std::cout << "[D] " << sizeof(data) << '\n';
+			// debug << sizeof(data) << '\n';
 
 			uint offset = 0;
 			for (uint i = 0; i < sizeof(int); ++i) {
