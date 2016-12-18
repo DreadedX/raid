@@ -16,7 +16,9 @@ if(PNG_FOUND)
 	include_directories(${PNG_INCLUDE_DIRS})
 	target_link_libraries(${PROJECT_NAME} ${PNG_LIBRARIES})
 endif(PNG_FOUND)
+
 target_link_libraries(${PROJECT_NAME} logger)
+target_link_libraries (${PROJECT_NAME} stdc++fs)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+
+#include "logger.h"
 //----------------------------------------------
 namespace raid {
 	//----------------------------------------------
@@ -10,11 +12,11 @@ namespace raid {
 	class Resource {
 		public:
 			Resource() {
-				std::cout << "Resource constructed\n";
+				// debug << "Resource constructed\n";
 			}
 
 			virtual ~Resource() {
-				std::cout << "Resource Deconstructed\n";
+				// debug << "Resource Deconstructed\n";
 			}
 
 		private:
@@ -40,12 +42,12 @@ namespace raid {
 
 					// If the key exists it means it was expired
 					if (list.count(resource_name) != 0) {
-						std::cout << "Resource expired: " << resource_name << '\n';
+						// debug << "Resource expired: " << resource_name << '\n';
 
 						list.erase(list.find(resource_name));
 					}
 
-					std::cout << "Resource not in memory: " << resource_name << '\n';
+					// debug << "Resource not in memory: " << resource_name << '\n';
 
 					// Create new shared ptr
 					std::shared_ptr<T> t = std::make_shared<T>();
@@ -63,7 +65,7 @@ namespace raid {
 					return t;
 				}
 
-				std::cout << "Resource already in memory: " << resource_name << '\n';
+				// debug << "Resource already in memory: " << resource_name << '\n';
 				// The weak ptr was still valid, so we return a shared ptr to the asset
 				return std::dynamic_pointer_cast<T, Resource>(list.find(resource_name)->second.lock());
 			}

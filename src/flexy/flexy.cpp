@@ -1,8 +1,11 @@
 //----------------------------------------------
 #include <iostream>
 #include <iomanip>
-#include <dlfcn.h>
 #include <memory>
+
+#if __linux__ || __unix__
+	#include <dlfcn.h>
+#endif
 
 #include "flexy/ValTree.h"
 #include "flexy/helper.h"
@@ -21,28 +24,32 @@ using namespace flxr;
 //----------------------------------------------
 // @todo Add abstraction for plugin loading
 auto process(std::string plugin_name, std::string file_path) {
-	std::string base_path = "../bin/";
-	plugin_name = base_path + "lib" + plugin_name + ".so";
-	void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
-	char* error = dlerror();
-	if (error) {
-		warning << error << '\n';
-		exit(-1);
-	}
-	delete[] error;
-	error = nullptr;
+	#if __linux__ || __unix__
+		std::string base_path = "../bin/";
+		plugin_name = base_path + "lib" + plugin_name + ".so";
+		void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
+		char* error = dlerror();
+		if (error) {
+			warning << error << '\n';
+			exit(-1);
+		}
+		delete[] error;
+		error = nullptr;
 
-	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
-	process_pointer process = (process_pointer)dlsym(handle, "process");
-	error = dlerror();
-	if (error) {
-		warning << error << '\n';
-		exit(-1);
-	}
-	delete[] error;
-	error = nullptr;
-
-	return process(file_path);
+		typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
+		process_pointer process = (process_pointer)dlsym(handle, "process");
+		error = dlerror();
+		if (error) {
+			warning << error << '\n';
+			exit(-1);
+		}
+		delete[] error;
+		error = nullptr;
+		return process(file_path);
+	#else
+		Plugin().process(file_path);
+		return open_file(meta_data.get_path());
+	#endif
 }
 //----------------------------------------------
 void write_test() {
@@ -146,6 +153,9 @@ void read_test() {
 }
 //----------------------------------------------
 int main() {
+	debug << "This is a debug message\nMore text\n";
+	message << "This is a debug message\n";
+	warning << "This is a debug message\n";
 	write_test();
 	read_test();
 }

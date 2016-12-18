@@ -9,7 +9,7 @@ class Plugin {
 
 	public:
 		virtual std::shared_ptr<std::iostream> process(std::string file_path) {
-			std::cerr << "Plugin is not implemented\n";
+			warning << "Plugin is not implemented\n";
 			return open_file(file_path);
 		};
 };

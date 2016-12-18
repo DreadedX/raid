@@ -22,11 +22,14 @@ if (GLEW_FOUND)
     target_link_libraries (${PROJECT_NAME} ${GLEW_LIBRARIES})
 endif (GLEW_FOUND)
 find_package (PkgConfig REQUIRED)
+
+if(UNIX)
 pkg_search_module (GLFW REQUIRED glfw3)
 if (GLFW_FOUND)
     include_directories(${GLFW_INCLUDE_DIRS})
 	target_link_libraries (${PROJECT_NAME} ${GLFW_LIBRARIES})
 endif (GLFW_FOUND)
+endif(UNIX)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} glew32 glfw3 opengl32 imm32)
@@ -38,6 +41,7 @@ if (ZLIB_FOUND)
 	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
 endif (ZLIB_FOUND)
 target_link_libraries (${PROJECT_NAME} flxr logger)
+target_link_libraries (${PROJECT_NAME} stdc++fs)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(

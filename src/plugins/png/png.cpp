@@ -5,8 +5,9 @@
 
 #include "flexy/plugin.h"
 #include "flxr/memstream.h"
+// #include "typedef.h"
 
-// #include "logger.h"
+#include "logger.h"
 
 namespace png {
 
@@ -28,7 +29,7 @@ png::Data png::read(const char *name) {
 
 	png_structp png_ptr;
 	png_infop info_ptr;
-	uint sig_read = 0;
+	uint32 sig_read = 0;
 	int color_type;
 	int interlace_type;
 	FILE *fp;
@@ -65,12 +66,12 @@ png::Data png::read(const char *name) {
 	int bit_depth;
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
 
-	uint row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+	uint32 row_bytes = png_get_rowbytes(png_ptr, info_ptr);
 	data.pixels = (byte*) malloc(row_bytes * height);
 	data.size = row_bytes * height;
 
 	png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
-	for (uint i = 0; i < height; i++) {
+	for (uint32 i = 0; i < height; i++) {
 		// note that png is ordered top to
 		// bottom, but OpenGL expect it bottom to top
 		// so the order or swapped
@@ -97,27 +98,27 @@ class PNG : public Plugin {
 			png::Data image = png::read(file_path.c_str());
 
 			byte data[image.size + 2*sizeof(int) + sizeof(byte)];
-			// debug << sizeof(data) << '\n';
+			debug << sizeof(data) << '\n';
 
-			uint offset = 0;
-			for (uint i = 0; i < sizeof(int); ++i) {
+			uint32 offset = 0;
+			for (unsigned int i = 0; i < sizeof(int32); ++i) {
 
 				data[i] = image.width >> (i*8);
 			}
-			offset += sizeof(int);
+			offset += sizeof(int32);
 
-			for (uint i = 0; i < sizeof(int); ++i) {
+			for (unsigned int i = 0; i < sizeof(int32); ++i) {
 
 				data[i+offset] = image.height >> (i*8);
 			}
-			offset += sizeof(int);
+			offset += sizeof(int32);
 
 			data[offset] = image.bytesPerPixel;
 			offset += sizeof(byte);
 
 			// file->data = data.pixels;
-			for (int y = 0; y < image.height; y++) {
-				for (int x = 0; x < image.width*image.bytesPerPixel; x++) {
+			for (int32 y = 0; y < image.height; y++) {
+				for (int32 x = 0; x < image.width*image.bytesPerPixel; x++) {
 
 					data[x + y * (image.width*image.bytesPerPixel) + offset] = image.pixels[x + y * (image.width*image.bytesPerPixel)];
 				}

@@ -55,7 +55,7 @@ int main() {
 	// Or improve memstream to also be written to...
 	std::stringstream stream1;
 	flxr::read_data(data1, stream1);
-	for (uint i = 0; i < stream1.str().length(); ++i) {
+	for (unsigned int i = 0; i < stream1.str().length(); ++i) {
 		byte dat;
 		flxr::read(stream1, dat);
 		debug << std::hex << (int)dat << ' ';

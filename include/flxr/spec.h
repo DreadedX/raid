@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 
+#include "logger.h"
 #include "typedef.h"
 //----------------------------------------------
 namespace flxr {
@@ -49,10 +50,10 @@ namespace flxr {
 				stream.open(m_name, std::ios::out | std::ios::in | std::ios::binary);
 
 				if(!stream.is_open()) {
-					std::cout << "Trying to create: " << m_name << '\n';
+					message << "Trying to create: " << m_name << '\n';
 					stream.open(name, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
 					if(!stream.is_open()) {
-						std::cerr << "Failed to open file: " << m_name << '\n';
+						warning << "Failed to open file: " << m_name << '\n';
 						exit(-1);
 					}
 				}
@@ -69,7 +70,7 @@ namespace flxr {
 			void configure(COMPRESSION m_compression, int m_compression_level) {
 				header.magic = MAGIC;
 				header.compression = m_compression;
-				header.index_size = reinterpret_cast<uint64>(index.size());
+				header.index_size = (uint64)index.size();
 
 				compression_level = m_compression_level;
 			}

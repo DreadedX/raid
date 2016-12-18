@@ -5,17 +5,16 @@
 #include <streambuf>
 #include <ctime>
 #include <cstring>
-
-extern std::fstream log;
+#include <memory>
 
 namespace logger {
 
 	/// @note Credit: http://stackoverflow.com/questions/27336335/c-cout-with-prefix (Modified)
 	class prefixbuf : public std::streambuf {
 		private:
-			std::string prefix;
+			std::string _prefix;
 			std::string _location;
-			std::streambuf* sbuf;
+			std::streambuf* _sbuf;
 			bool need_prefix;
 
 			int sync();
@@ -32,44 +31,35 @@ namespace logger {
 			oprefixstream(std::string const& prefix, std::ostream& out);
 	};
 
+	class Multiplexer {
+		public:
+			Multiplexer(std::ostream& out1, const std::string& prefix);
+
+			// This doesn't work without pointer, the second one does not get constructor properly
+			std::unique_ptr<logger::oprefixstream> _out1 = nullptr;
+			std::unique_ptr<logger::oprefixstream> _out2 = nullptr;
+
+			Multiplexer& operator()(const char* file, int line);
+	};
 }
 
-class Multiplexer {
-	public:
-		Multiplexer(std::ostream& out1, std::ostream& out2, std::string prefix);
-		// logger::oprefixstream _out1;
-		// logger::oprefixstream _out2;
-		std::ostream& _out1;
-		// This needs to be a global thing
-		std::fstream _out2;
-
-		Multiplexer& operator()(const char* file, int line);
-
-		void flush() {
-			_out2.flush();
-		}
-};
-
 template <typename T>
-Multiplexer& operator<<(Multiplexer& m, const T& t) {
-	m._out1 << t;
-	m._out2 << t;
+logger::Multiplexer& operator<<(logger::Multiplexer& m, const T& t) {
+	*m._out1 << t;
+	*m._out2 << t;
+
 	return m;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-// Multiplexer& operator<<(Multiplexer& m, std::ostream&(*f)(std::ostream&)) {
-// 	m._out1 << f;
-// 	m._out2 << f;
-// 	return m;
-// }
-#pragma GCC diagnostic pop
+extern logger::Multiplexer debug;
+extern logger::Multiplexer message;
+extern logger::Multiplexer warning;
 
-extern Multiplexer debug;
-extern Multiplexer message;
-extern Multiplexer warning;
-
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#define debug debug(__FILENAME__, __LINE__)
-#define warning warning(__FILENAME__, __LINE__)
+#ifndef LOGGER_H
+	#define LOGGER_H
+	#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+	#define debug debug(__FILENAME__, __LINE__)
+	/// @todo This one does not work for whatever reason
+	// #define message message(__FILENAME__, __LINE__)
+	#define warning warning(__FILENAME__, __LINE__)
+#endif

@@ -19,6 +19,7 @@ if (ZLIB_FOUND)
 endif (ZLIB_FOUND)
 
 target_link_libraries (${PROJECT_NAME} logger)
+target_link_libraries (${PROJECT_NAME} stdc++fs)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(

@@ -6,6 +6,8 @@
 #include "flxr/compression/raw.h"
 #include "flxr/compression/on_disk.h"
 
+#include "logger.h"
+
 #include "flxr/exceptions.h"
 //----------------------------------------------
 void flxr::read_header(Container& container) {

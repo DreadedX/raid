@@ -12,6 +12,7 @@ raid::FileManager::FileManager() {
 	std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("test.flx");
 
 	try {
+		// THIS DOES NOT WORK ON WINDOWS
 		flxr::check_crc(*container);
 		flxr::read_header(*container);
 		flxr::read_index(*container);

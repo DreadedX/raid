@@ -12,25 +12,29 @@ namespace Progress {
 	std::string name;
 	uint64 total_size;
 
+	/// @todo This can not use message, because it will ruin the log
 	void draw(uint64 total_read) {
 
 		float progress = float(total_read)/float(total_size);
 
 		int bar_width = 70;
-		message << name << "\t[";
+		std::cout << name << " [";
 		int pos = bar_width * progress;
 		for (int i = 0; i < bar_width; ++i) {
 			if (i < pos) {
-				message << "=";
+				std::cout << "=";
 			} else if (i == pos) {
-				message << ">";
+				std::cout << ">";
 			} else {
-				message << " ";
+				std::cout << " ";
 			}
 		}
-		message << "] " << int(progress * 100) << "%\t " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(total_read)/1000/1000 << " MB / " << float(total_size)/1000/1000 << " MB\r";
+		std::cout << "] " << int(progress * 100) << "% ";
+		if (progress != 1) {
+			std::cout << " ";
+		}
+		std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(total_read)/1000/1000 << " MB / " << float(total_size)/1000/1000 << " MB\r";
 		std::cout.flush();
-		message.flush();
 	}
 
 	void setup(const std::string& m_name, uint64 m_total_size) {
@@ -41,8 +45,7 @@ namespace Progress {
 	}
 
 	void finish(uint64 compressed_size) {
-		message << '\n';
+		std::cout << '\n';
 		message << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(compressed_size)/1000/1000 << " MB compressed (" << float(compressed_size)/float(total_size)*100 << "%)\n";
-		message.flush();
 	}
 }

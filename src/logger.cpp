@@ -1,16 +1,23 @@
+#include <iomanip>
 #include "logger.h"
+#include "typedef.h"
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
+
 #undef debug
+#undef message
 #undef warning
 
-logger::prefixbuf::prefixbuf(std::string const& prefix, std::streambuf* sbuf) : prefix(prefix), sbuf(sbuf), need_prefix(true) {}
+logger::prefixbuf::prefixbuf(std::string const& prefix, std::streambuf* sbuf) : _prefix(prefix), _sbuf(sbuf), need_prefix(true) {}
 
 int logger::prefixbuf::sync() {
-	return this->sbuf->pubsync();
+	return this->_sbuf->pubsync();
 }
 
 int logger::prefixbuf::overflow(int c) {
 	if (c != std::char_traits<char>::eof()) {
-		if (this->need_prefix && !this->prefix.empty()) {
+		if (this->need_prefix && !this->_prefix.empty()) {
 			std::string final_prefix;
 
 			time_t rawtime;
@@ -26,17 +33,17 @@ int logger::prefixbuf::overflow(int c) {
 				_location = "";
 			}
 
-			for (uint i = final_prefix.size(); i < 50-prefix.length(); ++i) {
+			for (unsigned int i = final_prefix.size(); i < 50-_prefix.length(); ++i) {
 				final_prefix += '-';
 			}
-			final_prefix += " " + this->prefix + " -";
+			final_prefix += " " + this->_prefix + " -";
 			final_prefix += ' ';
 
-			this->sbuf->sputn(&final_prefix[0], final_prefix.size());
+			this->_sbuf->sputn(&final_prefix[0], final_prefix.size());
 		}
 		this->need_prefix = c == '\n';
 	}
-	return this->sbuf->sputc(c);
+	return this->_sbuf->sputc(c);
 }
 
 void logger::prefixbuf::set_location(std::string location) {
@@ -45,23 +52,42 @@ void logger::prefixbuf::set_location(std::string location) {
 
 logger::oprefixstream::oprefixstream(std::string const& prefix, std::ostream& out) : prefixbuf(prefix, out.rdbuf()), std::ios(static_cast<std::streambuf*>(this)), std::ostream(static_cast<std::streambuf*>(this)) {}
 
-// std::fstream log;
-// Multiplexer::Multiplexer(std::ostream& out1, std::ostream& out2, std::string prefix) : _out1(prefix, out1), _out2(prefix, out2) {
-Multiplexer::Multiplexer(std::ostream& out1, std::ostream& out2, std::string prefix) : _out1(out1) {
-	if (!_out2.is_open()) {
-		_out2.open("log.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-		_out2 << "Compiled on: " << __DATE__ << " " << __TIME__ << '\n';
+std::fstream _log;
+logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) {
+
+	_out1 = std::make_unique<logger::oprefixstream>(prefix, out1);
+	_out2 = std::make_unique<logger::oprefixstream>(prefix, _log);
+
+	if (!_log.is_open()) {
+
+		if(!fs::exists("logs")) {
+			fs::create_directory("logs");
+		}
+
+		#if 0
+			time_t rawtime;
+			time(&rawtime);
+
+			_log.open("logs/log-" + std::to_string(rawtime) + ".txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+		#else
+			_log.open("logs/log-latest.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+		#endif
+
+		_log << std::left << std::setw(11) << "Compiled on" << " : " << __DATE__ << " " << __TIME__ << '\n';
+		_log << std::left << std::setw(11) << "C++ version" << " : " << __cplusplus << '\n';
+		_log << std::left << std::setw(11) << "Build" << " : " << "---" << '\n';
 	}
 }
 
-Multiplexer& Multiplexer::operator()(const char* file, int line) {
+logger::Multiplexer& logger::Multiplexer::operator()(const char* file, int line) {
 	std::string location = std::string(file) + ":" + std::to_string(line);
-	// _out1.set_location(location);
-	// _out2.set_location(location);
+	_out1->set_location(location);
+	_out2->set_location(location);
 	return *this;
 }
 
-Multiplexer debug(std::cout, std::cout, "DEBUG");
-Multiplexer message(std::cout, std::cout, "");
-Multiplexer warning(std::cout, std::cout, "WARNING");
+/// @todo Make this only print prefix when in debug mode
+logger::Multiplexer debug(std::cout, "DEBUG");
+logger::Multiplexer message(std::cout, "");
+logger::Multiplexer warning(std::cerr, "WARNING");
 
