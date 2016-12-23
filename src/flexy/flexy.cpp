@@ -3,8 +3,12 @@
 #include <iomanip>
 #include <memory>
 
-#if __linux__ || __unix__
+#if __has_include(<dlfcn.h>)
 	#include <dlfcn.h>
+#elif __has_include(<windows.h>)
+	#include <windows.h>
+#else
+	#pragma message "The plugin system is not supported on this platform"
 #endif
 
 #include "flexy/ValTree.h"
@@ -24,7 +28,9 @@ using namespace flxr;
 //----------------------------------------------
 // @todo Add abstraction for plugin loading
 auto process(std::string plugin_name, std::string file_path) {
-	#if __linux__ || __unix__
+	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
+	#if __has_include(<dlfcn.h>)
+		/// @todo Look in directory of binary, maybe set this from config
 		std::string base_path = "../bin/";
 		plugin_name = base_path + "lib" + plugin_name + ".so";
 		void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
@@ -36,7 +42,6 @@ auto process(std::string plugin_name, std::string file_path) {
 		delete[] error;
 		error = nullptr;
 
-		typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
 		process_pointer process = (process_pointer)dlsym(handle, "process");
 		error = dlerror();
 		if (error) {
@@ -46,9 +51,27 @@ auto process(std::string plugin_name, std::string file_path) {
 		delete[] error;
 		error = nullptr;
 		return process(file_path);
+	#elif __has_include(<windows.h>)
+		// Somehow errors but still works...
+		std::string base_path = "./";
+		plugin_name = base_path + "lib" + plugin_name + ".dll";
+		debug << plugin_name << '\n';
+		HINSTANCE dll = LoadLibraryA(plugin_name.c_str());
+		DWORD error = GetLastError();
+		if (error) {
+			warning << "LoadLibrary: "  << error << '\n';
+			// exit(-1);
+		}
+		process_pointer process = (process_pointer)GetProcAddress(dll, "process");
+		error = GetLastError();
+		if (error) {
+			warning << "GetProcAddress: "  << error << '\n';
+			// exit(-1);
+		}
+		return process(file_path);
 	#else
 		Plugin().process(file_path);
-		return open_file(meta_data.get_path());
+		return open_file(file_path);
 	#endif
 }
 //----------------------------------------------
@@ -101,7 +124,6 @@ void write_test() {
 			if (!plugin.isNull()) {
 				stream = process(plugin.getStr(), meta_data.get_path());
 			} else {
-
 				stream = open_file(meta_data.get_path());
 				debug << "No plugin\n";
 			}
@@ -155,7 +177,7 @@ void read_test() {
 int main() {
 	debug << "This is a debug message\nMore text\n";
 	message << "This is a debug message\n";
-	warning << "This is a debug message\n";
+	warning << "This is a warning message\n";
 	write_test();
 	read_test();
 }

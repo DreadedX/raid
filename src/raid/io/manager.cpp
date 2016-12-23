@@ -13,7 +13,12 @@ raid::FileManager::FileManager() {
 
 	try {
 		// THIS DOES NOT WORK ON WINDOWS
-		flxr::check_crc(*container);
+		#ifndef WIN32
+			flxr::check_crc(*container);
+		#else
+			warning << "flxr::check_crc does not work on windows\n";
+			#pragma message "flxr::check_crc does not work on windows"
+		#endif
 		flxr::read_header(*container);
 		flxr::read_index(*container);
 

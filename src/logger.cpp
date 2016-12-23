@@ -1,9 +1,14 @@
 #include <iomanip>
 #include "logger.h"
 #include "typedef.h"
-#include <experimental/filesystem>
 
-namespace fs = std::experimental::filesystem;
+#if __has_include(<experimental/filesystem>)
+	#include <experimental/filesystem>
+	namespace fs = std::experimental::filesystem;
+#else
+	#pragma message "Compiler does not support experimental/filesystem"
+#endif
+
 
 #undef debug
 #undef message
@@ -60,9 +65,11 @@ logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) 
 
 	if (!_log.is_open()) {
 
-		if(!fs::exists("logs")) {
-			fs::create_directory("logs");
-		}
+		#if __has_include(<experimental/filesystem>)
+			if(!fs::exists("logs")) {
+				fs::create_directory("logs");
+			}
+		#endif
 
 		#if 0
 			time_t rawtime;

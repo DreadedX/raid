@@ -48,7 +48,6 @@ cmake_install.cmake
 install_manifest.txt
 
 ### Custom ###
-game/assets\ (kopie)
 build/*
 docs/*
 CMake/*

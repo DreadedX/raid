@@ -18,7 +18,9 @@ if(PNG_FOUND)
 endif(PNG_FOUND)
 
 target_link_libraries(${PROJECT_NAME} logger)
-target_link_libraries (${PROJECT_NAME} stdc++fs)
+if(NOT WIN32)
+	target_link_libraries (${PROJECT_NAME} stdc++fs)
+endif(NOT WIN32)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(

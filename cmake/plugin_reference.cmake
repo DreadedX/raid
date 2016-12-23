@@ -12,7 +12,9 @@ file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/plugins/reference/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
 
 target_link_libraries(${PROJECT_NAME} logger)
-target_link_libraries (${PROJECT_NAME} stdc++fs)
+if(NOT WIN32)
+	target_link_libraries (${PROJECT_NAME} stdc++fs)
+endif(NOT WIN32)
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
