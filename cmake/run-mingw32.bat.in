@@ -1,0 +1,2 @@
+set PATH=%PATH%;Z;\usr\i686-w64-mingw32\bin
+@CMAKE_BINARY_DIR@/@RUN_NAME@.exe @RUN_ARGS@

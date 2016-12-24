@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4)
 project(engine)
 
-set(NAME_ ${PROJECT_NAME})
+set(RUN_NAME ${PROJECT_NAME})
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 

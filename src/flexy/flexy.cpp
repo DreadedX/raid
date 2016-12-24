@@ -11,6 +11,8 @@
 	#pragma message "The plugin system is not supported on this platform"
 #endif
 
+#include "sol.hpp"
+
 #include "flexy/ValTree.h"
 #include "flexy/helper.h"
 #include "flexy/interface.h"
@@ -31,8 +33,8 @@ auto process(std::string plugin_name, std::string file_path) {
 	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
 	#if __has_include(<dlfcn.h>)
 		/// @todo Look in directory of binary, maybe set this from config
-		std::string base_path = "../bin/";
-		plugin_name = base_path + "lib" + plugin_name + ".so";
+		std::string base_path = "";
+		plugin_name = base_path + plugin_name + ".so";
 		void* handle = dlopen(plugin_name.c_str(), RTLD_NOW);
 		char* error = dlerror();
 		if (error) {
@@ -53,8 +55,8 @@ auto process(std::string plugin_name, std::string file_path) {
 		return process(file_path);
 	#elif __has_include(<windows.h>)
 		// Somehow errors but still works...
-		std::string base_path = "./";
-		plugin_name = base_path + "lib" + plugin_name + ".dll";
+		std::string base_path = "";
+		plugin_name = base_path + plugin_name + ".dll";
 		debug << plugin_name << '\n';
 		HINSTANCE dll = LoadLibraryA(plugin_name.c_str());
 		DWORD error = GetLastError();
@@ -75,69 +77,130 @@ auto process(std::string plugin_name, std::string file_path) {
 	#endif
 }
 //----------------------------------------------
-void write_test() {
-	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
-	std::string base_path = "../../";
+void write_test(std::string config_path) {
+	std::string base_path = config_path.substr(0, config_path.find_last_of("\\/")+1);
 
-	ValTree v;
-	v.parse(base_path + "assets/config.flxr");
+	sol::state lua;
+	// Make the compression enums available to the config script
+	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::package, sol::lib::io, sol::lib::string, sol::lib::table);
+	lua.script(R"lua(package.path = ")lua" + base_path +  R"lua(?.lua;" .. package.path)lua");
+	lua.script(R"lua(package.cpath = ")lua" + base_path +  R"lua(?.so;" .. package.cpath)lua");
+	lua.create_named_table("flexy", "base_path", base_path, "compression", lua.create_table_with(
+				"zlib", COMPRESSION::ZLIB,
+				"raw", COMPRESSION::RAW,
+				"on_disk", COMPRESSION::ON_DISK
+				));
+	// Load the config file
+	sol::protected_function_result config_result = lua.do_file(base_path + "config.lua");
 
-	for (const auto& package : v.getChild("packages")) {
+	if (config_result.valid() && ((sol::object)config_result).is<sol::table>()) {
+		sol::table config = config_result;
+		if (config["packages"] && ((sol::object)config["packages"]).is<sol::table>()) {
+			sol::table packages = config["packages"];
 
-		debug << "WRITE TEST\n";
+			/// @todo Check if values are what we expect
+			for (auto package_pair : packages) {
+				if (package_pair.second.is<sol::table>()) {
+					sol::table package = package_pair.second.as<sol::table>();
 
-		// Refactor to setup function
-		Container container(package.getKey() + ".flx");
-		{
-			for (auto file : package.getChild("files")) {
-				std::string name = package.getKey() + "/" + file.getKey();
-				std::string path = base_path + package.getChild("path").getStr() + "/" + get_file_name(name);
-				container.add_file( MetaData(name, path, container) );
+					// Default compression settings
+					sol::table compression = lua.create_table_with("type", COMPRESSION::RAW);
+					// If compression settings exist load them
+					/// @todo This should be passed to the compression function
+					if (package["compression"] && package["compression"]["type"]) {
+						compression = package["compression"];
+					} else {
+						warning << "Package missing compression setting, using defaults: " << package_pair.first.as<std::string>() << '\n';
+					}
+
+					std::string name = package.get_or<std::string>("name", "default");
+					/// @todo Add checking to this
+					std::string package_path = package.get<std::string>("path");
+					COMPRESSION type = compression["type"];
+					Container container(name + ".flx");
+
+					if (package["files"] && ((sol::object)package["files"]).is<sol::table>()) {
+						sol::table files = package["files"];
+						for (auto file : files) {
+							std::string file_name = name + "/" + file.second.as<std::string>();
+							std::string path = package_path + "/" + get_file_name(file_name);
+							container.add_file( MetaData(file_name, path, container) );
+						}
+					} else {
+						warning << "Package doen not contain any files or is malformed: " << package_pair.first.as<std::string>() << '\n';
+					}
+					container.configure(type, 9);
+					container.empty_file();
+					write_header(container);
+					write_index(container);
+
+					for (auto& meta_data : container.get_index()) {
+						debug << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
+
+						// Find the file extension and corresponding plugin
+						std::string plugin = "";
+						if (has_file_extension(meta_data.get_name())) {
+							if (config["plugins"]) {
+								sol::table plugins = config["plugins"];
+								for (auto plugin_pair : plugins) {
+									if (plugin_pair.second.is<sol::table>()) {
+										if (((sol::table)plugin_pair.second)["extensions"] && ((sol::object)((sol::table)plugin_pair.second)["extensions"]).is<sol::table>()) {
+											sol::table extensions = ((sol::table)plugin_pair.second)["extensions"];
+											for (auto extension_pair : extensions) {
+												if (extension_pair.second.is<std::string>()) {
+													if (extension_pair.second.as<std::string>() == get_file_extension(meta_data.get_name())) {
+														if (((sol::table)plugin_pair.second)["name"] && ((sol::object)((sol::table)plugin_pair.second)["name"]).is<std::string>()) {
+															plugin = ((sol::table)plugin_pair.second)["name"];
+														} else {
+															warning << "Plugin name is invalid " << plugin_pair.first.as<std::string>() << '\n';
+														}
+													}
+												} else {
+													warning << "Plugin extension is invalid: " << plugin_pair.first.as<std::string>() << '\n';
+												}
+											}
+										} else {
+											warning << "Plugin extension list is invalid: " << plugin_pair.first.as<std::string>() << '\n';
+										}
+									} else {
+										warning << "Skipping invalid plugin: " << plugin_pair.first.as<std::string>() << '\n';
+									}
+								}
+							} else {
+								warning << "There are no plugins registered\n";
+							}
+						}
+
+						// If a plugin was found run it, otherwise just load the file
+						std::shared_ptr<std::iostream> stream;
+						if (plugin != "") {
+							stream = process(plugin, meta_data.get_path());
+							debug << "Plugin: " << plugin << '\n';
+						} else {
+							stream = open_file(meta_data.get_path());
+							debug << "No plugin\n";
+						}
+
+						write_data(meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
+					}
+					write_index(container);
+					write_crc(container);
+				} else {
+					warning << "Skipping invalid package: " << package_pair.first.as<std::string>() << '\n';
+				}
 			}
-
-			COMPRESSION compression_type = COMPRESSION::RAW;
-			try {
-				compression_type = get_compression_type(package);
-			} catch(bad_compression_type& e) {
-				warning << e.what() << "\nUsing RAW...\n";
-			}
-
-			container.configure(compression_type, package.query("compression.level").getInt());
-			debug << "Compression type: " << compression_type << ", level: " << package.query("compression.level").getInt() << '\n';
-
-			container.empty_file();
+		} else {
+			warning << "Packages does not exist or is malformed\n";
 		}
-		write_header(container);
-		write_index(container);
-
-		for (auto& meta_data : container.get_index()) {
-			debug << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
-
-			// Find the file extension and corresponding plugin
-			ValTree plugin;
-			if (has_file_extension(meta_data.get_name())) {
-				plugin = v.query("plugins" + get_file_extension(meta_data.get_name()));
-			}
-
-			// If a plugin was found run it, otherwise just load the file
-			std::shared_ptr<std::iostream> stream;
-			if (!plugin.isNull()) {
-				stream = process(plugin.getStr(), meta_data.get_path());
-			} else {
-				stream = open_file(meta_data.get_path());
-				debug << "No plugin\n";
-			}
-
-			write_data(meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
-		}
-		write_index(container);
-		write_crc(container);
+	} else {
+		sol::error error = config_result;
+		warning << error.what() << '\n';
 	}
 }
 //----------------------------------------------
-void read_test() {
+void read_test_legacy() {
 	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
-	std::string base_path = "../../";
+	std::string base_path = "../../../";
 
 	ValTree v;
 	v.parse(base_path + "assets/config.flxr");
@@ -173,11 +236,74 @@ void read_test() {
 		}
 	}
 }
+void read_test(std::string config_path) {
+	std::string base_path = config_path.substr(0, config_path.find_last_of("\\/")+1);
+
+	sol::state lua;
+	// Make the compression enums available to the config script
+	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::package, sol::lib::io, sol::lib::string, sol::lib::table);
+	lua.script(R"lua(package.path = ")lua" + base_path +  R"lua(?.lua;" .. package.path)lua");
+	lua.script(R"lua(package.cpath = ")lua" + base_path +  R"lua(?.so;" .. package.cpath)lua");
+	lua.create_named_table("flexy", "base_path", base_path, "compression", lua.create_table_with(
+				"zlib", COMPRESSION::ZLIB,
+				"raw", COMPRESSION::RAW,
+				"on_disk", COMPRESSION::ON_DISK
+				));
+	// Load the config file
+	sol::protected_function_result config_result = lua.do_file(base_path + "config.lua");
+
+	if (config_result.valid() && ((sol::object)config_result).is<sol::table>()) {
+		sol::table config = config_result;
+		if (config["packages"] && ((sol::object)config["packages"]).is<sol::table>()) {
+			sol::table packages = config["packages"];
+
+			/// @todo Check if values are what we expect
+			for (auto package_pair : packages) {
+				if (package_pair.second.is<sol::table>()) {
+					sol::table package = package_pair.second.as<sol::table>();
+
+					std::string name = package.get_or<std::string>("name", "default");
+					Container container(name + ".flx");
+
+					try {
+						check_crc(container);
+						read_header(container);
+						read_index(container);
+
+						for (auto& meta_data : container.get_index()) {
+							debug << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
+						}
+
+						for (auto& meta_data : container.get_index()) {
+							std::stringstream stream;
+							try {
+								read_data(meta_data, stream);
+							} catch(flxr::bad_compression_type& e) {
+								warning << e.what() << '\n';
+							}
+							// debug << stream.str() << '\n';
+						}
+					} catch(flxr::bad_file& e) {
+						warning << e.what() << '\n';
+					}
+				}
+			}
+		}
+	}
+}
 //----------------------------------------------
-int main() {
-	debug << "This is a debug message\nMore text\n";
-	message << "This is a debug message\n";
-	warning << "This is a warning message\n";
-	write_test();
-	read_test();
+int main(int argc, const char* argv[]) {
+	try {
+		if (argc == 2) {
+			std::string config_path(argv[1]);
+			debug << "===WRITE===\n";
+			write_test(config_path);
+			debug << "===READ===\n";
+			read_test(config_path);
+		} else {
+			warning << "Incorrect amount of arguments\n";
+		}
+	} catch (std::exception& e) {
+		warning << e.what() << '\n';
+	}
 }

@@ -1,0 +1,23 @@
+Compiled on : Dec 24 2016 21:21:59
+C++ version : 201402
+Build       : ---
+Sat Dec 24 21:27:32 2016 - flexy.cpp:137 ---- DEBUG - test/file -> test/file
+Sat Dec 24 21:27:32 2016 - flexy.cpp:180 ---- DEBUG - No plugin
+Sat Dec 24 21:27:32 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/file
+0.0 MB compressed (120.0%)
+Sat Dec 24 21:27:32 2016 - flexy.cpp:137 ---- DEBUG - test/textures/grass.png -> test/textures/grass.png
+Sat Dec 24 21:27:32 2016 - flexy.cpp:177 ---- DEBUG - Plugin: libpng
+Sat Dec 24 21:27:32 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/textures/grass.png
+0.1 MB compressed (9.4%)
+Sat Dec 24 21:27:32 2016 - flexy.cpp:137 ---- DEBUG - test/textures/test.png -> test/textures/test.png
+Sat Dec 24 21:27:32 2016 - flexy.cpp:177 ---- DEBUG - Plugin: libpng
+Sat Dec 24 21:27:32 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/textures/test.png
+0.0 MB compressed (100.0%)
+Sat Dec 24 21:27:32 2016 - flexy.cpp:137 ---- DEBUG - test/musketeers.txt -> test/musketeers.txt
+Sat Dec 24 21:27:32 2016 - flexy.cpp:180 ---- DEBUG - No plugin
+Sat Dec 24 21:27:32 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/musketeers.txt
+0.5 MB compressed (36.1%)
+Sat Dec 24 21:27:32 2016 - flexy.cpp:137 ---- DEBUG - test/hello.txt -> test/hello.txt
+Sat Dec 24 21:27:32 2016 - flexy.cpp:180 ---- DEBUG - No plugin
+Sat Dec 24 21:27:32 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/hello.txt
+0.0 MB compressed (161.5%)
