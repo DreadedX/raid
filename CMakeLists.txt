@@ -8,7 +8,6 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 # Make sure there is no in source build
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -19,25 +18,30 @@ set(CMAKE_CXX_STANDARD 14)
 set(CXX_STANDARD_REQUIRED ON)
 
 string(TOLOWER ${CMAKE_SYSTEM_NAME} SYSTEM_NAME)
-message(${SYSTEM_NAME})
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/${SYSTEM_NAME}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/${SYSTEM_NAME}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/build/${SYSTEM_NAME}/vendor/include)
+
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/build/${SYSTEM_NAME}/vendor/include)
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
  
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(VENDOR_PATH ${CMAKE_CURRENT_BINARY_DIR}/vendor)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sugar/Sugar)
+include(${CMAKE_SOURCE_DIR}/cmake/sugar/Sugar)
+include(${CMAKE_SOURCE_DIR}/cmake/sol2.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/engine.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/engine.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/logger.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/logger.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/flxr.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/flexy.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/flxr.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/flexy.cmake)
 
 # Plugins
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/plugin_reference.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/plugin_png.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/plugin_reference.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/plugin_png.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/doxygen.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ycm.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/doxygen.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/ycm.cmake)
