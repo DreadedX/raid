@@ -1,0 +1,2 @@
+#!/bin/bash
+cgdb -q -ex start --args @CMAKE_BINARY_DIR@/@RUN_NAME@ @RUN_ARGS@

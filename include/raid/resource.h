@@ -19,6 +19,10 @@ namespace raid {
 				// debug << "Resource Deconstructed\n";
 			}
 
+			void test() {
+				debug << "YO WTF\n";
+			}
+
 		private:
 			/// All resourcess need this function to load the actual resource.
 			virtual void load(std::string resource_name) = 0;
@@ -40,6 +44,7 @@ namespace raid {
 				if (list.count(resource_name) == 0 || list.find(resource_name)->second.expired())
 				{
 
+
 					// If the key exists it means it was expired
 					if (list.count(resource_name) != 0) {
 						// debug << "Resource expired: " << resource_name << '\n';
@@ -55,24 +60,27 @@ namespace raid {
 					t->load(resource_name);
 
 					// Create a weak ptr to the resource
-					auto ptr = std::weak_ptr<Resource>();
-					ptr = std::dynamic_pointer_cast<Resource, T>(t);
+					std::weak_ptr<Resource> ptr = std::dynamic_pointer_cast<Resource, T>(t);
 
 					// Add the weak ptr to the resource list
-					list.insert({resource_name, ptr});
+					/// @todo THIS DOES NOT WORK IN RELEASE
+					#if NDEBUG
+						#pragma message "This does not work in release"
+					#endif
+					list.emplace(resource_name, ptr);
 
 					// Return the shared ptr
 					return t;
 				}
 
-				// debug << "Resource already in memory: " << resource_name << '\n';
+				debug << "Resource already in memory: " << resource_name << '\n';
 				// The weak ptr was still valid, so we return a shared ptr to the asset
 				return std::dynamic_pointer_cast<T, Resource>(list.find(resource_name)->second.lock());
 			}
 		private:
 			/// @todo figure out a way to remove unloaded resources from the list automatically
 			/// List containing all resources that are maybe loaded
-			std::unordered_map<std::string, std::weak_ptr<raid::Resource>> list;
+			std::unordered_map<std::string, std::weak_ptr<Resource>> list;
 	};
 	//----------------------------------------------
 }

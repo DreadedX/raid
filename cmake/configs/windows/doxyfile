@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = @NAME_@
+PROJECT_NAME           = png
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       =  @CMAKE_CURRENT_SOURCE_DIR@/docs
+OUTPUT_DIRECTORY       =  /home/tim/Projects/cpp/raid/docs
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -684,7 +684,7 @@ FILE_VERSION_FILTER    =
 # DoxygenLayout.xml, doxygen will parse it automatically even if the LAYOUT_FILE
 # tag is left empty.
 
-LAYOUT_FILE            = @CMAKE_SOURCE_DIR@/cmake/doxygen/DoxygenLayout.xml
+LAYOUT_FILE            = /home/tim/Projects/cpp/raid/cmake/in-files/doxygen/DoxygenLayout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files containing
 # the reference definitions. This must be a list of .bib files. The .bib
@@ -772,7 +772,7 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 # INPUT                  = core/flare/src core/flare/src/assets core/flare/src/components core/flare/include/flare core/flare/include/flare/assets core/flare/include/flare/components core/extra/src core/extra/include/extra core/flux/src/ core/flux/include/flux core/fuse/src core/fuse/include/fuse
-INPUT                  = @DOXYGEN_INPUT@
+INPUT                  = /home/tim/Projects/cpp/raid/src/flexy/ValTree.cpp /home/tim/Projects/cpp/raid/src/flexy/flexy.cpp /home/tim/Projects/cpp/raid/src/flxr/compression/on_disk.cpp /home/tim/Projects/cpp/raid/src/flxr/compression/raw.cpp /home/tim/Projects/cpp/raid/src/flxr/compression/zlib.cpp /home/tim/Projects/cpp/raid/src/flxr/crc.cpp /home/tim/Projects/cpp/raid/src/flxr/read.cpp /home/tim/Projects/cpp/raid/src/flxr/write.cpp /home/tim/Projects/cpp/raid/src/logger.cpp /home/tim/Projects/cpp/raid/src/plugins/png/png.cpp /home/tim/Projects/cpp/raid/src/plugins/reference/reference.cpp /home/tim/Projects/cpp/raid/src/raid/engine.cpp /home/tim/Projects/cpp/raid/src/raid/graphics/opengl/opengl.cpp /home/tim/Projects/cpp/raid/src/raid/io/manager.cpp /home/tim/Projects/cpp/raid/src/raid/raid.cpp /home/tim/Projects/cpp/raid/src/raid/resource.cpp /home/tim/Projects/cpp/raid/include/flexy/ValTree.h /home/tim/Projects/cpp/raid/include/flexy/helper.h /home/tim/Projects/cpp/raid/include/flexy/interface.h /home/tim/Projects/cpp/raid/include/flexy/plugin.h /home/tim/Projects/cpp/raid/include/flxr/binary_helper.h /home/tim/Projects/cpp/raid/include/flxr/compression/on_disk.h /home/tim/Projects/cpp/raid/include/flxr/compression/raw.h /home/tim/Projects/cpp/raid/include/flxr/compression/zlib.h /home/tim/Projects/cpp/raid/include/flxr/crc.h /home/tim/Projects/cpp/raid/include/flxr/exceptions.h /home/tim/Projects/cpp/raid/include/flxr/memstream.h /home/tim/Projects/cpp/raid/include/flxr/read.h /home/tim/Projects/cpp/raid/include/flxr/spec.h /home/tim/Projects/cpp/raid/include/flxr/write.h /home/tim/Projects/cpp/raid/include/logger.h /home/tim/Projects/cpp/raid/include/raid/engine.h /home/tim/Projects/cpp/raid/include/raid/graphics/manager.h /home/tim/Projects/cpp/raid/include/raid/graphics/opengl/opengl.h /home/tim/Projects/cpp/raid/include/raid/io/manager.h /home/tim/Projects/cpp/raid/include/raid/resource.h /home/tim/Projects/cpp/raid/include/typedef.h 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1112,7 +1112,7 @@ HTML_STYLESHEET        =
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = @CMAKE_SOURCE_DIR@/cmake/doxygen/customdoxygen.css
+HTML_EXTRA_STYLESHEET  = /home/tim/Projects/cpp/raid/cmake/in-files/doxygen/customdoxygen.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note

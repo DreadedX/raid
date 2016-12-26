@@ -3,21 +3,8 @@
 #include <string>
 #include <memory>
 #include "flxr/spec.h"
-#include "flexy/ValTree.h"
 
 #include "logger.h"
-//----------------------------------------------
-inline bool has_file_extension(const std::string& str) {
-	return str.substr(str.find_last_of('/')).find_last_of('.') != std::string::npos;
-}
-//----------------------------------------------
-inline std::string get_file_extension(const std::string& str) {
-	return str.substr(str.find_last_of('.')+1);
-}
-//----------------------------------------------
-inline std::string get_file_name(const std::string& str) {
-	return str.substr(str.find_first_of('/')+1);
-}
 //----------------------------------------------
 inline std::shared_ptr<std::iostream> open_file(std::string file_path) {
 	std::shared_ptr<std::iostream> stream = std::make_shared<std::fstream>();

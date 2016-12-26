@@ -1,0 +1,35 @@
+Compiled on : Dec 26 2016 23:35:24
+C++ version : 201402
+Build       : ---
+Mon Dec 26 23:47:15 2016 - flexy.cpp:264 ---- DEBUG - ===WRITE===
+Mon Dec 26 23:47:15 2016 - flexy.cpp:140 ---- DEBUG - /home/tim/Projects/cpp/raid/assets/test/hello.txt -> test/hello.txt
+Mon Dec 26 23:47:15 2016 - flexy.cpp:184 ---- DEBUG - No plugin
+Mon Dec 26 23:47:15 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/hello.txt
+0.0 MB compressed (161.5%)
+Mon Dec 26 23:47:15 2016 - flexy.cpp:140 ---- DEBUG - /home/tim/Projects/cpp/raid/assets/test/musketeers.txt -> test/musketeers.txt
+Mon Dec 26 23:47:15 2016 - flexy.cpp:184 ---- DEBUG - No plugin
+Mon Dec 26 23:47:15 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/musketeers.txt
+0.5 MB compressed (36.1%)
+Mon Dec 26 23:47:15 2016 - flexy.cpp:140 ---- DEBUG - /home/tim/Projects/cpp/raid/assets/test/textures/grass.png -> test/textures/grass.png
+Mon Dec 26 23:47:15 2016 - flexy.cpp:181 ---- DEBUG - Plugin: libpng
+Mon Dec 26 23:47:15 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/textures/grass.png
+0.1 MB compressed (9.4%)
+Mon Dec 26 23:47:15 2016 - flexy.cpp:140 ---- DEBUG - /home/tim/Projects/cpp/raid/assets/test/textures/test.png -> test/textures/test.png
+Mon Dec 26 23:47:15 2016 - flexy.cpp:181 ---- DEBUG - Plugin: libpng
+Mon Dec 26 23:47:15 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/textures/test.png
+0.0 MB compressed (100.0%)
+Mon Dec 26 23:47:15 2016 - flexy.cpp:140 ---- DEBUG - /home/tim/Projects/cpp/raid/assets/test/file -> test/file
+Mon Dec 26 23:47:15 2016 - flexy.cpp:184 ---- DEBUG - No plugin
+Mon Dec 26 23:47:15 2016 - zlib.cpp:17 ------ DEBUG - Compressing: test/file
+0.0 MB compressed (120.0%)
+Mon Dec 26 23:47:15 2016 - flexy.cpp:266 ---- DEBUG - ===READ===
+Mon Dec 26 23:47:15 2016 - flexy.cpp:239 ---- DEBUG - test/hello.txt 0.0 MB compressed
+Mon Dec 26 23:47:15 2016 - flexy.cpp:239 ---- DEBUG - test/musketeers.txt 0.5 MB compressed
+Mon Dec 26 23:47:15 2016 - flexy.cpp:239 ---- DEBUG - test/textures/grass.png 0.1 MB compressed
+Mon Dec 26 23:47:15 2016 - flexy.cpp:239 ---- DEBUG - test/textures/test.png 0.0 MB compressed
+Mon Dec 26 23:47:15 2016 - flexy.cpp:239 ---- DEBUG - test/file 0.0 MB compressed
+Mon Dec 26 23:47:15 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
+Mon Dec 26 23:47:15 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/musketeers.txt
+Mon Dec 26 23:47:15 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/grass.png
+Mon Dec 26 23:47:15 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
+Mon Dec 26 23:47:15 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file

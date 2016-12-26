@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <memory>
 
+#include <experimental/filesystem>
+
 #if __has_include(<dlfcn.h>)
 	#include <dlfcn.h>
 #elif __has_include(<windows.h>)
@@ -13,12 +15,11 @@
 
 #include "sol.hpp"
 
-#include "flexy/ValTree.h"
 #include "flexy/helper.h"
 #include "flexy/interface.h"
 #include "flexy/plugin.h"
 
-/// @note Do not put this above flext includes, somehow breaks
+/// @note Do not put this above flexy includes, somehow breaks
 /// @todo Figure this out
 #include "flxr/write.h"
 #include "flxr/read.h"
@@ -78,7 +79,8 @@ auto process(std::string plugin_name, std::string file_path) {
 }
 //----------------------------------------------
 void write_test(std::string config_path) {
-	std::string base_path = config_path.substr(0, config_path.find_last_of("\\/")+1);
+	std::experimental::filesystem::path path(config_path);
+	std::string base_path = path.parent_path().string() + '/';
 
 	sol::state lua;
 	// Make the compression enums available to the config script
@@ -91,11 +93,11 @@ void write_test(std::string config_path) {
 				"on_disk", COMPRESSION::ON_DISK
 				));
 	// Load the config file
-	sol::protected_function_result config_result = lua.do_file(base_path + "config.lua");
+	sol::protected_function_result config_result = lua.do_file(config_path);
 
 	if (config_result.valid() && ((sol::object)config_result).is<sol::table>()) {
 		sol::table config = config_result;
-		if (config["packages"] && ((sol::object)config["packages"]).is<sol::table>()) {
+		if (((sol::object)config["packages"]).is<sol::table>()) {
 			sol::table packages = config["packages"];
 
 			/// @todo Check if values are what we expect
@@ -107,7 +109,7 @@ void write_test(std::string config_path) {
 					sol::table compression = lua.create_table_with("type", COMPRESSION::RAW);
 					// If compression settings exist load them
 					/// @todo This should be passed to the compression function
-					if (package["compression"] && package["compression"]["type"]) {
+					if (((sol::object)package["compression"]).is<sol::table>() && ((sol::object)package["compression"]["type"]).is<COMPRESSION>()) {
 						compression = package["compression"];
 					} else {
 						warning << "Package missing compression setting, using defaults: " << package_pair.first.as<std::string>() << '\n';
@@ -119,11 +121,11 @@ void write_test(std::string config_path) {
 					COMPRESSION type = compression["type"];
 					Container container(name + ".flx");
 
-					if (package["files"] && ((sol::object)package["files"]).is<sol::table>()) {
+					if (((sol::object)package["files"]).is<sol::table>()) {
 						sol::table files = package["files"];
 						for (auto file : files) {
 							std::string file_name = name + "/" + file.second.as<std::string>();
-							std::string path = package_path + "/" + get_file_name(file_name);
+							std::string path = package_path + "/" + file.second.as<std::string>();
 							container.add_file( MetaData(file_name, path, container) );
 						}
 					} else {
@@ -139,17 +141,18 @@ void write_test(std::string config_path) {
 
 						// Find the file extension and corresponding plugin
 						std::string plugin = "";
-						if (has_file_extension(meta_data.get_name())) {
-							if (config["plugins"]) {
+						std::experimental::filesystem::path path(meta_data.get_name());
+						if (path.extension() != "") {
+							if (((sol::object)config["plugins"]).is<sol::table>()) {
 								sol::table plugins = config["plugins"];
 								for (auto plugin_pair : plugins) {
 									if (plugin_pair.second.is<sol::table>()) {
-										if (((sol::table)plugin_pair.second)["extensions"] && ((sol::object)((sol::table)plugin_pair.second)["extensions"]).is<sol::table>()) {
+										if (((sol::object)((sol::table)plugin_pair.second)["extensions"]).is<sol::table>()) {
 											sol::table extensions = ((sol::table)plugin_pair.second)["extensions"];
 											for (auto extension_pair : extensions) {
 												if (extension_pair.second.is<std::string>()) {
-													if (extension_pair.second.as<std::string>() == get_file_extension(meta_data.get_name())) {
-														if (((sol::table)plugin_pair.second)["name"] && ((sol::object)((sol::table)plugin_pair.second)["name"]).is<std::string>()) {
+													if ("." + extension_pair.second.as<std::string>() == path.extension()) {
+														if (((sol::object)((sol::table)plugin_pair.second)["name"]).is<std::string>()) {
 															plugin = ((sol::table)plugin_pair.second)["name"];
 														} else {
 															warning << "Plugin name is invalid " << plugin_pair.first.as<std::string>() << '\n';
@@ -198,44 +201,6 @@ void write_test(std::string config_path) {
 	}
 }
 //----------------------------------------------
-void read_test_legacy() {
-	/// @todo The path to the config needs to be an commandline argument, and everything needs to be relative to the config file
-	std::string base_path = "../../../";
-
-	ValTree v;
-	v.parse(base_path + "assets/config.flxr");
-
-	for (const auto& package : v.getChild("packages")) {
-
-		debug << "READ TEST\n";
-
-		Container container(package.getKey() + ".flx");
-
-		try {
-			check_crc(container);
-			read_header(container);
-			read_index(container);
-
-			for (auto& meta_data : container.get_index()) {
-				debug << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
-			}
-
-			for (auto& meta_data : container.get_index()) {
-				std::stringstream stream;
-				try {
-					read_data(meta_data, stream);
-				} catch(flxr::bad_compression_type& e) {
-					warning << e.what() << '\n';
-				}
-				// debug << stream.str() << '\n';
-			}
-
-			debug << "==============================\n";
-		} catch(flxr::bad_file& e) {
-			warning << e.what() << '\n';
-		}
-	}
-}
 void read_test(std::string config_path) {
 	std::string base_path = config_path.substr(0, config_path.find_last_of("\\/")+1);
 
@@ -250,11 +215,11 @@ void read_test(std::string config_path) {
 				"on_disk", COMPRESSION::ON_DISK
 				));
 	// Load the config file
-	sol::protected_function_result config_result = lua.do_file(base_path + "config.lua");
+	sol::protected_function_result config_result = lua.do_file(config_path);
 
 	if (config_result.valid() && ((sol::object)config_result).is<sol::table>()) {
 		sol::table config = config_result;
-		if (config["packages"] && ((sol::object)config["packages"]).is<sol::table>()) {
+		if (((sol::object)config["packages"]).is<sol::table>()) {
 			sol::table packages = config["packages"];
 
 			/// @todo Check if values are what we expect

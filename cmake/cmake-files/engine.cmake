@@ -59,4 +59,4 @@ set_target_properties(
     "${target_compile_options}" # important: need quotes (one argument for COMPILE_OPTIONS)
 )
 
-include(${CMAKE_SOURCE_DIR}/cmake/execute.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/execute.cmake)

@@ -36,6 +36,8 @@ class Texture : public Resource {
 			} catch(flxr::bad_compression_type& e) {
 				warning << e.what() << '\n';
 			}
+
+			debug << "From Texture: " << resource_name << "\n";
 		}
 };
 //----------------------------------------------

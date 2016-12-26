@@ -1,2 +1,0 @@
-#!/bin/bash
-cgdb -q -ex start --args @CMAKE_BINARY_DIR@/@NAME_@
