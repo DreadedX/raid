@@ -1,9 +1,9 @@
 //----------------------------------------------
 #include "flxr/binary_helper.h"
-#include "flxr/compression/raw.h"
+#include "flxr/spec.h"
 #include "logger.h"
 //----------------------------------------------
-void flxr::raw::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::Raw::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Writing: " << meta_data.get_name() << "\n";
@@ -30,7 +30,7 @@ void flxr::raw::write_data(MetaData& meta_data, std::iostream& source, std::func
 	}
 }
 //----------------------------------------------
-void flxr::raw::read_data(MetaData& meta_data, std::iostream& dest) {
+void flxr::Raw::read_data(MetaData& meta_data, std::iostream& dest) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Reading: " << meta_data.get_name() << "\n";

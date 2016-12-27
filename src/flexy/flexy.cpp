@@ -21,8 +21,7 @@
 
 /// @note Do not put this above flexy includes, somehow breaks
 /// @todo Figure this out
-#include "flxr/write.h"
-#include "flxr/read.h"
+#include "flxr/spec.h"
 #include "flxr/exceptions.h"
 
 #include "logger.h"
@@ -133,8 +132,8 @@ void write_test(std::string config_path) {
 					}
 					container.configure(type, 9);
 					container.empty_file();
-					write_header(container);
-					write_index(container);
+					container.write_header();
+					container.write_index();
 
 					for (auto& meta_data : container.get_index()) {
 						debug << meta_data.get_path() << " -> " << meta_data.get_name() << '\n';
@@ -184,10 +183,11 @@ void write_test(std::string config_path) {
 							debug << "No plugin\n";
 						}
 
-						write_data(meta_data, *stream, Progress::setup, Progress::draw, Progress::finish);
+						meta_data.write_data(*stream, Progress::setup, Progress::draw, Progress::finish);
 					}
-					write_index(container);
-					write_crc(container);
+					/// @todo Maybe combine this in container.finalize()
+					container.write_index();
+					container.write_crc();
 				} else {
 					warning << "Skipping invalid package: " << package_pair.first.as<std::string>() << '\n';
 				}
@@ -231,9 +231,9 @@ void read_test(std::string config_path) {
 					Container container(name + ".flx");
 
 					try {
-						check_crc(container);
-						read_header(container);
-						read_index(container);
+						container.check_crc();
+						container.read_header();
+						container.read_index();
 
 						for (auto& meta_data : container.get_index()) {
 							debug << meta_data.get_name() << " " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(meta_data.get_size())/1000/1000 << " MB compressed\n";
@@ -242,7 +242,7 @@ void read_test(std::string config_path) {
 						for (auto& meta_data : container.get_index()) {
 							std::stringstream stream;
 							try {
-								read_data(meta_data, stream);
+								meta_data.read_data(stream);
 							} catch(flxr::bad_compression_type& e) {
 								warning << e.what() << '\n';
 							}

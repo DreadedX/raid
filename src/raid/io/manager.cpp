@@ -2,7 +2,6 @@
 #include "typedef.h"
 #include "raid/io/manager.h"
 #include "flxr/spec.h"
-#include "flxr/read.h"
 #include "flxr/exceptions.h"
 
 #include "logger.h"
@@ -14,13 +13,13 @@ raid::FileManager::FileManager() {
 	try {
 		// THIS DOES NOT WORK ON WINDOWS
 		#ifndef WIN32
-			flxr::check_crc(*container);
+			container->check_crc();
 		#else
 			warning << "flxr::check_crc does not work on windows\n";
 			#pragma message "flxr::check_crc does not work on windows"
 		#endif
-		flxr::read_header(*container);
-		flxr::read_index(*container);
+		container->read_header();
+		container->read_index();
 
 		for(auto& meta_data : (*container).get_index()) {
 			add_file(meta_data);

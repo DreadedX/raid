@@ -12,7 +12,7 @@
 // #include "raid/graphics/manager.h"
 #include "raid/graphics/opengl/opengl.h"
 
-#include "flxr/read.h"
+#include "flxr/spec.h"
 #include "flxr/binary_helper.h"
 #include "flxr/exceptions.h"
 
@@ -32,7 +32,7 @@ class Texture : public Resource {
 			auto& file_manager = Engine::instance().get_file_manager();
 			auto& data = file_manager.get_file(resource_name);
 			try {
-				flxr::read_data(data, stream);
+				data.read_data(stream);
 			} catch(flxr::bad_compression_type& e) {
 				warning << e.what() << '\n';
 			}
@@ -56,7 +56,7 @@ int main() {
 	// We might want to add a version of read data that reads to an array/vector...
 	// Or improve memstream to also be written to...
 	std::stringstream stream1;
-	flxr::read_data(data1, stream1);
+	data1.read_data(stream1);
 	for (unsigned int i = 0; i < stream1.str().length(); ++i) {
 		byte dat;
 		flxr::read(stream1, dat);
@@ -69,7 +69,7 @@ int main() {
 	auto& data2 = file_manager.get_file("test/hello.txt");
 	debug << data2.get_name() << '\n';
 	std::stringstream stream2;
-	flxr::read_data(data2, stream2);
+	data2.read_data(stream2);
 	debug << stream2.str() << '\n';
 	//----------------------------------------------
 	//-Resources------------------------------------

@@ -3,9 +3,12 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <memory>
 
 #include "logger.h"
 #include "typedef.h"
+#include "flxr/exceptions.h"
+#include "flxr/compression.h"
 //----------------------------------------------
 namespace flxr {
 	//----------------------------------------------
@@ -20,20 +23,22 @@ namespace flxr {
 	};
 	//----------------------------------------------
 	class Container;
+	class Compression;
 	class MetaData {
 
 		public:
 			MetaData(const std::string name, const std::string path, Container& container) : _name(name), _path(path), _container(container) {}
 
+			const auto& get_size() { return _size; }
+			const auto& get_offset() { return _offset; }
 			const auto& get_name() { return _name; }
-			const auto get_offset() { return _offset; }
-			const auto get_size() { return _size; }
 			const auto& get_path() { return _path; }
 			auto& get_container() { return _container; }
 
 			void set_size(uint64 size) { _size = size; }
 			void set_offset(uint64 offset) { _offset = offset; }
-			// void set_path(const std::string& path) { _path = path; }
+			void write_data(std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish);
+			void read_data(std::iostream& dest);
 
 		private:
 			const std::string _name;
@@ -43,7 +48,9 @@ namespace flxr {
 			const std::string _path;
 			Container& _container;
 	};
-	//----------------------------------------------
+}
+//----------------------------------------------
+namespace flxr {
 	class Container {
 		public:
 			Container(std::string m_name) : name(m_name) {
@@ -73,6 +80,7 @@ namespace flxr {
 				header.index_size = (uint64)index.size();
 
 				compression_level = m_compression_level;
+				compression = _get_compression();
 			}
 
 			void add_file(MetaData meta_data) {
@@ -81,8 +89,15 @@ namespace flxr {
 
 			auto& get_stream() { return stream; }
 			auto& get_index() { return index; }
-			auto& get_header() { return header; }
 			auto& get_compression_level() { return compression_level; }
+			auto& get_compression() { return compression; }
+
+			void write_header();
+			void read_header();
+			void write_index();
+			void read_index();
+			void write_crc();
+			void check_crc();
 
 			#pragma pack(1)
 			struct Header {
@@ -92,10 +107,24 @@ namespace flxr {
 			};
 
 		private:
+			std::unique_ptr<Compression> _get_compression() { 
+				switch(header.compression) {
+					case flxr::COMPRESSION::ZLIB:
+						return std::make_unique<Zlib>();
+					case flxr::COMPRESSION::RAW:
+						return std::make_unique<Raw>();
+					default:
+						// We need to check beforehand if the compression type is even valid
+						/// @todo Add function to check if compression type is valid, and maybe check other header stuff
+						throw flxr::not_implemented();
+				}
+			}
+
 			const std::string name;
 			std::fstream stream;
 			std::vector<MetaData> index;
 			int compression_level;
+			std::unique_ptr<Compression> compression = nullptr;
 
 			Header header;
 	};

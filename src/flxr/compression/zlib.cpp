@@ -4,14 +4,14 @@
 #include <zlib.h>
 
 #include "flxr/binary_helper.h"
-#include "flxr/compression/zlib.h"
+#include "flxr/spec.h"
 
 #include "logger.h"
 //----------------------------------------------
 #define CHUNK 16384
 //----------------------------------------------
 /// @todo This function is kind of ugly, refactor
-void flxr::zlib::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Compressing: " << meta_data.get_name() << "\n";
@@ -84,7 +84,7 @@ void flxr::zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	}
 }
 //----------------------------------------------
-void flxr::zlib::read_data(MetaData& meta_data, std::iostream& dest) {
+void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Decompressing: " << meta_data.get_name() << "\n";

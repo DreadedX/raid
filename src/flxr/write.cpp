@@ -1,23 +1,21 @@
 //----------------------------------------------
 #include "flxr/binary_helper.h"
-#include "flxr/write.h"
+#include "flxr/spec.h"
 #include "flxr/crc.h"
 
-#include "flxr/compression/zlib.h"
-#include "flxr/compression/raw.h"
-#include "flxr/compression/on_disk.h"
+#include "flxr/compression.h"
 
 #include "flxr/exceptions.h"
 //----------------------------------------------
-void flxr::write_header(Container& container) {
-	write(container.get_stream(), container.get_header());
+void flxr::Container::write_header() {
+	write(get_stream(), header);
 }
 //----------------------------------------------
-void flxr::write_index(Container& container) {
-	auto& stream = container.get_stream();
+void flxr::Container::write_index() {
+	auto& stream = get_stream();
 
 	stream.seekg(sizeof(Container::Header), std::ios::beg);
-	for(auto meta_data : container.get_index()) {
+	for(auto meta_data : get_index()) {
 		write(stream, meta_data.get_name());
 		write(stream, meta_data.get_offset());
 		write(stream, meta_data.get_size());
@@ -25,24 +23,12 @@ void flxr::write_index(Container& container) {
 	stream.seekg(0, std::ios::end);
 }
 //----------------------------------------------
-/// @todo There must be a better way to do this
-/// @todo Create a list that stores possible compression techniques, to which the user can add
-void flxr::write_data(MetaData& meta_data, std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
-	switch(meta_data.get_container().get_header().compression) {
-		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::write_data(meta_data, source, on_init, on_update, on_finish);
-			break;
-		case flxr::COMPRESSION::RAW:
-			flxr::raw::write_data(meta_data, source, on_init, on_update, on_finish);
-			break;
-		default:
-			/// @note This should never get thrown, unless you specify a compression type without implementing
-			throw flxr::not_implemented();
-	}
+void flxr::MetaData::write_data(std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+	get_container().get_compression()->write_data(*this, source, on_init, on_update, on_finish);
 }
 //----------------------------------------------
-void flxr::write_crc(Container& container) {
-	auto& stream = container.get_stream();
+void flxr::Container::write_crc() {
+	auto& stream = get_stream();
 
 	uint64 size = stream.tellg();
 	stream.clear();

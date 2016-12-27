@@ -1,31 +1,31 @@
 //----------------------------------------------
 #include "flxr/binary_helper.h"
-#include "flxr/read.h"
+#include "flxr/spec.h"
 #include "flxr/crc.h"
-#include "flxr/compression/zlib.h"
-#include "flxr/compression/raw.h"
-#include "flxr/compression/on_disk.h"
+#include "flxr/compression.h"
 
 #include "logger.h"
 
 #include "flxr/exceptions.h"
 //----------------------------------------------
-void flxr::read_header(Container& container) {
-	read(container.get_stream(), container.get_header());
+void flxr::Container::read_header() {
+	read(get_stream(), header);
 
-	if (container.get_header().magic != MAGIC) {
+	if (header.magic != MAGIC) {
 		throw flxr::bad_magic_type();
 	}
+
+	compression = _get_compression();
 }
 //----------------------------------------------
-void flxr::read_index(Container& container) {
-	auto& stream = container.get_stream();
+void flxr::Container::read_index() {
+	auto& stream = get_stream();
 
-	for (uint64 i = 0; i < container.get_header().index_size; i++) {
+	for (uint64 i = 0; i < header.index_size; i++) {
 
 		std::string file_name;
 		read(stream, file_name);
-		MetaData meta_data(file_name, "", container);
+		MetaData meta_data(file_name, "", *this);
 		uint64 offset;
 		read(stream, offset);
 		meta_data.set_offset(offset);
@@ -33,28 +33,16 @@ void flxr::read_index(Container& container) {
 		read(stream, size);
 		meta_data.set_size(size);
 
-		container.add_file(std::move(meta_data));
+		add_file(std::move(meta_data));
 	}
 }
 //----------------------------------------------
-/// @todo There must be a better way to do this
-void flxr::read_data(MetaData& meta_data, std::iostream& dest) {
-	switch(meta_data.get_container().get_header().compression) {
-		case flxr::COMPRESSION::ZLIB:
-			flxr::zlib::read_data(meta_data, dest);
-			break;
-		case flxr::COMPRESSION::RAW:
-			flxr::raw::read_data(meta_data, dest);
-			break;
-		default:
-			// We need to check beforehand if the compression type is even valid
-			/// @todo Add function to check if compression type is valid, and maybe check other header stuff
-			throw flxr::not_implemented();
-	}
+void flxr::MetaData::read_data(std::iostream& dest) {
+	get_container().get_compression()->read_data(*this, dest);
 }
 //----------------------------------------------
-void flxr::check_crc(Container& container) {
-	auto& stream = container.get_stream();
+void flxr::Container::check_crc() {
+	auto& stream = get_stream();
 
 	stream.seekg(0, std::ios::end);
 	uint64 size = stream.tellg();
