@@ -17,9 +17,9 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	debug << "Compressing: " << meta_data.get_name() << "\n";
 
 	source.seekg(0, std::ios::end);
-	uint64 total_size = source.tellg();
+	int64 total_size = source.tellg();
 	source.seekg(0, std::ios::beg);
-	uint64 total_read = 0;
+	int64 total_read = 0;
 
 	if (on_init != nullptr) {
 		on_init(meta_data.get_name(), total_size);
@@ -89,8 +89,8 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::functi
 
 	debug << "Decompressing: " << meta_data.get_name() << "\n";
 
-	uint64 total_read = 0;
-	uint64 final_size = 0;
+	int64 total_read = 0;
+	int64 final_size = 0;
 
 	if (on_init != nullptr) {
 		on_init(meta_data.get_name(), meta_data.get_size());

@@ -21,7 +21,7 @@ void flxr::Container::read_header() {
 void flxr::Container::read_index() {
 	auto& stream = get_stream();
 
-	for (uint64 i = 0; i < header.index_size; i++) {
+	for (int64 i = 0; i < header.index_size; i++) {
 
 		std::string file_name;
 		read(stream, file_name);
@@ -59,10 +59,11 @@ void flxr::Container::check_crc() {
 		}
 		size -= chunk_size;
 
-		char buffer[chunk_size];
+		char* buffer = new char[chunk_size];
 		stream.read(buffer, chunk_size);
 
 		crc = crc_update(crc, buffer, chunk_size);
+		delete[] buffer;
 	}
 	crc = crc_finalize(crc);
 

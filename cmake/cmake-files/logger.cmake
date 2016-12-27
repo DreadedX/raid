@@ -20,7 +20,7 @@ sugar_generate_warning_flags(
 	ENABLE ALL
 )
 set_target_properties(
-    engine
+	${PROJECT_NAME}
     PROPERTIES
     ${target_properties} # important: without quotes (properties: name, value, name, value, ...)
     COMPILE_OPTIONS

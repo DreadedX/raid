@@ -1,0 +1,12 @@
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "vendor/zlib"]
+	path = vendor/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "vendor/glew"]
+	path = vendor/glew
+	url = https://github.com/nigels-com/glew.git
+[submodule "vendor/lua"]
+	path = vendor/lua
+	url = https://github.com/LuaDist/lua.git

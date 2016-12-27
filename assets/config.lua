@@ -24,7 +24,7 @@ local config = {
 	plugins = {
 		png = {
 			extensions = {"png"},
-			name = "libpng"
+			name = "plugin_png"
 		}
 	}
 }

@@ -97,8 +97,9 @@ class PNG : public Plugin {
 
 			png::Data image = png::read(file_path.c_str());
 
-			byte data[image.size + 2*sizeof(int) + sizeof(byte)];
-			debug << sizeof(data) << '\n';
+			uint64 size = image.size + 2*sizeof(int) + sizeof(byte);
+			byte* data = new byte[size];
+			debug << size << '\n';
 
 			uint32 offset = 0;
 			for (unsigned int i = 0; i < sizeof(int32); ++i) {
@@ -124,10 +125,11 @@ class PNG : public Plugin {
 				}
 			}
 
-			std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<char*>>((char*)data, sizeof(data));
+			std::shared_ptr<std::iostream> final_stream = std::make_shared<Memstream<char*>>((char*)data, size);
+			delete[] data;
 
 			return final_stream;
 		}
 };
 
-share_plugin(PNG);
+share_plugin(PNG)

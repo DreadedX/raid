@@ -1,0 +1,27 @@
+function(link_lua PROJ_NAME)
+	if (NOT WIN32)
+		find_package (Lua REQUIRED)
+	endif()
+
+	if (LUA_FOUND AND NOT WIN32 AND NOT BUILD_DEPENDENCIES)
+		message(STATUS "LUA found")
+		target_include_directories(${PROJ_NAME} PRIVATE ${LUA_INCLUDE_DIR})
+		target_link_libraries(${PROJ_NAME} ${LUA_LIBRARIES})
+	else()
+		# Added static/dynamic option
+		if(TARGET liblua)
+			message(STATUS "LUA already included")
+		else()
+			message(STATUS "LUA not found, building from source")
+			execute_process(COMMAND git submodule update --init -- vendor/lua
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_QUIET)
+			execute_process(COMMAND git checkout 5.3.2
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lua OUTPUT_QUIET)
+			set(LUA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lua/include CACHE PATH "lua include directory" FORCE)
+			add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/lua EXCLUDE_FROM_ALL)
+		endif()
+		add_dependencies(${PROJ_NAME} liblua)
+		target_link_libraries(${PROJ_NAME} liblua)
+		target_include_directories(${PROJ_NAME} PRIVATE ${LUA_INCLUDE_DIRS})
+	endif()
+endfunction()

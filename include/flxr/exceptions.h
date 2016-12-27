@@ -12,7 +12,7 @@ namespace flxr {
 	class bad_magic_type : public std::exception {
 		public:
 			virtual const char* what() const throw() {
-				return "Invalid magic numver";
+				return "Invalid magic number";
 			}
 	};
 	class bad_file : public std::exception {

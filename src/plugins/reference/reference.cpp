@@ -32,6 +32,6 @@ class Reference : public Plugin {
 		}
 };
 //----------------------------------------------
-share_plugin(Reference);
+share_plugin(Reference)
 //----------------------------------------------
 

@@ -1,0 +1,33 @@
+Compiled on : Dec 27 2016 20:50:59
+C++ version : 201402
+Build       : ---
+Tue Dec 27 21:16:45 2016 - manager.cpp:51 --- DEBUG - Adding file: test/hello.txt
+Tue Dec 27 21:16:45 2016 - manager.cpp:51 --- DEBUG - Adding file: test/musketeers.txt
+Tue Dec 27 21:16:45 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/grass.png
+Tue Dec 27 21:16:45 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/test.png
+Tue Dec 27 21:16:45 2016 - manager.cpp:51 --- DEBUG - Adding file: test/file
+Tue Dec 27 21:16:45 2016 - engine.h:30 ------ DEBUG - Engine constructed!
+Tue Dec 27 21:16:45 2016 - raid.cpp:54 ------ DEBUG - test/textures/test.png
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
+Tue Dec 27 21:16:45 2016 - raid.cpp:63 ------ DEBUG - 2 0 0 0 2 0 0 0 3 0 0 ff 0 0 0 ff 0 0 0 ff 0 
+Tue Dec 27 21:16:45 2016 - raid.cpp:70 ------ DEBUG - test/hello.txt
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
+Tue Dec 27 21:16:45 2016 - raid.cpp:73 ------ DEBUG - Hello world!
+Tue Dec 27 21:16:45 2016 -------------------- DEBUG - 
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
+Tue Dec 27 21:16:45 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/textures/test.png
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
+Tue Dec 27 21:16:45 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/hello.txt
+Tue Dec 27 21:16:45 2016 - resource.h:76 ---- DEBUG - Resource already in memory: test/textures/test.png
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
+Tue Dec 27 21:16:45 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/file
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/file [expired]
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
+Tue Dec 27 21:16:45 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
+Tue Dec 27 21:16:45 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/file
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/file [valid]
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
+Tue Dec 27 21:16:45 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
+Tue Dec 27 21:16:46 2016 - raid.cpp:94 ------ DEBUG - End
+Tue Dec 27 21:16:46 2016 - engine.h:15 ------ DEBUG - Engine destructed

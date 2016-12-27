@@ -9,8 +9,9 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flxr/*.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${CPP_FILES})
+add_dependencies(${PROJECT_NAME} logger)
 
-add_dependencies(${PROJECT_NAME} sol2)
+link_zlib(${PROJECT_NAME})
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
@@ -19,7 +20,7 @@ sugar_generate_warning_flags(
 	ENABLE ALL
 )
 set_target_properties(
-    engine
+	${PROJECT_NAME}
     PROPERTIES
     ${target_properties} # important: without quotes (properties: name, value, name, value, ...)
     COMPILE_OPTIONS

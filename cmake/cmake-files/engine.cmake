@@ -10,40 +10,22 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/raid/*.cpp)
 
 add_executable(${PROJECT_NAME} ${CPP_FILES})
+add_dependencies(${PROJECT_NAME} flxr logger)
 
 find_package (OpenGL REQUIRED)
 if (OPENGL_FOUND)
     include_directories(${OPENGL_INCLUDE_DIRS})
-    target_link_libraries (${PROJECT_NAME} ${OPENGL_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 endif (OPENGL_FOUND)
-find_package (GLEW REQUIRED)
-if (GLEW_FOUND)
-    include_directories(${GLEW_INCLUDE_DIRS})
-    target_link_libraries (${PROJECT_NAME} ${GLEW_LIBRARIES})
-endif (GLEW_FOUND)
-find_package (PkgConfig REQUIRED)
 
-if(UNIX)
-pkg_search_module (GLFW REQUIRED glfw3)
-if (GLFW_FOUND)
-    include_directories(${GLFW_INCLUDE_DIRS})
-	target_link_libraries (${PROJECT_NAME} ${GLFW_LIBRARIES})
-endif (GLFW_FOUND)
-endif(UNIX)
-
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} glew32 glfw3 opengl32 imm32)
-endif(WIN32)
-
-find_package (ZLIB REQUIRED)
-if (ZLIB_FOUND)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
-endif (ZLIB_FOUND)
-target_link_libraries (${PROJECT_NAME} flxr logger)
+target_link_libraries (${PROJECT_NAME} logger)
 if(NOT WIN32)
 	target_link_libraries (${PROJECT_NAME} stdc++fs)
 endif(NOT WIN32)
+target_link_libraries (${PROJECT_NAME} flxr)
+link_zlib(${PROJECT_NAME})
+link_glew(${PROJECT_NAME})
+link_glfw(${PROJECT_NAME})
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
@@ -52,7 +34,7 @@ sugar_generate_warning_flags(
 	ENABLE ALL
 )
 set_target_properties(
-    engine
+	${PROJECT_NAME}
     PROPERTIES
     ${target_properties} # important: without quotes (properties: name, value, name, value, ...)
     COMPILE_OPTIONS

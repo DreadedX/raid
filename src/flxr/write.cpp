@@ -41,9 +41,10 @@ void flxr::Container::write_crc() {
 			chunk_size = size;
 		}
 		size -= chunk_size;
-		char buffer[chunk_size];
+		char *buffer = new char[chunk_size];
 		stream.read(buffer, chunk_size);
 		crc = crc_update(crc, buffer, chunk_size);
+		delete[] buffer;
 	}
 	crc = crc_finalize(crc);
 

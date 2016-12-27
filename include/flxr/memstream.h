@@ -13,7 +13,7 @@ class Membuf : public std::basic_streambuf<char> {
 		}
 	protected:
 		virtual std::iostream::pos_type seekoff(std::iostream::off_type off, std::ios_base::seekdir way,
-				std::ios_base::openmode which = std::ios_base::in | std::ios_base::out) override {
+				std::ios_base::openmode = std::ios_base::in | std::ios_base::out) override {
 
 			if (way == std::ios_base::cur) gbump(off);
 			if (way == std::ios_base::beg) gbump(eback()-gptr()+off);

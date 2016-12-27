@@ -11,28 +11,15 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flexy/*.cpp)
 
 add_executable(${PROJECT_NAME} ${CPP_FILES})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS} flxr)
-
-find_package (ZLIB REQUIRED)
-if (ZLIB_FOUND)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	target_link_libraries (${PROJECT_NAME} ${ZLIB_LIBRARIES})
-endif (ZLIB_FOUND)
-# find_package (Lua REQUIRED)
-# if (Lua_FOUND)
-	# include_directories(${LUA_INCLUDE_DIR})
-	# target_link_libraries (${PROJECT_NAME} ${LUA_LIBRARIES})
-if (UNIX)
-	target_link_libraries (${PROJECT_NAME} /usr/lib64/liblua.so.5.3)
-elseif(WIN32)
-	target_link_libraries (${PROJECT_NAME} /usr/i686-w64-mingw32/lib/liblua53.dll.a)
-endif()
-# endif (Lua_FOUND)
+add_dependencies(${PROJECT_NAME} sol2 flxr logger)
 
 target_link_libraries (${PROJECT_NAME} logger)
 if(NOT WIN32)
 	target_link_libraries (${PROJECT_NAME} stdc++fs)
 endif(NOT WIN32)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS} flxr)
+link_zlib(${PROJECT_NAME})
+link_lua(${PROJECT_NAME})
 
 include(sugar_generate_warning_flags)
 sugar_generate_warning_flags(
@@ -41,7 +28,7 @@ sugar_generate_warning_flags(
 	ENABLE ALL
 )
 set_target_properties(
-    engine
+	${PROJECT_NAME}
     PROPERTIES
     ${target_properties} # important: without quotes (properties: name, value, name, value, ...)
     COMPILE_OPTIONS
