@@ -37,8 +37,8 @@ void flxr::Container::read_index() {
 	}
 }
 //----------------------------------------------
-void flxr::MetaData::read_data(std::iostream& dest) {
-	get_container().get_compression()->read_data(*this, dest);
+void flxr::MetaData::read_data(std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+	get_container().get_compression()->read_data(*this, dest, on_init, on_update, on_finish);
 }
 //----------------------------------------------
 void flxr::Container::check_crc() {

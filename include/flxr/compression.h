@@ -16,9 +16,10 @@ namespace flxr {
 					std::function<void(const std::string&, const uint64)> = nullptr,
 					std::function<void(const uint64)> = nullptr,
 					std::function<void(const uint64)> = nullptr) = 0;
-			virtual void read_data(MetaData&, std::iostream&) {
-				warning << "write_data is not not_implemented\n";
-			}
+			virtual void read_data(MetaData&, std::iostream&,
+					std::function<void(const std::string&, const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr) = 0;
 	};
 	class Zlib : public flxr::Compression {
 		public:
@@ -26,7 +27,10 @@ namespace flxr {
 					std::function<void(const std::string&, const uint64)> on_init = nullptr,
 					std::function<void(const uint64)> on_update = nullptr,
 					std::function<void(const uint64)> on_finish = nullptr) override;
-			void read_data(MetaData& meta_data, std::iostream& dest) override;
+			void read_data(MetaData&, std::iostream&,
+					std::function<void(const std::string&, const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr) override;
 	};
 	class Raw : public flxr::Compression {
 		public:
@@ -34,6 +38,9 @@ namespace flxr {
 					std::function<void(const std::string&, const uint64)> on_init = nullptr,
 					std::function<void(const uint64)> on_update = nullptr,
 					std::function<void(const uint64)> on_finish = nullptr) override;
-			void read_data(MetaData& meta_data, std::iostream& dest) override;
+			void read_data(MetaData&, std::iostream&,
+					std::function<void(const std::string&, const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr,
+					std::function<void(const uint64)> = nullptr) override;
 	};
 }

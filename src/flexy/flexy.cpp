@@ -242,7 +242,7 @@ void read_test(std::string config_path) {
 						for (auto& meta_data : container.get_index()) {
 							std::stringstream stream;
 							try {
-								meta_data.read_data(stream);
+								meta_data.read_data(stream, Progress::setup, Progress::draw, Progress::finish);
 							} catch(flxr::bad_compression_type& e) {
 								warning << e.what() << '\n';
 							}

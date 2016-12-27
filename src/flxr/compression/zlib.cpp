@@ -16,6 +16,15 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 
 	debug << "Compressing: " << meta_data.get_name() << "\n";
 
+	source.seekg(0, std::ios::end);
+	uint64 total_size = source.tellg();
+	source.seekg(0, std::ios::beg);
+	uint64 total_read = 0;
+
+	if (on_init != nullptr) {
+		on_init(meta_data.get_name(), total_size);
+	}
+
 	meta_data.set_offset(stream.tellg());
 
 	int ret, flush;
@@ -31,15 +40,6 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	ret = deflateInit(&strm, meta_data.get_container().get_compression_level());
 	if (ret != Z_OK) {
 		exit(-1);
-	}
-
-	source.seekg(0, std::ios::end);
-	uint64 total_size = source.tellg();
-	source.seekg(0, std::ios::beg);
-	uint64 total_read = 0;
-
-	if (on_init != nullptr) {
-		on_init(meta_data.get_name(), total_size);
 	}
 
 	/* compress until end of file */
@@ -84,10 +84,18 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	}
 }
 //----------------------------------------------
-void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest) {
+void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Decompressing: " << meta_data.get_name() << "\n";
+
+	uint64 total_read = 0;
+	uint64 final_size = 0;
+
+	if (on_init != nullptr) {
+		on_init(meta_data.get_name(), meta_data.get_size());
+	}
+	
 	/// @todo This should be calculated
 	stream.seekg(meta_data.get_offset(), std::ios::beg);
 
@@ -112,6 +120,12 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 	/* decompress until deflate stream ends or end of file */
 	do {
 		strm.avail_in = stream.readsome(reinterpret_cast<char*>(in), CHUNK);
+		total_read += strm.avail_in;
+		if (on_update != nullptr) {
+			on_update(total_read);
+			/// @todo Figure out why meta_data.get_size() is wrong, propably doesn't include zlib header
+			// debug << total_read << " " << meta_data.get_size() << '\n';
+		}
 		if (stream.fail()) {
 			(void)inflateEnd(&strm);
 			warning << "Stream fail\n";
@@ -137,6 +151,7 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 					exit(-1);
 			}
 			have = CHUNK - strm.avail_out;
+			final_size += have;
 			std::vector<byte> out_vector(out, out+have);
 			write(dest, out_vector);
 		} while (strm.avail_out == 0);
@@ -146,4 +161,8 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest) {
 
 	/* clean up and return */
 	(void)inflateEnd(&strm);
+
+	if (on_finish != nullptr) {
+		on_finish(final_size);
+	}
 }

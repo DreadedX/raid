@@ -37,8 +37,8 @@ namespace flxr {
 
 			void set_size(uint64 size) { _size = size; }
 			void set_offset(uint64 offset) { _offset = offset; }
-			void write_data(std::iostream& source, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish);
-			void read_data(std::iostream& dest);
+			void write_data(std::iostream& source, std::function<void(const std::string&, const uint64)> on_init = nullptr, std::function<void(const uint64)> on_update = nullptr, std::function<void(const uint64)> on_finish = nullptr);
+			void read_data(std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init = nullptr, std::function<void(const uint64)> on_update = nullptr, std::function<void(const uint64)> on_finish = nullptr);
 
 		private:
 			const std::string _name;
