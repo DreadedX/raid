@@ -7,16 +7,14 @@
 
 #include "typedef.h"
 #include "raid/engine.h"
-// #include "raid/resource.h"
-// #include "raid/io/manager.h"
-// #include "raid/graphics/manager.h"
-#include "raid/graphics/opengl/opengl.h"
 
 #include "flxr/spec.h"
 #include "flxr/binary_helper.h"
 #include "flxr/exceptions.h"
 
 #include "logger.h"
+
+#include "raid/platform/platform.h"
 
 using namespace raid;
 //----------------------------------------------
@@ -41,14 +39,12 @@ class Texture : public Resource {
 		}
 };
 //----------------------------------------------
-int main() {
-	//-Graphics-------------------------------------
-	GraphicsManager& graphics = Engine::instance().get_graphics();
-	graphics.set_impl<OpenGL>();
-	graphics.create_window(1280, 720, "Daidalos Engine");
-	//----------------------------------------------
-	//-Files----------------------------------------
-	/// @todo Upgrade this thing to use some of the fancy stuff used by resources
+ENTRY {
+	// debug << "Engine init goed here\n";
+	// LOGI("Engine init goes here");
+	auto& platform = Engine::instance().get_platform();
+	platform.set_impl(std::make_unique<PLATFORM_IMPL>(PLATFORM_ARGS));
+
 	auto& file_manager = Engine::instance().get_file_manager();
 
 	debug << file_manager.get_file("test/textures/test.png").get_name() << '\n';
@@ -84,13 +80,37 @@ int main() {
 	
 	resource.debug_list();
 
-	// Basic game loop
-	while(!graphics.should_window_close()) {
-		graphics.poll_events();
-		graphics.swap_buffers();
-	}
+	bool was_running = false;
 
-	//----------------------------------------------
-	debug << "End\n";
+	// Setup loop
+	while(!platform.should_window_close())  {
+
+		platform.poll_events();
+
+		if (platform.has_context()) {
+			// debug << "Graphics init goes here\n";
+			// LOGI("Graphics init goes here");
+			platform.create_window(1280, 720, "Daidalos Engine");
+			platform.test_setup();
+		}
+
+		// // If app->window exists start the main game loop
+		while(platform.has_context() && !platform.should_window_close()) {
+
+			platform.test_render();
+
+			platform.poll_events();
+			platform.swap_buffers();
+
+			was_running = true;
+		}
+
+		if (was_running) {
+			// debug << "Graphics cleanup code goed here\n";
+			// LOGI("Graphics cleanup code goed here");
+			platform.terminate();
+			was_running = false;
+		}
+	}
+	// LOGI("Engine cleanup code goed here");
 }
-//----------------------------------------------

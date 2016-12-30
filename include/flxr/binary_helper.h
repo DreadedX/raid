@@ -14,6 +14,13 @@ namespace flxr {
 		return stream;
 	}
 	//----------------------------------------------
+	/// Simplify writing binary array
+	template<typename T>
+	inline std::ostream& write(std::ostream& stream, const T value, uint64_t length){
+		stream.write(reinterpret_cast<const char*>(value), length);
+		return stream;
+	}
+	//----------------------------------------------
 	/// Simplify writing strings and null terminating them
 	template<>
 	inline std::ostream& write(std::ostream& stream, const std::string& value){

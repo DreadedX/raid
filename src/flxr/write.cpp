@@ -35,7 +35,7 @@ void flxr::Container::write_crc() {
 	stream.seekg(0, std::ios::beg);
 	uint32 chunk_size = 1024;
 
-	crc_t crc = crc_init();
+	crc32 crc = 0;
 	while(size > 0) {
 		if (size < chunk_size) {
 			chunk_size = size;
@@ -43,10 +43,9 @@ void flxr::Container::write_crc() {
 		size -= chunk_size;
 		char *buffer = new char[chunk_size];
 		stream.read(buffer, chunk_size);
-		crc = crc_update(crc, buffer, chunk_size);
+		crc = crc32_bitwiser(buffer, chunk_size, crc);
 		delete[] buffer;
 	}
-	crc = crc_finalize(crc);
 
 	write(stream, crc);
 }

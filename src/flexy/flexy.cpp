@@ -3,7 +3,12 @@
 #include <iomanip>
 #include <memory>
 
-#include <experimental/filesystem>
+#if __has_include(<experimental/filesystem>)
+	#include <experimental/filesystem>
+	namespace fs = std::experimental::filesystem;
+#else
+	#pragma message "Compiler does not support experimental/filesystem"
+#endif
 
 #if __has_include(<dlfcn.h>)
 	#include <dlfcn.h>
@@ -28,6 +33,7 @@
 
 using namespace flxr;
 //----------------------------------------------
+#if __has_include(<experimental/filesystem>)
 // @todo Add abstraction for plugin loading
 auto process(std::string plugin_name, std::string file_path) {
 	typedef std::shared_ptr<std::iostream> (*process_pointer)(std::string file_path);
@@ -78,7 +84,7 @@ auto process(std::string plugin_name, std::string file_path) {
 }
 //----------------------------------------------
 void write_test(std::string config_path) {
-	std::experimental::filesystem::path path(config_path);
+	fs::path path(config_path);
 	std::string base_path = path.parent_path().string() + '/';
 
 	sol::state lua;
@@ -140,7 +146,7 @@ void write_test(std::string config_path) {
 
 						// Find the file extension and corresponding plugin
 						std::string plugin = "";
-						std::experimental::filesystem::path path(meta_data.get_name());
+						fs::path path(meta_data.get_name());
 						if (path.extension() != "") {
 							if (((sol::object)config["plugins"]).is<sol::table>()) {
 								sol::table plugins = config["plugins"];
@@ -272,3 +278,8 @@ int main(int argc, const char* argv[]) {
 		warning << e.what() << '\n';
 	}
 }
+#else
+int main() {
+	warning << "experimental/filesystem not available on this system\n";
+}
+#endif

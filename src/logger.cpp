@@ -1,4 +1,6 @@
 #include <iomanip>
+#include <string>
+#include <sstream>
 #include "logger.h"
 #include "typedef.h"
 
@@ -8,7 +10,6 @@
 #else
 	#pragma message "Compiler does not support experimental/filesystem"
 #endif
-
 
 #undef debug
 #undef message
@@ -60,7 +61,13 @@ logger::oprefixstream::oprefixstream(std::string const& prefix, std::ostream& ou
 std::fstream _log;
 logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) {
 
-	_out1 = std::make_unique<logger::oprefixstream>(prefix, out1);
+	#ifdef ANDROID
+		out1.rdbuf(new logger::androidbuf);
+
+		_out1 = std::make_unique<logger::oprefixstream>("", out1);
+	#else
+		_out1 = std::make_unique<logger::oprefixstream>(prefix, out1);
+	#endif
 	_out2 = std::make_unique<logger::oprefixstream>(prefix, _log);
 
 	if (!_log.is_open()) {
@@ -87,7 +94,13 @@ logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) 
 }
 
 logger::Multiplexer& logger::Multiplexer::operator()(const char* file, int line) {
+#ifndef ANDROID
 	std::string location = std::string(file) + ":" + std::to_string(line);
+#else
+	std::ostringstream os;
+	os << line;
+	std::string location = std::string(file) + ":" + os.str();
+#endif
 	_out1->set_location(location);
 	_out2->set_location(location);
 	return *this;

@@ -1,33 +1,47 @@
-Compiled on : Dec 27 2016 16:54:23
+Compiled on : Dec 29 2016 15:47:25
 C++ version : 201402
 Build       : ---
-Tue Dec 27 18:09:48 2016 - manager.cpp:51 --- DEBUG - Adding file: test/hello.txt
-Tue Dec 27 18:09:48 2016 - manager.cpp:51 --- DEBUG - Adding file: test/musketeers.txt
-Tue Dec 27 18:09:48 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/grass.png
-Tue Dec 27 18:09:48 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/test.png
-Tue Dec 27 18:09:48 2016 - manager.cpp:51 --- DEBUG - Adding file: test/file
-Tue Dec 27 18:09:48 2016 - engine.h:30 ------ DEBUG - Engine constructed!
-Tue Dec 27 18:09:49 2016 - raid.cpp:54 ------ DEBUG - test/textures/test.png
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/textures/test.png
-Tue Dec 27 18:09:49 2016 - raid.cpp:63 ------ DEBUG - 2 0 0 0 2 0 0 0 3 0 0 ff 0 0 0 ff 0 0 0 ff 0 
-Tue Dec 27 18:09:49 2016 - raid.cpp:70 ------ DEBUG - test/hello.txt
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/hello.txt
-Tue Dec 27 18:09:49 2016 - raid.cpp:73 ------ DEBUG - Hello world!
-Tue Dec 27 18:09:49 2016 -------------------- DEBUG - 
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/textures/test.png
-Tue Dec 27 18:09:49 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/textures/test.png
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/hello.txt
-Tue Dec 27 18:09:49 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/hello.txt
-Tue Dec 27 18:09:49 2016 - resource.h:76 ---- DEBUG - Resource already in memory: test/textures/test.png
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/file
-Tue Dec 27 18:09:49 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/file
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/file [expired]
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
-Tue Dec 27 18:09:49 2016 - zlib.cpp:93 ------ DEBUG - Decompressing: test/file
-Tue Dec 27 18:09:49 2016 - raid.cpp:40 ------ DEBUG - From Texture: test/file
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/file [valid]
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
-Tue Dec 27 18:09:49 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
-Tue Dec 27 18:09:49 2016 - raid.cpp:94 ------ DEBUG - End
-Tue Dec 27 18:09:49 2016 - engine.h:15 ------ DEBUG - Engine destructed
+Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/hello.txt
+Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/musketeers.txt
+Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/grass.png
+Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/test.png
+Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/file
+Fri Dec 30 01:39:58 2016 - engine.cpp:7 ----- DEBUG - Engine constructed!
+Fri Dec 30 01:39:58 2016 - raid.cpp:50 ------ DEBUG - test/textures/test.png
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
+Fri Dec 30 01:39:58 2016 - raid.cpp:59 ------ DEBUG - 2 0 0 0 2 0 0 0 3 0 0 ff 0 0 0 ff 0 0 0 ff 0 
+Fri Dec 30 01:39:58 2016 - raid.cpp:66 ------ DEBUG - test/hello.txt
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
+Fri Dec 30 01:39:58 2016 - raid.cpp:69 ------ DEBUG - Hello world!
+Fri Dec 30 01:39:58 2016 -------------------- DEBUG - 
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
+Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/textures/test.png
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
+Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/hello.txt
+Fri Dec 30 01:39:58 2016 - resource.h:76 ---- DEBUG - Resource already in memory: test/textures/test.png
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
+Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/file
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/file [expired]
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
+Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
+Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/file
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/file [valid]
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
+Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
+Fri Dec 30 01:39:59 2016 - opengl_base.cpp:60 - WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
+Fri Dec 30 01:39:59 2016 - opengl_base.cpp:73 - WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
+Fri Dec 30 01:39:59 2016 - opengl_base.cpp:77 - DEBUG - Linking program
+Fri Dec 30 01:39:59 2016 - opengl_base.cpp:89 - WARNING - Vertex info
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - -----------
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - (0) : error C2003: incompatible options for link
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - Fragment info
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - -------------
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - (0) : error C2003: incompatible options for link
+Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
+Fri Dec 30 01:40:00 2016 - engine.h:15 ------ DEBUG - Engine destructed

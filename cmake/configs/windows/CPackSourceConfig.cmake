@@ -55,7 +55,7 @@ SET(CPACK_IGNORE_FILES "/CVS/;/\\.svn/;/\\.bzr/;/\\.hg/;/\\.git/;\\.swp\$;\\.#;/
 SET(CPACK_INSTALLED_DIRECTORIES "/home/tim/Projects/cpp/raid;/")
 SET(CPACK_INSTALL_CMAKE_PROJECTS "")
 SET(CPACK_INSTALL_PREFIX "/usr/local")
-SET(CPACK_MODULE_PATH "/home/tim/Projects/cpp/raid/vendor/lua/cmake;/home/tim/Projects/cpp/raid/cmake/cmake-files/sugar/collecting;/home/tim/Projects/cpp/raid/cmake/cmake-files/sugar/core;/home/tim/Projects/cpp/raid/cmake/cmake-files/sugar/print;/home/tim/Projects/cpp/raid/cmake/cmake-files/sugar/utility")
+SET(CPACK_MODULE_PATH "/home/tim/Projects/cpp/raid/vendor/lua/cmake")
 SET(CPACK_NSIS_DISPLAY_NAME "lua 5.3.2")
 SET(CPACK_NSIS_INSTALLER_ICON_CODE "")
 SET(CPACK_NSIS_INSTALLER_MUI_ICON_CODE "")

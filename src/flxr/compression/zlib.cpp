@@ -39,7 +39,7 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	strm.opaque = Z_NULL;
 	ret = deflateInit(&strm, meta_data.get_container().get_compression_level());
 	if (ret != Z_OK) {
-		exit(-1);
+		// exit(-1);
 	}
 
 	/* compress until end of file */
@@ -48,7 +48,7 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 		total_read += strm.avail_in;
 		if (source.fail()) {
 			(void)deflateEnd(&strm);
-			exit(Z_ERRNO);
+			// exit(Z_ERRNO);
 		}
 		if (on_update != nullptr) {
 			on_update(total_read);
@@ -114,7 +114,7 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::functi
 	ret = inflateInit(&strm);
 	if (ret != Z_OK) {
 		warning << "Failed inflateInit\n";
-		exit(-1);
+		// exit(-1);
 	}
 
 	/* decompress until deflate stream ends or end of file */
@@ -129,7 +129,7 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::functi
 		if (stream.fail()) {
 			(void)inflateEnd(&strm);
 			warning << "Stream fail\n";
-			exit(-1);
+			// exit(-1);
 		}
 		if (strm.avail_in == 0)
 			break;
@@ -148,7 +148,7 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::functi
 				case Z_MEM_ERROR:
 					(void)inflateEnd(&strm);
 					warning << "Z_MEM_ERROR\n";
-					exit(-1);
+					// exit(-1);
 			}
 			have = CHUNK - strm.avail_out;
 			final_size += have;

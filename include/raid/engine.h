@@ -2,7 +2,7 @@
 //----------------------------------------------
 #include <memory>
 
-#include "raid/graphics/manager.h"
+#include "raid/platform/proxy.h"
 #include "raid/io/manager.h"
 #include "raid/resource.h"
 
@@ -22,18 +22,16 @@ namespace raid {
 			// std::shared_ptr<GraphicsManager> get_graphics() { return graphics; }
 			// std::shared_ptr<FileManager> get_file_manager() { return file_manager; }
 			// std::shared_ptr<ResourceManager> get_resource() { return resource; }
-			GraphicsManager& get_graphics() { return graphics; }
-			FileManager& get_file_manager() { return file_manager; }
-			ResourceManager& get_resource() {return resource; }
+			auto& get_platform() { return platform; }
+			auto& get_file_manager() { return file_manager; }
+			auto& get_resource() {return resource; }
 		protected:
-			Engine() { 
-				debug << "Engine constructed!\n"; 
-			}
+			Engine();
 		private:
 			// std::shared_ptr<GraphicsManager> graphics = std::make_shared<GraphicsManager>();
 			// std::shared_ptr<FileManager> file_manager = std::make_shared<FileManager>();
 			// std::shared_ptr<ResourceManager> resource = std::make_shared<ResourceManager>();
-			GraphicsManager graphics;
+			PlatformProxy platform;
 			FileManager file_manager;
 			ResourceManager resource;
 	};

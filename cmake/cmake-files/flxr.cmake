@@ -11,18 +11,8 @@ file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/src/flxr/*.cpp)
 add_library(${PROJECT_NAME} STATIC ${CPP_FILES})
 add_dependencies(${PROJECT_NAME} logger)
 
+if(NOT ANDROID)
 link_zlib(${PROJECT_NAME})
-
-include(sugar_generate_warning_flags)
-sugar_generate_warning_flags(
-    target_compile_options
-    target_properties
-	ENABLE ALL
-)
-set_target_properties(
-	${PROJECT_NAME}
-    PROPERTIES
-    ${target_properties} # important: without quotes (properties: name, value, name, value, ...)
-    COMPILE_OPTIONS
-    "${target_compile_options}" # important: need quotes (one argument for COMPILE_OPTIONS)
-)
+else()
+target_link_libraries (${PROJECT_NAME} z)
+endif()

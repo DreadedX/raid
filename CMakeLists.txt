@@ -7,6 +7,11 @@ if(CCACHE_FOUND)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
+if(ANDROID)
+     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${my_cxx_flags}" )
+     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${my_cxx_flags}" )
+ endif()
+
 # Make sure there is no in source build
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -32,22 +37,50 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(VENDOR_PATH ${CMAKE_CURRENT_BINARY_DIR}/vendor)
 
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/sugar/Sugar)
+if(NOT ANDROID)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/sol2.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/zlib.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/glew.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/glfw.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/lua.cmake)
 
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/sol2.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/zlib.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/glew.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/glfw.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/lua.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/flexy.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_png.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_reference.cmake)
+
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/doxygen.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/ycm.cmake)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/logger.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/flxr.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/flexy.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/engine.cmake)
 
 # Plugins
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_png.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_reference.cmake)
+if(NOT ANDROID)
+endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/doxygen.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/ycm.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/sugar/Sugar)
+include(sugar_generate_warning_flags)
+sugar_generate_warning_flags(
+    target_compile_options
+    target_properties
+	ENABLE ALL
+)
+if(NOT ANDROID)
+	set_target_properties(
+		logger flxr flexy engine png reference
+		PROPERTIES
+		${target_properties} # important: without quotes (properties: name, value, name, value, ...)
+		COMPILE_OPTIONS
+		"${target_compile_options}" # important: need quotes (one argument for COMPILE_OPTIONS)
+		)
+else()
+	set_target_properties(
+		logger flxr engine
+		PROPERTIES
+		${target_properties} # important: without quotes (properties: name, value, name, value, ...)
+		COMPILE_OPTIONS
+		"${target_compile_options}" # important: need quotes (one argument for COMPILE_OPTIONS)
+		)
+endif()

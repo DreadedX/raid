@@ -6,18 +6,17 @@
 
 #include "logger.h"
 //----------------------------------------------
+/// @todo Make this not platform specific
 raid::FileManager::FileManager() {
 	// Create en pointer to a container
-	std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("test.flx");
+	#ifndef ANDROID
+		std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("test.flx");
+	#else
+		std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("/storage/emulated/0/Android/data/nl.mtgames.daidalos/files/test.flx");
+	#endif
 
-	try {
-		// THIS DOES NOT WORK ON WINDOWS
-		#ifndef WIN32
-			container->check_crc();
-		#else
-			warning << "flxr::check_crc does not work on windows\n";
-			#pragma message "flxr::check_crc does not work on windows"
-		#endif
+	// try {
+		container->check_crc();
 		container->read_header();
 		container->read_index();
 
@@ -26,9 +25,9 @@ raid::FileManager::FileManager() {
 		}
 
 		containers.emplace_back(std::move(container));
-	} catch(flxr::bad_file& e) {
-		warning << e.what() << '\n';
-	}
+	// } catch(flxr::bad_file& e) {
+	// 	warning << e.what() << '\n';
+	// }
 }
 //----------------------------------------------
 flxr::MetaData& raid::FileManager::get_file(std::string file_name) {
@@ -41,9 +40,10 @@ flxr::MetaData& raid::FileManager::get_file(std::string file_name) {
 	}
 
 	warning << "Unable to find file: " << file_name << '\n';
+	throw std::runtime_error("Unable to find file");
 
 	/// @todo This should be an exception, maybe even return a default object or something
-	exit(-1);
+	// exit(-1);
 }
 //----------------------------------------------
 /// @todo Prevent duplication

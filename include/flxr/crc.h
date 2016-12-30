@@ -1,82 +1,21 @@
-/**
- * \file crc.h
- * Functions and types for CRC checks.
- *
- * Generated on Sun Oct  9 19:44:00 2016,
- * by pycrc v0.9, https://pycrc.org
- * using the configuration:
- *    Width         = 32
- *    Poly          = 0x04c11db7
- *    Xor_In        = 0xffffffff
- *    ReflectIn     = True
- *    Xor_Out       = 0xffffffff
- *    ReflectOut    = True
- *    Algorithm     = table-driven
- *****************************************************************************/
-#ifndef __CRC_H__
-#define __CRC_H__
+#pragma once
 
-#include <stdlib.h>
-#include <stdint.h>
+#include "typedef.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef uint32_t crc32;
 
+const uint32 polynomial = 0xEDB88320;
 
-/**
- * The definition of the used algorithm.
- *
- * This is not used anywhere in the generated code, but it may be used by the
- * application code to call algoritm-specific code, is desired.
- *****************************************************************************/
-#define CRC_ALGO_TABLE_DRIVEN 1
+inline crc32 crc32_bitwiser(const void* data, size_t length, crc32 previous_crc = 0) {
+	crc32 crc = ~previous_crc;
+	const byte* current = static_cast<const byte*>(data);
 
+	while(length--) {
+		crc ^= *current++;
+		for (unsigned int i = 0; i < 8; ++i) {
+			crc = (crc >> 1) ^ (-int(crc & 1) & polynomial);
+		}
+	}
 
-/**
- * The type of the CRC values.
- *
- * This type must be big enough to contain at least 32 bits.
- *****************************************************************************/
-typedef uint_fast32_t crc_t;
-
-
-/**
- * Calculate the initial crc value.
- *
- * \return     The initial crc value.
- *****************************************************************************/
-static inline crc_t crc_init(void)
-{
-    return 0xffffffff;
+	return ~crc;
 }
-
-
-/**
- * Update the crc value with new data.
- *
- * \param crc      The current crc value.
- * \param data     Pointer to a buffer of \a data_len bytes.
- * \param data_len Number of bytes in the \a data buffer.
- * \return         The updated crc value.
- *****************************************************************************/
-crc_t crc_update(crc_t crc, const void *data, size_t data_len);
-
-
-/**
- * Calculate the final crc value.
- *
- * \param crc  The current crc value.
- * \return     The final crc value.
- *****************************************************************************/
-static inline crc_t crc_finalize(crc_t crc)
-{
-    return crc ^ 0xffffffff;
-}
-
-
-#ifdef __cplusplus
-}           /* closing brace for extern "C" */
-#endif
-
-#endif      /* __CRC_H__ */

@@ -7,6 +7,10 @@
 #include <cstring>
 #include <memory>
 
+#ifdef ANDROID
+	#include "android/log.h"
+#endif
+
 namespace logger {
 
 	/// @note Credit: http://stackoverflow.com/questions/27336335/c-cout-with-prefix (Modified)
@@ -31,6 +35,34 @@ namespace logger {
 			oprefixstream(std::string const& prefix, std::ostream& out);
 	};
 
+	#ifdef ANDROID
+		class androidbuf: public std::streambuf {
+			public:
+				enum { bufsize = 128 }; // ... or some other suitable buffer size
+				androidbuf() { this->setp(buffer, buffer + bufsize - 1); }
+			private:
+				int overflow(int c) {
+					if (c == traits_type::eof()) {
+						*this->pptr() = traits_type::to_char_type(c);
+						this->sbumpc();
+					}
+					return this->sync()? traits_type::eof(): traits_type::not_eof(c);
+				}
+				int sync() {
+					if (this->pbase() != this->pptr()) {
+						__android_log_print(ANDROID_LOG_INFO,
+								"Engine",
+								"%s",
+								std::string(this->pbase(),
+									this->pptr() - this->pbase()).c_str());
+						this->setp(buffer, buffer + bufsize - 1);
+					}
+					return 0;
+				}
+				char buffer[bufsize];
+		};
+	#endif
+
 	class Multiplexer {
 		public:
 			Multiplexer(std::ostream& out1, const std::string& prefix);
@@ -45,7 +77,7 @@ namespace logger {
 
 template <typename T>
 logger::Multiplexer& operator<<(logger::Multiplexer& m, const T& t) {
-	*m._out1 << t;
+	*m._out1 << t << std::flush;
 	*m._out2 << t;
 
 	return m;

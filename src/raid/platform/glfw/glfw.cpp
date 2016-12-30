@@ -1,7 +1,7 @@
 //----------------------------------------------
 #include <iostream>
 
-#include "raid/graphics/opengl/opengl.h"
+#include "raid/platform/glfw/glfw.h"
 
 #include "logger.h"
 //----------------------------------------------
@@ -17,7 +17,7 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 	}
 }
 //----------------------------------------------
-void raid::OpenGL::create_window(int width, int height, std::string title) {
+void raid::GLFW::create_window(int width, int height, std::string title) {
 
 	if(!glfwInit()) {
 		warning << "Failed to initialize glfw\n";
@@ -67,17 +67,27 @@ void raid::OpenGL::create_window(int width, int height, std::string title) {
 	}
 }
 //----------------------------------------------
-inline bool raid::OpenGL::should_window_close() {
-
+inline void raid::GLFW::terminate() {
+}
+//----------------------------------------------
+inline bool raid::GLFW::should_window_close() {
+	if (window == nullptr) {
+		return false;
+	}
 	return glfwWindowShouldClose(window);
 }
 //----------------------------------------------
-inline void raid::OpenGL::poll_events() {
+/// @todo Make this actually check something
+inline bool raid::GLFW::has_context() {
+	return true;
+}
+//----------------------------------------------
+inline void raid::GLFW::poll_events() {
 
 	glfwPollEvents();
 }
 //----------------------------------------------
-inline void raid::OpenGL::swap_buffers() {
+inline void raid::GLFW::swap_buffers() {
 
 	glfwSwapBuffers(window);
 }

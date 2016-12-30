@@ -46,12 +46,12 @@ void flxr::Container::check_crc() {
 
 	stream.seekg(0, std::ios::end);
 	uint64 size = stream.tellg();
-	size -= sizeof(crc_t);
+	size -= sizeof(crc32);
 	stream.clear();
 	stream.seekg(0, std::ios::beg);
 	uint32 chunk_size = 1024;
 
-	crc_t crc = crc_init();
+	crc32 crc = 0;
 	while(size > 0) {
 
 		if (size < chunk_size) {
@@ -62,12 +62,13 @@ void flxr::Container::check_crc() {
 		char* buffer = new char[chunk_size];
 		stream.read(buffer, chunk_size);
 
-		crc = crc_update(crc, buffer, chunk_size);
+		crc = crc32_bitwiser(buffer, chunk_size, crc);
 		delete[] buffer;
 	}
-	crc = crc_finalize(crc);
 
-	crc_t provided_crc;
+	std::cout << "CRC: " << crc << '\n';
+
+	crc32 provided_crc;
 	read(stream, provided_crc);
 	if (crc != provided_crc) {
 		throw flxr::bad_file();
