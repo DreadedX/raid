@@ -17,6 +17,11 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 	}
 }
 //----------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+//----------------------------------------------
 void raid::GLFW::create_window(int width, int height, std::string title) {
 
 	if(!glfwInit()) {
@@ -59,6 +64,8 @@ void raid::GLFW::create_window(int width, int height, std::string title) {
 
 	glfwSwapInterval(0);
 	glfwSetKeyCallback(window, key_callback);
+	// glfwSetWindowSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	if (glGetError() != GL_NO_ERROR) {
 		warning << "Something went wrong\n";

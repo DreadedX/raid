@@ -56,4 +56,10 @@ namespace flxr {
 		std::getline(stream, value, '\0');
 		return stream;
 	}
+	// Simplify reading vectors
+	template<typename T>
+	inline std::istream& read(std::istream& stream, std::vector<T>& value){
+		stream.read(reinterpret_cast<char*>(value.data()), value.size());
+		return stream;
+	}
 }

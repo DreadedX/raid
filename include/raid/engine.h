@@ -22,6 +22,7 @@ namespace raid {
 			// std::shared_ptr<GraphicsManager> get_graphics() { return graphics; }
 			// std::shared_ptr<FileManager> get_file_manager() { return file_manager; }
 			// std::shared_ptr<ResourceManager> get_resource() { return resource; }
+			void set_platform(std::unique_ptr<PlatformProxy> impl) { platform = std::move(impl); }
 			auto& get_platform() { return platform; }
 			auto& get_file_manager() { return file_manager; }
 			auto& get_resource() {return resource; }
@@ -31,7 +32,7 @@ namespace raid {
 			// std::shared_ptr<GraphicsManager> graphics = std::make_shared<GraphicsManager>();
 			// std::shared_ptr<FileManager> file_manager = std::make_shared<FileManager>();
 			// std::shared_ptr<ResourceManager> resource = std::make_shared<ResourceManager>();
-			PlatformProxy platform;
+			std::unique_ptr<PlatformProxy> platform;
 			FileManager file_manager;
 			ResourceManager resource;
 	};

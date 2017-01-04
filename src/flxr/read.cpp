@@ -1,4 +1,6 @@
 //----------------------------------------------
+#include <vector>
+
 #include "flxr/binary_helper.h"
 #include "flxr/spec.h"
 #include "flxr/crc.h"
@@ -37,8 +39,14 @@ void flxr::Container::read_index() {
 	}
 }
 //----------------------------------------------
-void flxr::MetaData::read_data(std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::MetaData::read_data(std::vector<byte>& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	get_container().get_compression()->read_data(*this, dest, on_init, on_update, on_finish);
+}
+//----------------------------------------------
+void flxr::MetaData::read_data(std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+	std::vector<byte> temp;
+	read_data(temp, on_init, on_update, on_finish);
+	flxr::write(dest, temp);
 }
 //----------------------------------------------
 void flxr::Container::check_crc() {

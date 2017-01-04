@@ -39,7 +39,7 @@ int logger::prefixbuf::overflow(int c) {
 				_location = "";
 			}
 
-			for (unsigned int i = final_prefix.size(); i < 50-_prefix.length(); ++i) {
+			for (unsigned int i = final_prefix.size(); i < 53-_prefix.length(); ++i) {
 				final_prefix += '-';
 			}
 			final_prefix += " " + this->_prefix + " -";

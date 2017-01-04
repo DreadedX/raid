@@ -12,18 +12,9 @@ namespace raid {
 	class Resource {
 		public:
 			Resource() {
-				// debug << "Resource constructed\n";
+				debug << "Resource constructed\n";
 			}
 
-			virtual ~Resource() {
-				// debug << "Resource Deconstructed\n";
-			}
-
-			void test() {
-				debug << "YO WTF\n";
-			}
-
-		private:
 			/// All resourcess need this function to load the actual resource.
 			virtual void load(std::string resource_name) = 0;
 	};
@@ -36,9 +27,10 @@ namespace raid {
 			void debug_list();
 
 			/// Create new resource instance of type T and initialize it.
-			template <class T> std::shared_ptr<T> factory(std::string resource_name) {
+			template <class T> std::shared_ptr<T> get(std::string resource_name) {
 				// Make sure the requested type is derived from Resource
 				static_assert(std::is_base_of<Resource, T>::value, "T needs to be derived from Resource");
+				static_assert(!std::is_same<Resource, T>::value, "T needs to be derived from Resource");
 
 				// Check if the resource is already loaded and still valid
 				if (list.count(resource_name) == 0 || list.find(resource_name)->second.expired())
@@ -60,7 +52,7 @@ namespace raid {
 					t->load(resource_name);
 
 					// Create a weak ptr to the resource
-					std::weak_ptr<Resource> ptr = std::dynamic_pointer_cast<Resource, T>(t);
+					std::weak_ptr<Resource> ptr = std::static_pointer_cast<Resource, T>(t);
 
 					// Add the weak ptr to the resource list
 					/// @todo THIS DOES NOT WORK IN RELEASE

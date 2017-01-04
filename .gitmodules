@@ -10,3 +10,9 @@
 [submodule "vendor/lua"]
 	path = vendor/lua
 	url = https://github.com/LuaDist/lua.git
+[submodule "vendor/shaderc"]
+	path = vendor/shaderc
+	url = https://github.com/google/shaderc.git
+[submodule "vendor/spirv-cross"]
+	path = vendor/spirv-cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git

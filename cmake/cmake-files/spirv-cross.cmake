@@ -1,0 +1,17 @@
+function(link_spirv_cross PROJ_NAME)
+	if(TARGET spirv-cross-glsl)
+		message(STATUS "SHADERC already included")
+	else()
+		message(STATUS "SHADERC not found, building from source")
+		execute_process(COMMAND git submodule update --init -- vendor/spirv-cross
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_QUIET)
+		# execute_process(COMMAND git checkout 5.3.2
+		# 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor/shaderc OUTPUT_QUIET)
+		set(SPIRV_CROSS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/vendor/spirv-cross/include CACHE PATH "spirvcross include directory" FORCE)
+		set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/spirv-cross EXCLUDE_FROM_ALL)
+	endif()
+	add_dependencies(${PROJ_NAME} spirv-cross-glsl)
+	target_link_libraries(${PROJ_NAME} spirv-cross-glsl)
+	target_include_directories(${PROJ_NAME} PRIVATE ${SPIRV_CROSS_INCLUDE_DIRS})
+endfunction()

@@ -1,47 +1,48 @@
-Compiled on : Dec 29 2016 15:47:25
+Compiled on : Jan  4 2017 00:18:39
 C++ version : 201402
 Build       : ---
-Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/hello.txt
-Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/musketeers.txt
-Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/grass.png
-Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/textures/test.png
-Fri Dec 30 01:39:58 2016 - manager.cpp:51 --- DEBUG - Adding file: test/file
-Fri Dec 30 01:39:58 2016 - engine.cpp:7 ----- DEBUG - Engine constructed!
-Fri Dec 30 01:39:58 2016 - raid.cpp:50 ------ DEBUG - test/textures/test.png
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
-Fri Dec 30 01:39:58 2016 - raid.cpp:59 ------ DEBUG - 2 0 0 0 2 0 0 0 3 0 0 ff 0 0 0 ff 0 0 0 ff 0 
-Fri Dec 30 01:39:58 2016 - raid.cpp:66 ------ DEBUG - test/hello.txt
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
-Fri Dec 30 01:39:58 2016 - raid.cpp:69 ------ DEBUG - Hello world!
-Fri Dec 30 01:39:58 2016 -------------------- DEBUG - 
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/textures/test.png
-Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/textures/test.png
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/hello.txt
-Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/hello.txt
-Fri Dec 30 01:39:58 2016 - resource.h:76 ---- DEBUG - Resource already in memory: test/textures/test.png
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
-Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/file
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/file [expired]
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
-Fri Dec 30 01:39:58 2016 - zlib.cpp:90 ------ DEBUG - Decompressing: test/file
-Fri Dec 30 01:39:58 2016 - raid.cpp:38 ------ DEBUG - From Texture: test/file
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/file [valid]
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/hello.txt [valid]
-Fri Dec 30 01:39:58 2016 - resource.cpp:10 -- DEBUG - 	test/textures/test.png [valid]
-Fri Dec 30 01:39:59 2016 - opengl_base.cpp:60 - WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
-Fri Dec 30 01:39:59 2016 - opengl_base.cpp:73 - WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
-Fri Dec 30 01:39:59 2016 - opengl_base.cpp:77 - DEBUG - Linking program
-Fri Dec 30 01:39:59 2016 - opengl_base.cpp:89 - WARNING - Vertex info
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - -----------
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - (0) : error C2003: incompatible options for link
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - Fragment info
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - -------------
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 0(5) : error C0204: version directive must be first statement and may not be repeated
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - (0) : error C2003: incompatible options for link
-Fri Dec 30 01:39:59 2016 ------------------ WARNING - 
-Fri Dec 30 01:40:00 2016 - engine.h:15 ------ DEBUG - Engine destructed
+Wed Jan  4 01:53:10 2017 - manager.cpp:51 ------ DEBUG - Adding file: test/hello.txt
+Wed Jan  4 01:53:10 2017 - manager.cpp:51 ------ DEBUG - Adding file: test/textures/test.png
+Wed Jan  4 01:53:10 2017 - manager.cpp:51 ------ DEBUG - Adding file: test/shader/test.vert
+Wed Jan  4 01:53:10 2017 - manager.cpp:51 ------ DEBUG - Adding file: test/shader/test.frag
+Wed Jan  4 01:53:10 2017 - engine.cpp:7 -------- DEBUG - Engine constructed!
+Wed Jan  4 01:53:10 2017 - raid.cpp:40 --------- DEBUG - test/hello.txt
+Wed Jan  4 01:53:10 2017 - zlib.cpp:90 --------- DEBUG - Decompressing: test/hello.txt
+Wed Jan  4 01:53:10 2017 - raid.cpp:43 --------- DEBUG - Hello world!
+Wed Jan  4 01:53:10 2017 ----------------------- DEBUG - 
+Wed Jan  4 01:53:10 2017 - resource.h:15 ------- DEBUG - Resource constructed
+Wed Jan  4 01:53:10 2017 - raid.cpp:25 --------- DEBUG - Dummy asset: test/hello.txt
+Wed Jan  4 01:53:10 2017 - resource.h:15 ------- DEBUG - Resource constructed
+Wed Jan  4 01:53:10 2017 - raid.cpp:25 --------- DEBUG - Dummy asset: test/file
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/file [expired]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/hello.txt [valid]
+Wed Jan  4 01:53:10 2017 - resource.h:15 ------- DEBUG - Resource constructed
+Wed Jan  4 01:53:10 2017 - raid.cpp:25 --------- DEBUG - Dummy asset: test/file
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/file [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/hello.txt [valid]
+Wed Jan  4 01:53:10 2017 - raid.cpp:60 --------- DEBUG - Graphics init goes here
+Wed Jan  4 01:53:10 2017 - resource.h:15 ------- DEBUG - Resource constructed
+Wed Jan  4 01:53:10 2017 - shader.h:11 --------- DEBUG - I am a shader
+Wed Jan  4 01:53:10 2017 - zlib.cpp:90 --------- DEBUG - Decompressing: test/shader/test.vert
+Wed Jan  4 01:53:10 2017 - zlib.cpp:90 --------- DEBUG - Decompressing: test/shader/test.frag
+Wed Jan  4 01:53:10 2017 - opengl_base.cpp:133 - DEBUG - Linking program
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/file [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	 [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/hello.txt [valid]
+Wed Jan  4 01:53:10 2017 - resource.h:15 ------- DEBUG - Resource constructed
+Wed Jan  4 01:53:10 2017 - texture.h:11 -------- DEBUG - I am a texture
+Wed Jan  4 01:53:10 2017 - opengl_base.h:33 ---- DEBUG - Loading asset: test/textures/test.png
+Wed Jan  4 01:53:10 2017 - zlib.cpp:90 --------- DEBUG - Decompressing: test/textures/test.png
+Wed Jan  4 01:53:10 2017 - opengl_base.h:41 ---- DEBUG - 2 0 0 0 2 0 0 0 3 0 0 ff 0 0 0 ff 0 0 0 ff 0 
+Wed Jan  4 01:53:10 2017 - resource.h:68 ------- DEBUG - Resource already in memory: test/textures/test.png
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/file [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/textures/test.png [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	 [valid]
+Wed Jan  4 01:53:10 2017 - resource.cpp:11 ----- DEBUG - 	test/hello.txt [valid]
+Wed Jan  4 01:53:11 2017 - raid.cpp:78 --------- DEBUG - Graphics cleanup code goed here
+Wed Jan  4 01:53:11 2017 - resource.cpp:11 ----- DEBUG - 	test/file [valid]
+Wed Jan  4 01:53:11 2017 - resource.cpp:11 ----- DEBUG - 	test/textures/test.png [expired]
+Wed Jan  4 01:53:11 2017 - resource.cpp:11 ----- DEBUG - 	 [expired]
+Wed Jan  4 01:53:11 2017 - resource.cpp:11 ----- DEBUG - 	test/hello.txt [valid]
+Wed Jan  4 01:53:11 2017 - raid.cpp:85 --------- DEBUG - Engine cleanup code goed here
+Wed Jan  4 01:53:11 2017 - engine.h:15 --------- DEBUG - Engine destructed

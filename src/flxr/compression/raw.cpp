@@ -32,7 +32,7 @@ void flxr::Raw::write_data(MetaData& meta_data, std::iostream& source, std::func
 	}
 }
 //----------------------------------------------
-void flxr::Raw::read_data(MetaData& meta_data, std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::Raw::read_data(MetaData& meta_data, std::vector<byte>& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Reading: " << meta_data.get_name() << "\n";
@@ -44,10 +44,11 @@ void flxr::Raw::read_data(MetaData& meta_data, std::iostream& dest, std::functio
 	stream.seekg(meta_data.get_offset(), std::ios::beg);
 
 	/// @todo This really should be an loop
-	std::vector<char> buffer;
-	buffer.resize(meta_data.get_size());
-	stream.read(buffer.data(), meta_data.get_size()), meta_data.get_size();
-	dest.write(buffer.data(), meta_data.get_size());
+	// std::vector<char> buffer;
+	dest.resize(meta_data.get_size());
+	// stream.read(reinterpret_cast<char*>(dest.data()), meta_data.get_size()), meta_data.get_size();
+	flxr::read(stream, dest);
+	// dest.write(buffer.data(), meta_data.get_size());
 
 	if (on_update != nullptr) {
 		on_update(meta_data.get_size());

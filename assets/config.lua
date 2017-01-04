@@ -2,10 +2,12 @@
 
 local files = {
 	"hello.txt",
-	"musketeers.txt",
-	"textures/grass.png",
+	-- "musketeers.txt",
+	-- "textures/grass.png",
 	"textures/test.png",
-	"file"
+	"shader/test.vert",
+	"shader/test.frag",
+	-- "file"
 }
 
 local config = {
@@ -25,6 +27,10 @@ local config = {
 		png = {
 			extensions = {"png"},
 			name = "plugin_png"
+		},
+		shader = {
+			extensions = {"frag", "vert"},
+			name = "plugin_shader"
 		}
 	}
 }

@@ -84,7 +84,7 @@ void flxr::Zlib::write_data(MetaData& meta_data, std::iostream& source, std::fun
 	}
 }
 //----------------------------------------------
-void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
+void flxr::Zlib::read_data(MetaData& meta_data, std::vector<byte>& dest, std::function<void(const std::string&, const uint64)> on_init, std::function<void(const uint64)> on_update, std::function<void(const uint64)> on_finish) {
 	auto& stream = meta_data.get_container().get_stream();
 
 	debug << "Decompressing: " << meta_data.get_name() << "\n";
@@ -152,8 +152,9 @@ void flxr::Zlib::read_data(MetaData& meta_data, std::iostream& dest, std::functi
 			}
 			have = CHUNK - strm.avail_out;
 			final_size += have;
-			std::vector<byte> out_vector(out, out+have);
-			write(dest, out_vector);
+			dest.insert(dest.end(), out, out+have);
+			// std::vector<byte> out_vector(out, out+have);
+			// write(dest, out_vector);
 		} while (strm.avail_out == 0);
 
 		/* done when inflate() says it's done */

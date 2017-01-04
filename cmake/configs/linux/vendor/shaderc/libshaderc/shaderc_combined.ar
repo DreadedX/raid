@@ -1,0 +1,12 @@
+create /home/tim/Projects/cpp/raid/cmake/configs/linux/vendor/shaderc/libshaderc/libshaderc_combined.a
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libSPIRV-Tools.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libSPIRV.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libSPIRV-Tools-opt.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libglslang.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libHLSL.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libOGLCompiler.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libOSDependent.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libshaderc_util.a 
+addlib /home/tim/Projects/cpp/raid/build/linux-debug/lib/libshaderc.a
+save
+end
