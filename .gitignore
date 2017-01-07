@@ -51,7 +51,7 @@ install_manifest.txt
 build/*
 docs/*
 dist/*
-cmake/config
+# cmake/config/*
 *~
 *.swp
 imgui.ini
