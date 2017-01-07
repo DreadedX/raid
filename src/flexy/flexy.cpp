@@ -147,7 +147,7 @@ void write_test(std::string config_path) {
 						// Find the file extension and corresponding plugin
 						std::string plugin = "";
 						fs::path path(meta_data.get_name());
-						if (path.extension() != "") {
+						// if (path.extension() != "") {
 							if (((sol::object)config["plugins"]).is<sol::table>()) {
 								sol::table plugins = config["plugins"];
 								for (auto plugin_pair : plugins) {
@@ -174,10 +174,24 @@ void write_test(std::string config_path) {
 										warning << "Skipping invalid plugin: " << plugin_pair.first.as<std::string>() << '\n';
 									}
 								}
+								if (plugin == "") {
+									debug << "No plugin found, using default\n";
+									for (auto plugin_pair : plugins) {
+										if (plugin_pair.second.is<sol::table>()) {
+											if (((sol::object)((sol::table)plugin_pair.second)["default"]).is<bool>() && ((bool)((sol::table)plugin_pair.second)["default"])) {
+												if (((sol::object)((sol::table)plugin_pair.second)["name"]).is<std::string>()) {
+													plugin = ((sol::table)plugin_pair.second)["name"];
+												} else {
+													warning << "Plugin name is invalid " << plugin_pair.first.as<std::string>() << '\n';
+												}
+											}
+										}
+									}
+								}
 							} else {
 								warning << "There are no plugins registered\n";
 							}
-						}
+						// }
 
 						// If a plugin was found run it, otherwise just load the file
 						std::shared_ptr<std::iostream> stream;
@@ -185,8 +199,8 @@ void write_test(std::string config_path) {
 							stream = process(plugin, meta_data.get_path());
 							debug << "Plugin: " << plugin << '\n';
 						} else {
-							stream = open_file(meta_data.get_path());
-							debug << "No plugin\n";
+							warning << "No plugin\n";
+							assert(false);
 						}
 
 						meta_data.write_data(*stream, Progress::setup, Progress::draw, Progress::finish);

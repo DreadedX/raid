@@ -52,6 +52,7 @@ if(NOT ANDROID)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_png.cmake)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_reference.cmake)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_shader.cmake)
+	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/plugin_default.cmake)
 
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/doxygen.cmake)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/ycm.cmake)
