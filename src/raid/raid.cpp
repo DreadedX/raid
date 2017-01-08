@@ -33,6 +33,11 @@ ENTRY {
 	auto& platform = Engine::instance().get_platform();
 
 	auto& file_manager = Engine::instance().get_file_manager();
+	// #ifndef ANDROID
+		file_manager.add_container("test.flx");
+	// #else
+		// file_manager.add_container("/storage/emulated/0/Android/data/nl.mtgames.daidalos/files/test.flx");
+	// #endif
 
 	auto& resource = Engine::instance().get_resource();
 

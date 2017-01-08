@@ -72,6 +72,7 @@ sugar_generate_warning_flags(
     target_compile_options
     target_properties
 	ENABLE ALL
+	DISABLE compatibility-c++98
 )
 if(NOT ANDROID)
 	set_target_properties(

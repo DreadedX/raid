@@ -1,19 +1,16 @@
 //----------------------------------------------
 #include "typedef.h"
-#include "raid/io/manager.h"
+#include "raid/engine.h"
 #include "flxr/spec.h"
 #include "flxr/exceptions.h"
 
 #include "logger.h"
 //----------------------------------------------
 /// @todo Make this not platform specific
-raid::FileManager::FileManager() {
+void raid::FileManager::add_container(const std::string& container_path) {
 	// Create en pointer to a container
-	#ifndef ANDROID
-		std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("test.flx");
-	#else
-		std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>("/storage/emulated/0/Android/data/nl.mtgames.daidalos/files/test.flx");
-	#endif
+	std::string full_path = Engine::instance().get_platform()->get_storage_path() + "/" + container_path;
+	std::unique_ptr<flxr::Container> container = std::make_unique<flxr::Container>(full_path);
 
 	// try {
 		container->check_crc();

@@ -1,6 +1,7 @@
 #pragma once
 //----------------------------------------------
 #include <iostream>
+#include <string>
 #include <memory>
 
 #include "raid/asset/texture.h"
@@ -20,6 +21,8 @@ namespace raid {
 			virtual bool has_context() = 0;
 			virtual void poll_events() = 0;
 			virtual void swap_buffers() = 0;
+
+			virtual std::string get_storage_path() = 0;
 
 			virtual std::shared_ptr<Texture> load_texture(std::string asset_name) = 0;
 			virtual std::shared_ptr<Shader> load_shader(std::string asset_name) = 0;

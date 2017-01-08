@@ -15,10 +15,11 @@ namespace raid {
 
 		public:
 			/// Create a list of all the files
-			FileManager();
+			// FileManager();
 
 			// Returns reference to file, DO NO STORE THIS, when reloading this can become invalid on reload or addition of more files
 			flxr::MetaData& get_file(std::string file_name);
+			void add_container(const std::string& container_path);
 
 		private:
 			/// List of all containers

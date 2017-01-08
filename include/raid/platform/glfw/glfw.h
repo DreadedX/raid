@@ -14,11 +14,13 @@ namespace raid {
 		public:
 			/// Create an opengl window
 			void create_window(int width, int height, std::string title) override;
-			inline void terminate() override;
-			inline bool should_window_close() override;
-			inline bool has_context() override;
-			inline void poll_events() override;
-			inline void swap_buffers() override;
+			void terminate() override;
+			bool should_window_close() override;
+			bool has_context() override;
+			void poll_events() override;
+			void swap_buffers() override;
+
+			virtual std::string get_storage_path() { return "."; }
 
 		private:
 			/// Raw pointer to window

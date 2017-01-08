@@ -2,12 +2,12 @@
 
 local files = {
 	"hello.txt",
-	"musketeers.txt",
-	"textures/grass.png",
-	-- "textures/test.png",
-	-- "shader/test.vert",
-	-- "shader/test.frag",
-	"file"
+	-- "musketeers.txt",
+	-- "textures/grass.png",
+	"textures/test.png",
+	"shader/test.vert",
+	"shader/test.frag",
+	-- "file"
 }
 
 local config = {

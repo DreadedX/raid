@@ -17,8 +17,7 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 	}
 }
 //----------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow*, int width, int height) {
     glViewport(0, 0, width, height);
 }
 //----------------------------------------------
@@ -74,10 +73,10 @@ void raid::GLFW::create_window(int width, int height, std::string title) {
 	}
 }
 //----------------------------------------------
-inline void raid::GLFW::terminate() {
+void raid::GLFW::terminate() {
 }
 //----------------------------------------------
-inline bool raid::GLFW::should_window_close() {
+bool raid::GLFW::should_window_close() {
 	if (window == nullptr) {
 		return false;
 	}
@@ -85,16 +84,16 @@ inline bool raid::GLFW::should_window_close() {
 }
 //----------------------------------------------
 /// @todo Make this actually check something
-inline bool raid::GLFW::has_context() {
+bool raid::GLFW::has_context() {
 	return true;
 }
 //----------------------------------------------
-inline void raid::GLFW::poll_events() {
+void raid::GLFW::poll_events() {
 
 	glfwPollEvents();
 }
 //----------------------------------------------
-inline void raid::GLFW::swap_buffers() {
+void raid::GLFW::swap_buffers() {
 
 	glfwSwapBuffers(window);
 }

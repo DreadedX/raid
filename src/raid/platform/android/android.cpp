@@ -118,17 +118,17 @@ void raid::Android::terminate() {
 	surface = EGL_NO_SURFACE;
 }
 //----------------------------------------------
-inline bool raid::Android::should_window_close() {
+bool raid::Android::should_window_close() {
 
 	return app->destroyRequested;
 }
 //----------------------------------------------
-inline bool raid::Android::has_context() {
+bool raid::Android::has_context() {
 
 	return app->window != nullptr;
 }
 //----------------------------------------------
-inline void raid::Android::poll_events() {
+void raid::Android::poll_events() {
 	int ident;
 	int fdesc;
 	int events;
@@ -143,7 +143,7 @@ inline void raid::Android::poll_events() {
 	}
 }
 //----------------------------------------------
-inline void raid::Android::swap_buffers() {
+void raid::Android::swap_buffers() {
     eglSwapBuffers(display, surface);
 }
 //----------------------------------------------
