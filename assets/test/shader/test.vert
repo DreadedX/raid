@@ -1,9 +1,15 @@
 #version 330 core
 #pragma shader_stage(vertex)
-#include "test.inc"
+layout (location = 0) in vec4 vertex;
 
-layout(location = 0) in vec3 vertex_position;
+out vec2 tex_coords;
+
+uniform transformations {
+	mat4 projection;
+	mat4 model;
+};
+
 void main() {
-	gl_Position.w = 1.0;
-	gl_Position.xyz = vertex_position;
+	tex_coords = vertex.zw;
+	gl_Position = projection * model * vec4(vertex.xy, 0.0, 1.0);
 }

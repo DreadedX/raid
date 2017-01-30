@@ -11,6 +11,7 @@
 #else
 	#include "raid/platform/glfw/glfw.h"
 	#define PLATFORM_IMPL GLFW
+	// #define PLATFORM_IMPL DummyPlatform
 	#define PLATFORM_ARGS
 	#define PLATFORM_GL_VERSION "330 core"
 	#define ENTRY int main()

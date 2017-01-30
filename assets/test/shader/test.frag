@@ -1,8 +1,11 @@
 #version 330 core
 #pragma shader_stage(fragment)
-#include "test.inc"
+in vec2 tex_coords;
+out vec4 color;
 
-out vec3 color;
+uniform sampler2D image;
+
 void main() {
-	color = vec3(0.1,0.1,0.5);
+	color = texture(image, tex_coords);
+	// color = vec4(1.0, 0.0, 0.0, 1.0);
 }

@@ -75,7 +75,7 @@ png::Data png::read(const char *name) {
 		// note that png is ordered top to
 		// bottom, but OpenGL expect it bottom to top
 		// so the order or swapped
-		memcpy(data.pixels+(row_bytes * (height - 1 -i)), row_pointers[i], row_bytes);
+		memcpy(data.pixels+(row_bytes * i), row_pointers[i], row_bytes);
 	}
 
 	data.width = width;

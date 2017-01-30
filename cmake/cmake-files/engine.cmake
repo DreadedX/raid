@@ -14,6 +14,8 @@ else()
 	list(REMOVE_ITEM CPP_FILES ${CMAKE_SOURCE_DIR}/src/raid/platform/android/android.cpp)
 endif()
 
+link_glm(${PROJECT_NAME})
+
 if(NOT ANDROID)
 	add_executable(${PROJECT_NAME} ${CPP_FILES})
 else()

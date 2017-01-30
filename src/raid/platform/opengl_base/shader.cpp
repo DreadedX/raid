@@ -26,28 +26,24 @@ std::string get_shader_string(std::vector<byte> _binary) {
 		binary.push_back(temp);
 	}
 
-	for (auto& num : binary) {
-		debug << num << " ";
-	}
-	debug << '\n';
-
 	spirv_cross::CompilerGLSL glsl(std::move(binary));
 
 	// The SPIR-V is now parsed, and we can perform reflection on it.
 	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
+	/// @note This generates a shader that does not work on opengl es 3.0, but it is really usefull!
 	// Get all sampled images in the shader.
 	for (auto &resource : resources.sampled_images)
 	{
-		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
-
-		// Modify the decoration to prepare it for GLSL.
-		glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
-
-		// Some arbitrary remapping if we want.
-		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
+		// unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+		// unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+		// printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+        //
+		// // Modify the decoration to prepare it for GLSL.
+		// glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
+        //
+		// // Some arbitrary remapping if we want.
+		// glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
 	}
 
 	// Set some options.
@@ -68,6 +64,7 @@ std::string get_shader_string(std::vector<byte> _binary) {
 	return source;
 }
 
+const bool BINARY = false;
 void raid::OpenGLShader::load(std::string) {
 	auto& file_manager = Engine::instance().get_file_manager();
 	auto& vertex_file = file_manager.get_file("test/shader/test.vert");
@@ -86,7 +83,7 @@ void raid::OpenGLShader::load(std::string) {
 	int InfoLogLength;
 
 	// Compile Vertex Shader
-	if (glSpecializeShaderARB && false) {
+	if (glSpecializeShaderARB && BINARY) {
 		glShaderBinary(1, &VertexShaderID, GL_SHADER_BINARY_FORMAT_SPIR_V_ARB, vertex_binary.data(), vertex_binary.size());
 		glSpecializeShaderARB(VertexShaderID, "main", 0, nullptr, nullptr);
 	} else {
@@ -107,7 +104,7 @@ void raid::OpenGLShader::load(std::string) {
 	}
 
 	// Compile Fragment Shader
-	if (glSpecializeShaderARB && false) {
+	if (glSpecializeShaderARB && BINARY) {
 		glShaderBinary(1, &FragmentShaderID, GL_SHADER_BINARY_FORMAT_SPIR_V_ARB, fragment_binary.data(), fragment_binary.size());
 		glSpecializeShaderARB(FragmentShaderID, "main", 0, nullptr, nullptr);
 	} else {

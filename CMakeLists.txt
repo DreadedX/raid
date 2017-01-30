@@ -40,6 +40,7 @@ endif()
 set(VENDOR_PATH ${CMAKE_CURRENT_BINARY_DIR}/vendor)
 
 include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/spirv-cross.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/glm.cmake)
 if(NOT ANDROID)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/sol2.cmake)
 	include(${CMAKE_SOURCE_DIR}/cmake/cmake-files/zlib.cmake)

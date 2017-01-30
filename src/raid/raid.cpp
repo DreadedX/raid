@@ -26,18 +26,33 @@ class Dummy : public Resource {
 		}
 };
 //----------------------------------------------
+class Tile {
+	public:
+		Tile(float x, float y, float width, float height) : _x(x), _y(y), _width(width), _height(height) {
+			_texture = Engine::instance().get_platform()->load_texture("test/textures/grass.png");
+			_shader = Engine::instance().get_platform()->load_shader("WIP");
+		}
+
+		void draw() {
+			Engine::instance().get_platform()->draw_sprite(_x, _y, _width, _height, 0.0f, _texture, _shader);
+		}
+
+	private:
+		// Replace width and heigt with a shape, which is also used for collision and knowing the size of the sprite that needs to be rendered
+		float _x;
+		float _y;
+		float _width;
+		float _height;
+		std::shared_ptr<Texture> _texture;
+		std::shared_ptr<Shader> _shader;
+};
+//----------------------------------------------
 ENTRY {
-	// debug << "Engine init goed here\n";
-	// LOGI("Engine init goes here");
 	Engine::instance().set_platform(std::make_unique<PLATFORM_IMPL>(PLATFORM_ARGS));
 	auto& platform = Engine::instance().get_platform();
 
 	auto& file_manager = Engine::instance().get_file_manager();
-	// #ifndef ANDROID
-		file_manager.add_container("test.flx");
-	// #else
-		// file_manager.add_container("/storage/emulated/0/Android/data/nl.mtgames.daidalos/files/test.flx");
-	// #endif
+	file_manager.add_container("test.flx");
 
 	auto& resource = Engine::instance().get_resource();
 
@@ -65,16 +80,19 @@ ENTRY {
 			debug << "Graphics init goes here\n";
 			// LOGI("Graphics init goes here");
 			platform->create_window(1280, 720, "Daidalos Engine");
-			auto shader = platform->test_setup();
+			platform->test_setup();
 
 			resource.debug_list();
-			auto texture1 = platform->load_texture("test/textures/test.png");
-			auto texture11 = platform->load_texture("test/textures/test.png");
+			Tile tile(200.0f, 200.0f, 64.0f, 64.0f);
+			resource.debug_list();
+			Tile tile2(264.0f, 200.0f, 64.0f, 64.0f);
 			resource.debug_list();
 			
 			while(platform->has_context() && !platform->should_window_close()) {
+				platform->test_render();
 
-				platform->test_render(shader);
+				tile.draw();
+				tile2.draw();
 
 				platform->poll_events();
 				platform->swap_buffers();
