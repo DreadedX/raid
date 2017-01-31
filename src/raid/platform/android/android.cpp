@@ -16,9 +16,40 @@ static void engine_handle_cmd(android_app*, int32_t cmd) {
 	}
 }
 //----------------------------------------------
+static struct Pointer {
+	int x = 0;
+	int y = 0;
+	bool pressed = false;
+} pointer;
+//----------------------------------------------
+static int engine_handle_input(android_app* app, AInputEvent* event) {
+	if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+		int x = AMotionEvent_getX(event, 0);
+		int y = AMotionEvent_getY(event, 0);
+
+		pointer.x = x;
+		pointer.y = y;
+
+		switch (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK) {
+			case AMOTION_EVENT_ACTION_UP:
+				pointer.pressed = false;
+				break;
+			case AMOTION_EVENT_ACTION_DOWN:
+				pointer.pressed = true;
+				break;
+			default:
+				break;
+		}
+
+		return 1;
+	}
+	return 0;
+}
+//----------------------------------------------
 raid::Android::Android(android_app* app) { 
 	app_dummy();
-	app->onAppCmd = engine_handle_cmd;
+	// app->onAppCmd = engine_handle_cmd;
+	app->onInputEvent = engine_handle_input;
 	this->app = app;
 }
 //----------------------------------------------
@@ -147,3 +178,7 @@ void raid::Android::swap_buffers() {
     eglSwapBuffers(display, surface);
 }
 //----------------------------------------------
+bool raid::Android::is_pressed(int x, int y, int width, int height) {
+
+	return (x <= pointer.x && pointer.x <= x+width && y <= pointer.y && pointer.y <= y+height && pointer.pressed);
+}

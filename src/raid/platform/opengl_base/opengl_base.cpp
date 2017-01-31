@@ -50,7 +50,7 @@ void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, 
 
 	model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-	glm::mat4 projection = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, -1.0f, 1.0f);
 
 	GLuint block_index = glGetUniformBlockIndex(shader_id, "transformations");
 	GLint block_size;
