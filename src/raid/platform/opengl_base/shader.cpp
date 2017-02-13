@@ -16,7 +16,7 @@ std::string get_shader_string(std::vector<byte> _binary) {
 	
 	// Figure out something better
 	std::vector<uint32_t> binary;
-	for (uint i = 0; i < _binary.size(); i+=4) {
+	for (uint32_t i = 0; i < _binary.size(); i+=4) {
 		uint32_t temp = 0;
 		temp += _binary[i+0] << 0*8;
 		temp += _binary[i+1] << 1*8;
@@ -64,8 +64,8 @@ std::string get_shader_string(std::vector<byte> _binary) {
 	return source;
 }
 
-const bool BINARY = false;
-void raid::OpenGLShader::load(std::string) {
+const bool BINARY = true;
+void raid::OpenGLShader::load() {
 	auto& file_manager = Engine::instance().get_file_manager();
 	auto& vertex_file = file_manager.get_file("test/shader/test.vert");
 	auto& fragment_file = file_manager.get_file("test/shader/test.frag");
@@ -89,7 +89,6 @@ void raid::OpenGLShader::load(std::string) {
 	} else {
 		std::string vertex_source_string = get_shader_string(vertex_binary);
 		const char* vertex_source = vertex_source_string.c_str();
-		debug << vertex_source << '\n';
 		glShaderSource(VertexShaderID, 1, &vertex_source, NULL);
 	}
 	glCompileShader(VertexShaderID);
@@ -110,7 +109,6 @@ void raid::OpenGLShader::load(std::string) {
 	} else {
 		std::string fragment_source_string = get_shader_string(fragment_binary);
 		const char* fragment_source = fragment_source_string.c_str();
-		debug << fragment_source << '\n';
 		glShaderSource(FragmentShaderID, 1, &fragment_source, NULL);
 	}
 	glCompileShader(FragmentShaderID);

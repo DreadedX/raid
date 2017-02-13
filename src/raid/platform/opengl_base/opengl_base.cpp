@@ -36,7 +36,7 @@ static GLuint vao;
 // Store this in the shader
 static GLuint ubo;
 
-void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader) {
+void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader, bool foreground) {
 	GLuint shader_id = std::static_pointer_cast<OpenGLShader, Shader>(shader)->get_program_id();
 
 	glUseProgram(shader_id);
@@ -50,7 +50,12 @@ void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, 
 
 	model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-	glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection;
+	if(foreground) {
+		projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, -1.0f, 1.0f);
+	} else {
+		projection = glm::ortho(0.0f+camera_x, 1920.0f+camera_x, 1080.0f+camera_y, 0.0f+camera_y, -1.0f, 1.0f);
+	}
 
 	GLuint block_index = glGetUniformBlockIndex(shader_id, "transformations");
 	GLint block_size;

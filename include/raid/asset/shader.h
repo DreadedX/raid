@@ -6,9 +6,6 @@
 
 namespace raid {
 	class Shader : public Resource {
-		public:
-			Shader() {
-				debug << "I am a shader\n";
-			}
+		using Resource::Resource;
 	};
 }

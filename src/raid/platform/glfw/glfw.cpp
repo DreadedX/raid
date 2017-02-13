@@ -71,6 +71,16 @@ void raid::GLFW::create_window(int width, int height, std::string title) {
 		/// @todo This should be an exception
 		exit(-1);
 	}
+
+	// Cursor test
+	// unsigned char pixels[16 * 16 * 4];
+	// memset(pixels, 0xff, sizeof(pixels));
+	// GLFWimage image;
+	// image.width = 16;
+	// image.height = 16;
+	// image.pixels = pixels;
+	// GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+	// glfwSetCursor(window, cursor);
 }
 //----------------------------------------------
 void raid::GLFW::terminate() {
@@ -98,3 +108,17 @@ void raid::GLFW::swap_buffers() {
 	glfwSwapBuffers(window);
 }
 //----------------------------------------------
+bool raid::GLFW::is_pressed(int x, int y, int width, int height) {
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+
+	double pointer_x;
+	double pointer_y;
+
+	glfwGetCursorPos(window, &pointer_x, &pointer_y);
+
+	// This needs to automatically convert external coordinates to internal coordinates
+	pointer_x = (pointer_x/1280)*1920;
+	pointer_y = (pointer_y/720)*1080;
+
+	return (x <= pointer_x && pointer_x <= x+width && y <= pointer_y && pointer_y <= y+height && state == GLFW_PRESS);
+}

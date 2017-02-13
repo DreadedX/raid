@@ -27,7 +27,7 @@ namespace raid {
 			virtual std::shared_ptr<Texture> load_texture(std::string asset_name) = 0;
 			virtual std::shared_ptr<Shader> load_shader(std::string asset_name) = 0;
 
-			virtual void draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader) = 0;
+			virtual void draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader, bool foreground = false) = 0;
 
 			virtual bool is_pressed(int x, int y, int width, int height) = 0;
 
@@ -35,6 +35,7 @@ namespace raid {
 			// virtual uint load_shader() = 0;
 			virtual void test_setup() = 0;
 			virtual void test_render() = 0;
+			virtual void test_move_camera(float x, float y) = 0;
 	};
 	//----------------------------------------------
 	class DummyPlatform : public PlatformProxy {

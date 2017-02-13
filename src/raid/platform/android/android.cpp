@@ -16,26 +16,32 @@ static void engine_handle_cmd(android_app*, int32_t cmd) {
 	}
 }
 //----------------------------------------------
-static struct Pointer {
+struct Pointer {
 	int x = 0;
 	int y = 0;
 	bool pressed = false;
-} pointer;
+};
+//----------------------------------------------
+#define POINTER_COUNT 10
+static std::array<Pointer, POINTER_COUNT> pointers;
 //----------------------------------------------
 static int engine_handle_input(android_app* app, AInputEvent* event) {
 	if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-		int x = AMotionEvent_getX(event, 0);
-		int y = AMotionEvent_getY(event, 0);
-
-		pointer.x = x;
-		pointer.y = y;
+		int pointer_id = ((AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT);
+		if (pointer_id >= POINTER_COUNT) {
+			return 0;
+		}
+		pointers[pointer_id].x = AMotionEvent_getX(event, pointer_id);
+		pointers[pointer_id].y = AMotionEvent_getY(event, pointer_id);
 
 		switch (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK) {
 			case AMOTION_EVENT_ACTION_UP:
-				pointer.pressed = false;
+			case AMOTION_EVENT_ACTION_POINTER_UP:
+				pointers[pointer_id].pressed = false;
 				break;
 			case AMOTION_EVENT_ACTION_DOWN:
-				pointer.pressed = true;
+			case AMOTION_EVENT_ACTION_POINTER_DOWN:
+				pointers[pointer_id].pressed = true;
 				break;
 			default:
 				break;
@@ -180,5 +186,11 @@ void raid::Android::swap_buffers() {
 //----------------------------------------------
 bool raid::Android::is_pressed(int x, int y, int width, int height) {
 
-	return (x <= pointer.x && pointer.x <= x+width && y <= pointer.y && pointer.y <= y+height && pointer.pressed);
+	/// @todo Check this for all pointers
+	for (auto& pointer : pointers) {
+		if (x <= pointer.x && pointer.x <= x+width && y <= pointer.y && pointer.y <= y+height && pointer.pressed) {
+			return true;
+		}
+	}
+	return false;
 }

@@ -11,12 +11,17 @@ namespace raid {
 	/// @todo Allow the reloading of resources
 	class Resource {
 		public:
-			Resource() {
-				debug << "Resource constructed\n";
+			Resource(std::string resource_name) : _resource_name(resource_name) {
+				debug << "Resource constructed: " << _resource_name << "\n";
 			}
 
+			virtual ~Resource() {}
+
 			/// All resourcess need this function to load the actual resource.
-			virtual void load(std::string resource_name) = 0;
+			virtual void load() = 0;
+
+		protected:
+			std::string _resource_name;
 	};
 	//----------------------------------------------
 	class ResourceManager {
@@ -35,8 +40,6 @@ namespace raid {
 				// Check if the resource is already loaded and still valid
 				if (list.count(resource_name) == 0 || list.find(resource_name)->second.expired())
 				{
-
-
 					// If the key exists it means it was expired
 					if (list.count(resource_name) != 0) {
 						// debug << "Resource expired: " << resource_name << '\n';
@@ -47,9 +50,9 @@ namespace raid {
 					// debug << "Resource not in memory: " << resource_name << '\n';
 
 					// Create new shared ptr
-					std::shared_ptr<T> t = std::make_shared<T>();
+					std::shared_ptr<T> t = std::make_shared<T>(resource_name);
 					// Call the resources load function
-					t->load(resource_name);
+					t->load();
 
 					// Create a weak ptr to the resource
 					std::weak_ptr<Resource> ptr = std::static_pointer_cast<Resource, T>(t);

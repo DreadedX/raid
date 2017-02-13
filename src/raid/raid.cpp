@@ -20,9 +20,10 @@
 using namespace raid;
 //----------------------------------------------
 class Dummy : public Resource {
+	using Resource::Resource;
 	public:
-		void load(std::string asset_name) override {
-			debug << "Dummy asset: " << asset_name << '\n';
+		void load() override {
+			debug << "Dummy asset: " << _resource_name << '\n';
 		}
 };
 //----------------------------------------------
@@ -30,14 +31,15 @@ class Button {
 	public:
 		Button(int x, int y, int width, int height, std::string texture_name) : _x(x), _y(y), _width(width), _height(height) {
 			_texture = Engine::instance().get_platform()->load_texture(texture_name);
-			_shader = Engine::instance().get_platform()->load_shader("BUTTON");
+			_shader = Engine::instance().get_platform()->load_shader("BUTTON_SHADER");
 		}
 
-		void draw() {
-			Engine::instance().get_platform()->draw_sprite(_x, _y, _width, _height, 0.0f, _texture, _shader);
+		template <typename Functor>
+		void draw(Functor functor) {
+			Engine::instance().get_platform()->draw_sprite(_x, _y, _width, _height, 0.0f, _texture, _shader, true);
 
 			if (Engine::instance().get_platform()->is_pressed(_x, _y, _width, _height)) {
-				Engine::instance().get_platform()->draw_sprite(_x+200, _y-200, _width*2, _height*2, 0.0f, _texture, _shader);
+				functor();
 			}
 		}
 
@@ -81,13 +83,12 @@ class Chunk {
 					tiles.emplace_back("debug");
 				}
 			}
-			_shader = Engine::instance().get_platform()->load_shader("TEST_SHADER");
+			_shader = Engine::instance().get_platform()->load_shader("CHUNK_SHADER");
 		}
 
 		int get_index(int x, int y) {
 			return y + x*CHUNK_SIZE;
 		}
-
 
 		void draw() {
 			for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -143,13 +144,25 @@ ENTRY {
 		if (platform->has_context()) {
 			debug << "Graphics init goes here\n";
 			// LOGI("Graphics init goes here");
-			platform->create_window(1920, 1080, "Daidalos Engine");
+			platform->create_window(1280, 720, "Daidalos Engine");
 			platform->test_setup();
 
 			Chunk chunk1(0,0);
 			Chunk chunk2(1,0);
 
-			Button button(100, 800, 100, 100, "test/textures/grass.png");
+			// We use lambda's to make it easy to assign functions to buttons and to make it easy do the same action with a key
+			static int x = 0;
+			static int y = 0;
+			/// @todo Make the speed depent on the frametime
+			int speed = 10;
+			auto move_left = [speed](){Engine::instance().get_platform()->test_move_camera(x-=speed, y);};
+			auto move_right = [speed](){Engine::instance().get_platform()->test_move_camera(x+=speed, y);};
+			auto move_up = [speed](){Engine::instance().get_platform()->test_move_camera(x, y-=speed);};
+			auto move_down = [speed](){Engine::instance().get_platform()->test_move_camera(x, y+=speed);};
+			Button button_left(150, 700, 100, 300, "test/textures/grass.png");
+			Button button_right(350, 700, 100, 300, "test/textures/grass.png");
+			Button button_up(150, 700, 300, 100, "test/textures/grass.png");
+			Button button_down(150, 900, 300, 100, "test/textures/grass.png");
 			
 			while(platform->has_context() && !platform->should_window_close()) {
 				platform->test_render();
@@ -157,7 +170,15 @@ ENTRY {
 				chunk1.draw();
 				chunk2.draw();
 
-				button.draw();
+				// Figure out a way to just set this on construction
+				button_left.draw(move_left);
+				button_right.draw(move_right);
+				button_up.draw(move_up);
+				button_down.draw(move_down);
+
+				// if (key) {
+				//		move_xxx();
+				// }
 
 				platform->poll_events();
 				platform->swap_buffers();

@@ -20,6 +20,8 @@ namespace raid {
 			void poll_events() override;
 			void swap_buffers() override;
 
+			bool is_pressed(int x, int y, int width, int height) override;
+
 			virtual std::string get_storage_path() { return "."; }
 
 		private:
