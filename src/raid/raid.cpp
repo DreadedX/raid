@@ -137,6 +137,8 @@ ENTRY {
 	
 	resource.debug_list();
 
+	auto& timer = Engine::instance().get_timer();
+
 	while(!platform->should_window_close())  {
 
 		platform->poll_events();
@@ -151,20 +153,26 @@ ENTRY {
 			Chunk chunk2(1,0);
 
 			// We use lambda's to make it easy to assign functions to buttons and to make it easy do the same action with a key
-			static int x = 0;
-			static int y = 0;
+			static float x = 0;
+			static float y = 0;
 			/// @todo Make the speed depent on the frametime
-			int speed = 10;
-			auto move_left = [speed](){Engine::instance().get_platform()->test_move_camera(x-=speed, y);};
-			auto move_right = [speed](){Engine::instance().get_platform()->test_move_camera(x+=speed, y);};
-			auto move_up = [speed](){Engine::instance().get_platform()->test_move_camera(x, y-=speed);};
-			auto move_down = [speed](){Engine::instance().get_platform()->test_move_camera(x, y+=speed);};
+			static float speed = 0;
+			/// @note test_move_camera takes an int, but we give it a float
+			auto move_left = [](){Engine::instance().get_platform()->test_move_camera(x-=speed, y);};
+			auto move_right = [](){Engine::instance().get_platform()->test_move_camera(x+=speed, y);};
+			auto move_up = [](){Engine::instance().get_platform()->test_move_camera(x, y-=speed);};
+			auto move_down = [](){Engine::instance().get_platform()->test_move_camera(x, y+=speed);};
 			Button button_left(150, 700, 100, 300, "test/textures/grass.png");
 			Button button_right(350, 700, 100, 300, "test/textures/grass.png");
 			Button button_up(150, 700, 300, 100, "test/textures/grass.png");
 			Button button_down(150, 900, 300, 100, "test/textures/grass.png");
-			
+
 			while(platform->has_context() && !platform->should_window_close()) {
+				timer.start();
+
+				/// @todo This is pretty bad
+				speed = 1000*timer.get_delta();
+
 				platform->test_render();
 
 				chunk1.draw();
@@ -182,6 +190,8 @@ ENTRY {
 
 				platform->poll_events();
 				platform->swap_buffers();
+
+				timer.end();
 			}
 
 			debug << "Graphics cleanup code goed here\n";
