@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <sstream>
+#include <iomanip>
 
 #include "typedef.h"
 #include "raid/engine.h"
@@ -31,7 +32,7 @@ class Button {
 	public:
 		Button(int x, int y, int width, int height, std::string texture_name) : _x(x), _y(y), _width(width), _height(height) {
 			_texture = Engine::instance().get_platform()->load_texture(texture_name);
-			_shader = Engine::instance().get_platform()->load_shader("BUTTON_SHADER");
+			_shader = Engine::instance().get_platform()->load_shader("test/shader/test");
 		}
 
 		template <typename Functor>
@@ -83,7 +84,7 @@ class Chunk {
 					tiles.emplace_back("debug");
 				}
 			}
-			_shader = Engine::instance().get_platform()->load_shader("CHUNK_SHADER");
+			_shader = Engine::instance().get_platform()->load_shader("test/shader/test");
 		}
 
 		int get_index(int x, int y) {
@@ -167,6 +168,9 @@ ENTRY {
 			Button button_up(150, 700, 300, 100, "test/textures/grass.png");
 			Button button_down(150, 900, 300, 100, "test/textures/grass.png");
 
+			auto font = platform->load_font("test/fonts/SourceSansPro-Light.ttf");
+			auto font_shader = platform->load_shader("test/shader/font");
+
 			while(platform->has_context() && !platform->should_window_close()) {
 				timer.start();
 
@@ -183,6 +187,13 @@ ENTRY {
 				button_right.draw(move_right);
 				button_up.draw(move_up);
 				button_down.draw(move_down);
+
+				{
+					std::ostringstream strs;
+					strs << "Frametime: " << std::setprecision(2) << std::fixed << timer.get_delta() * 1000 << "ms";
+					std::string str = strs.str();
+					platform->draw_text(str, font, font_shader);
+				}
 
 				// if (key) {
 				//		move_xxx();

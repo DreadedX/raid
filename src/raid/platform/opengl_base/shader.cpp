@@ -67,8 +67,8 @@ std::string get_shader_string(std::vector<byte> _binary) {
 const bool BINARY = true;
 void raid::OpenGLShader::load() {
 	auto& file_manager = Engine::instance().get_file_manager();
-	auto& vertex_file = file_manager.get_file("test/shader/test.vert");
-	auto& fragment_file = file_manager.get_file("test/shader/test.frag");
+	auto& vertex_file = file_manager.get_file(_resource_name + ".vert");
+	auto& fragment_file = file_manager.get_file(_resource_name + ".frag");
 
 	std::vector<byte> vertex_binary;
 	vertex_file.read_data(vertex_binary);

@@ -6,6 +6,7 @@
 
 #include "raid/asset/texture.h"
 #include "raid/asset/shader.h"
+#include "raid/asset/font.h"
 
 #include "typedef.h"
 //----------------------------------------------
@@ -26,8 +27,10 @@ namespace raid {
 
 			virtual std::shared_ptr<Texture> load_texture(std::string asset_name) = 0;
 			virtual std::shared_ptr<Shader> load_shader(std::string asset_name) = 0;
+			virtual std::shared_ptr<Font> load_font(std::string asset_name) = 0;
 
 			virtual void draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader, bool foreground = false) = 0;
+			virtual void draw_text(std::string text, std::shared_ptr<Font> font, std::shared_ptr<Shader> shader) = 0;
 
 			virtual bool is_pressed(int x, int y, int width, int height) = 0;
 

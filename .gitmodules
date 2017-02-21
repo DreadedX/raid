@@ -19,3 +19,6 @@
 [submodule "vendor/glm"]
 	path = vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "vendor/freetype2"]
+	path = vendor/freetype2
+	url = http://git.savannah.gnu.org/cgit/freetype/freetype2.git

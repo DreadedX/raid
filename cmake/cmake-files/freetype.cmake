@@ -1,0 +1,27 @@
+function(link_freetype PROJ_NAME)
+	if (NOT WIN32)
+		# find_package (Freetype REQUIRED)
+	endif()
+
+	if (FALSE AND FREETYPE_FOUND AND NOT WIN32 AND NOT BUILD_DEPENDENCIES)
+		message(STATUS "FREETYPE found")
+		target_include_directories(${PROJ_NAME} PRIVATE ${FREETYPE_INCLUDE_DIRS})
+		target_link_libraries(${PROJ_NAME} ${FREETYPE_LIBRARIES})
+	else()
+		# Added static/dynamic option
+		if(TARGET freetype)
+			message(STATUS "FREETYPE already included")
+		else()
+			message(STATUS "FREETYPE not found, building from source")
+			execute_process(COMMAND git submodule update --init -- vendor/freetype2
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_QUIET)
+			execute_process(COMMAND git checkout VER-2-7-1
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor/freetyp2 OUTPUT_QUIET)
+			set(FREETYPE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/vendor/freetype2/include CACHE PATH "freetype2 include directory" FORCE)
+			add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/freetype2 EXCLUDE_FROM_ALL)
+		endif()
+		add_dependencies(${PROJ_NAME} freetype)
+		target_link_libraries(${PROJ_NAME} freetype)
+		target_include_directories(${PROJ_NAME} PRIVATE ${FREETYPE_INCLUDE_DIRS})
+	endif()
+endfunction()

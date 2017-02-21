@@ -5,6 +5,8 @@ void raid::OpenGLTexture::load() {
 	glGenTextures(1, &texture_id);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 //	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

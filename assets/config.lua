@@ -7,6 +7,12 @@ local files = {
 	"textures/test.png",
 	"shader/test.vert",
 	"shader/test.frag",
+	-- Font shaders
+	"shader/font.vert",
+	"shader/font.frag",
+	-- Fonts
+	"fonts/segoeui.ttf",
+	"fonts/SourceSansPro-Light.ttf",
 	-- "file"
 }
 
