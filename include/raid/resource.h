@@ -29,7 +29,20 @@ namespace raid {
 
 			/// Print list of all loaded assets
 			/// @todo This is temporary
-			void debug_list();
+			template <class T>
+			T& debug_list(T& os) {
+				for(auto resource : list) {
+					os << '\t' << resource.first;
+
+					if (!resource.second.expired()) {
+						os << " [valid: " << resource.second.use_count() << "]\n";
+					} else {
+						os << " [expired]\n";
+					}
+				}
+
+				return os;
+			}
 
 			/// Create new resource instance of type T and initialize it.
 			template <class T> std::shared_ptr<T> get(std::string resource_name) {

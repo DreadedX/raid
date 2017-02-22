@@ -26,6 +26,9 @@ namespace raid {
 			bool is_pressed(int x, int y, int width, int height) override;
 
 			std::string get_storage_path() override { return app->activity->externalDataPath; }
+			bool has_touchscreen() override { return true; }
+
+			bool test_check_key(int) override { return false; }
 
 		private:
 			struct android_app* app;

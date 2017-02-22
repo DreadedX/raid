@@ -122,3 +122,9 @@ bool raid::GLFW::is_pressed(int x, int y, int width, int height) {
 
 	return (x <= pointer_x && pointer_x <= x+width && y <= pointer_y && pointer_y <= y+height && state == GLFW_PRESS);
 }
+
+/// @todo This needs a keycode conversion table of some sorts
+bool raid::GLFW::test_check_key(int keycode) {
+	int state = glfwGetKey(window, keycode);
+	return state == GLFW_PRESS;
+}

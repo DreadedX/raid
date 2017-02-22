@@ -22,7 +22,10 @@ namespace raid {
 
 			bool is_pressed(int x, int y, int width, int height) override;
 
-			virtual std::string get_storage_path() { return "."; }
+			std::string get_storage_path() override { return "."; }
+			bool has_touchscreen() override { return false; }
+			
+			bool test_check_key(int keycode) override;
 
 		private:
 			/// Raw pointer to window

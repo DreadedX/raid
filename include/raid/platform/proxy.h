@@ -16,6 +16,7 @@ namespace raid {
 		public:
 			virtual ~PlatformProxy() {}
 
+			/// @todo Rename these functions
 			virtual void create_window(int width, int height, std::string title) = 0;
 			virtual void terminate() = 0;
 			virtual bool should_window_close() = 0;
@@ -34,11 +35,15 @@ namespace raid {
 
 			virtual bool is_pressed(int x, int y, int width, int height) = 0;
 
+			virtual bool has_touchscreen() = 0;
+
 			/// @todo Return a shader asset derived from a platform independent shader asset
 			// virtual uint load_shader() = 0;
 			virtual void test_setup() = 0;
 			virtual void test_render() = 0;
 			virtual void test_move_camera(float x, float y) = 0;
+
+			virtual bool test_check_key(int) = 0;
 	};
 	//----------------------------------------------
 	class DummyPlatform : public PlatformProxy {

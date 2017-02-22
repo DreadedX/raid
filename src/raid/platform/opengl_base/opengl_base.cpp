@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "raid/platform/opengl_base/opengl_base.h"
 #include "raid/engine.h"
 
@@ -99,7 +101,8 @@ void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, 
 
 void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, std::shared_ptr<Shader> shader) {
 	int x = 50;
-	int y = 50 + 25;
+	int x_init = x;
+	int y = 50;
 
 	float scale = 1.0f;
 
@@ -157,25 +160,38 @@ void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, s
 	glActiveTexture(GL_TEXTURE0);
 
 	glBindVertexArray(vao_text);
+	auto bearing_y_max = std::static_pointer_cast<OpenGLFont, Font>(font)->get_character('H').bearing.y;
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); ++c) {
+
+		if (*c == '\n') {
+			y += bearing_y_max * 1.2f * scale;
+			x = x_init;
+			continue;
+		}
+		/// @todo Handle this better
+		if (*c == '\t') {
+			x += 100 * scale;
+			continue;
+		}
+
 		auto ch = std::static_pointer_cast<OpenGLFont, Font>(font)->get_character(*c);
 
 		GLfloat xpos = x + ch.bearing.x * scale;
-		GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
+		GLfloat ypos = y + (bearing_y_max - ch.bearing.y) * scale;
 
 		GLfloat w = ch.size.x * scale;
 		/// @todo The image is flipped without the -, but this also moves the text
-		GLfloat h = -ch.size.y * scale;
+		GLfloat h = ch.size.y * scale;
 
 		GLfloat vertices_text[6][4] = {
-			{ xpos,     ypos + h,   0.0, 0.0 },            
-			{ xpos,     ypos,       0.0, 1.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
+			{ xpos,     ypos + h,   0.0, 1.0 },            
+			{ xpos + w,     ypos,       1.0, 0.0 },
+			{ xpos, ypos,       0.0, 0.0 },
 
-			{ xpos,     ypos + h,   0.0, 0.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
-			{ xpos + w, ypos + h,   1.0, 0.0 }           
+			{ xpos,     ypos + h,   0.0, 1.0 },
+			{ xpos + w, ypos + h,       1.0, 1.0 },
+			{ xpos + w, ypos,   1.0, 0.0 }           
 		};
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo_text);

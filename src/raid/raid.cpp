@@ -18,6 +18,10 @@
 
 #include "raid/platform/platform.h"
 
+#ifndef FORCE_TOUCHSCREEN
+#define FORCE_TOUCHSCREEN 0
+#endif
+
 using namespace raid;
 //----------------------------------------------
 class Dummy : public Resource {
@@ -133,10 +137,10 @@ ENTRY {
 	{
 		auto texture3 = resource.get<Dummy>("test/file");
 	}
-	resource.debug_list();
+	resource.debug_list(debug);
 	auto texture33 = resource.get<Dummy>("test/file");
 	
-	resource.debug_list();
+	resource.debug_list(debug);
 
 	auto& timer = Engine::instance().get_timer();
 
@@ -183,14 +187,23 @@ ENTRY {
 				chunk2.draw();
 
 				// Figure out a way to just set this on construction
-				button_left.draw(move_left);
-				button_right.draw(move_right);
-				button_up.draw(move_up);
-				button_down.draw(move_down);
+				if (platform->has_touchscreen() || FORCE_TOUCHSCREEN) {
+					button_left.draw(move_left);
+					button_right.draw(move_right);
+					button_up.draw(move_up);
+					button_down.draw(move_down);
+				} else {
+					if (platform->test_check_key(65)) { move_left(); }
+					if (platform->test_check_key(68)) { move_right(); }
+					if (platform->test_check_key(87)) { move_up(); }
+					if (platform->test_check_key(83)) { move_down(); }
+				}
 
 				{
 					std::ostringstream strs;
-					strs << "Frametime: " << std::setprecision(2) << std::fixed << timer.get_delta() * 1000 << "ms";
+					strs << "Frametime: " << std::setprecision(2) << std::fixed << timer.get_delta() * 1000 << "ms"
+						 << "\nLoaded assets:\n";
+					resource.debug_list(strs);
 					std::string str = strs.str();
 					platform->draw_text(str, font, font_shader);
 				}
@@ -210,7 +223,7 @@ ENTRY {
 			platform->terminate();
 		}
 	}
-	resource.debug_list();
+	resource.debug_list(debug);
 	// LOGI("Engine cleanup code goed here");
 	debug << "Engine cleanup code goed here\n";
 }
