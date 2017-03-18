@@ -18,6 +18,9 @@
 
 #include "raid/platform/platform.h"
 
+// Test out portaudio
+#include "portaudio.h"
+
 #ifndef FORCE_TOUCHSCREEN
 #define FORCE_TOUCHSCREEN 0
 #endif
@@ -117,6 +120,39 @@ class Chunk {
 		std::shared_ptr<Shader> _shader;
 };
 //----------------------------------------------
+typedef struct {
+	float left_phase;
+	float right_phase;
+} PaTestData;
+
+static int test_audio_callback(const void*, void* output_buffer,
+                               unsigned long frames_per_second,
+                               const PaStreamCallbackTimeInfo*,
+                               PaStreamCallbackFlags,
+                               void* user_data) {
+	PaTestData* data = (PaTestData*)user_data;
+	float* out = (float*)output_buffer;
+
+	for(unsigned int i=0; i < frames_per_second; ++i) {
+		*out++ = data->left_phase;
+		*out++ = data->right_phase;
+
+		data->left_phase += 0.01f;
+		if (data->left_phase >= 1.0f) {
+			data->left_phase -= 2.0f;
+		}
+		data->right_phase += 0.03f;
+		if (data->right_phase >= 1.0f) {
+			data->right_phase -= 2.0f;
+		}
+	}
+	return 0;
+}
+
+#define SAMPLE_RATE (44100)
+static PaTestData data;
+
+//----------------------------------------------
 ENTRY {
 	Engine::instance().set_platform(std::make_unique<PLATFORM_IMPL>(PLATFORM_ARGS));
 	auto& platform = Engine::instance().get_platform();
@@ -143,6 +179,28 @@ ENTRY {
 	resource.debug_list(debug);
 
 	auto& timer = Engine::instance().get_timer();
+
+	//----------------------------------------------
+	//-PortAudioTest--------------------------------
+	PaError err = Pa_Initialize();
+	if (err != paNoError) {
+		warning << "PortAudio failed to initialize!";
+		warning << Pa_GetErrorText(err);
+	}
+
+	PaStream* stream;
+	err = Pa_OpenDefaultStream( &stream, 0, 2, paFloat32, SAMPLE_RATE, 256, test_audio_callback, &data);
+	if (err != paNoError) {
+		warning << "PortAudio error!";
+		warning << Pa_GetErrorText(err);
+	}
+
+	err = Pa_StartStream(stream);
+	if (err != paNoError) {
+		warning << "PortAudio error!";
+		warning << Pa_GetErrorText(err);
+	}
+	//----------------------------------------------
 
 	while(!platform->should_window_close())  {
 
@@ -192,20 +250,35 @@ ENTRY {
 					button_right.draw(move_right);
 					button_up.draw(move_up);
 					button_down.draw(move_down);
-				} else {
-					if (platform->test_check_key(65)) { move_left(); }
-					if (platform->test_check_key(68)) { move_right(); }
-					if (platform->test_check_key(87)) { move_up(); }
-					if (platform->test_check_key(83)) { move_down(); }
 				}
+				if (platform->test_check_key(65)) { move_left(); }
+				if (platform->test_check_key(68)) { move_right(); }
+				if (platform->test_check_key(87)) { move_up(); }
+				if (platform->test_check_key(83)) { move_down(); }
 
 				{
 					std::ostringstream strs;
 					strs << "Frametime: " << std::setprecision(2) << std::fixed << timer.get_delta() * 1000 << "ms"
 						 << "\nLoaded assets:\n";
 					resource.debug_list(strs);
-					std::string str = strs.str();
-					platform->draw_text(str, font, font_shader);
+					platform->draw_text(strs.str(), font, font_shader);
+
+					/// @todo Improve the get_log_string function, maybe a vector with each line or something
+					// unsigned long last_line_start = get_log_string().str().find_last_of('\n', get_log_string().str().length()-200);
+					// if (last_line_start > get_log_string().str().length()) {
+					// 	last_line_start = get_log_string().str().length();
+					// }
+					// platform->draw_text(get_log_string().str().substr(last_line_start, get_log_string().str().length()), font, font_shader);
+					// platform->draw_text(get_log_string().str(), font, font_shader);
+
+					static bool test = true;
+					if (platform->test_check_key(32) && test) {
+						debug << "Just a test\n";
+						test = false;
+					}
+					if (!platform->test_check_key(32)) {
+						test = true;
+					}
 				}
 
 				// if (key) {
@@ -226,4 +299,18 @@ ENTRY {
 	resource.debug_list(debug);
 	// LOGI("Engine cleanup code goed here");
 	debug << "Engine cleanup code goed here\n";
+
+	//----------------------------------------------
+	//-PortAudioTest--------------------------------
+	err = Pa_StopStream(stream);
+	if (err != paNoError) {
+		warning << "PortAudio error!";
+		warning << Pa_GetErrorText(err);
+	}
+	err = Pa_Terminate();
+	if (err != paNoError) {
+		warning << "PortAudio failed to terminate!";
+		warning << Pa_GetErrorText(err);
+	}
+	//----------------------------------------------
 }

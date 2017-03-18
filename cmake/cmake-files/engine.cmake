@@ -41,6 +41,8 @@ link_spirv_cross(${PROJECT_NAME})
 
 link_freetype(${PROJECT_NAME})
 
+link_portaudio(${PROJECT_NAME})
+
 if(NOT ANDROID)
 	link_zlib(${PROJECT_NAME})
 	link_glew(${PROJECT_NAME})

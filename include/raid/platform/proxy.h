@@ -50,7 +50,9 @@ namespace raid {
 		public:
 			virtual ~DummyPlatform() {}
 
-			virtual void create_window(int, int, std::string) {}
+			virtual void create_window(int, int, std::string) {
+				warning << "Using dummy platform\n";
+			}
 			virtual void terminate() {}
 			virtual bool should_window_close() { return false; }
 			virtual bool has_context() { return true; }
@@ -61,10 +63,21 @@ namespace raid {
 
 			virtual std::shared_ptr<Texture> load_texture(std::string) { return nullptr; }
 			virtual std::shared_ptr<Shader> load_shader(std::string) { return nullptr; }
+			virtual std::shared_ptr<Font> load_font(std::string) { return nullptr; }
+
+			virtual void draw_sprite(float, float, float, float, float, std::shared_ptr<Texture>, std::shared_ptr<Shader>, bool) { return; }
+			virtual void draw_text(std::string, std::shared_ptr<Font>, std::shared_ptr<Shader>) {return; }
+
+			virtual bool is_pressed(int, int, int, int) {return false; }
+
+			virtual bool has_touchscreen() { return false; }
 
 			/// @todo Return a shader asset derived from a platform independent shader asset
 			// virtual uint load_shader() = 0;
 			virtual void test_setup() {}
-			virtual void test_render(std::shared_ptr<Shader>, std::shared_ptr<Texture>) {}
+			virtual void test_render() {}
+			virtual void test_move_camera(float, float) { return; }
+
+			virtual bool test_check_key(int) { return false; }
 	};
 }

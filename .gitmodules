@@ -22,3 +22,9 @@
 [submodule "vendor/freetype2"]
 	path = vendor/freetype2
 	url = http://git.savannah.gnu.org/cgit/freetype/freetype2.git
+[submodule "vendor/portaudio"]
+	path = vendor/portaudio
+	url = https://git.assembla.com/portaudio.git
+[submodule "vendor/portaudio_opensles"]
+	path = vendor/portaudio_opensles
+	url = https://github.com/Gundersanne/portaudio_opensles.git

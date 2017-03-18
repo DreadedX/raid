@@ -11,6 +11,8 @@
 	#include "android/log.h"
 #endif
 
+std::stringstream& get_log_string();
+
 namespace logger {
 
 	/// @note Credit: http://stackoverflow.com/questions/27336335/c-cout-with-prefix (Modified)

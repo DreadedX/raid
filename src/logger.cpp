@@ -58,7 +58,8 @@ void logger::prefixbuf::set_location(std::string location) {
 
 logger::oprefixstream::oprefixstream(std::string const& prefix, std::ostream& out) : prefixbuf(prefix, out.rdbuf()), std::ios(static_cast<std::streambuf*>(this)), std::ostream(static_cast<std::streambuf*>(this)) {}
 
-std::fstream _log;
+// std::fstream _log;
+std::stringstream _log;
 logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) {
 
 	#ifdef ANDROID
@@ -70,6 +71,7 @@ logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) 
 	#endif
 	_out2 = std::make_unique<logger::oprefixstream>(prefix, _log);
 
+	#if 0
 	if (!_log.is_open()) {
 
 		#if __has_include(<experimental/filesystem>)
@@ -91,6 +93,7 @@ logger::Multiplexer::Multiplexer(std::ostream& out1, const std::string& prefix) 
 		_log << std::left << std::setw(11) << "C++ version" << " : " << __cplusplus << '\n';
 		_log << std::left << std::setw(11) << "Build" << " : " << "---" << '\n';
 	}
+	#endif
 }
 
 logger::Multiplexer& logger::Multiplexer::operator()(const char* file, int line) {
@@ -104,6 +107,10 @@ logger::Multiplexer& logger::Multiplexer::operator()(const char* file, int line)
 	_out1->set_location(location);
 	_out2->set_location(location);
 	return *this;
+}
+
+std::stringstream& get_log_string() {
+	return _log;
 }
 
 /// @todo Make this only print prefix when in debug mode

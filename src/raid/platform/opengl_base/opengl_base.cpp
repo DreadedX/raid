@@ -100,9 +100,13 @@ void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, 
 }
 
 void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, std::shared_ptr<Shader> shader) {
+	/// @todo We really need to store the internal (and external) resolution
+	int screen_x = 1920;
+	int screen_y = 1080;
+
 	int x = 50;
 	int x_init = x;
-	int y = 50;
+	int y = 50; //-6000;
 
 	float scale = 1.0f;
 
@@ -184,6 +188,13 @@ void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, s
 		/// @todo The image is flipped without the -, but this also moves the text
 		GLfloat h = ch.size.y * scale;
 
+		x += (ch.advance >> 6) * scale;
+
+		// Don't render characters that are not visible
+		if (xpos+w < 0 || xpos > screen_x || ypos+h < 0 || ypos > screen_y) {
+			continue;
+		}
+
 		GLfloat vertices_text[6][4] = {
 			{ xpos,     ypos + h,   0.0, 1.0 },            
 			{ xpos + w,     ypos,       1.0, 0.0 },
@@ -200,8 +211,6 @@ void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, s
 
 		glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 		glDrawArrays(GL_TRIANGLES, 0, 6); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-		x += (ch.advance >> 6) * scale;
 	}
 	glBindVertexArray(0);
 }
