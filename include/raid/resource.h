@@ -81,7 +81,7 @@ namespace raid {
 					return t;
 				}
 
-				debug << "Resource already in memory: " << resource_name << '\n';
+				// debug << "Resource already in memory: " << resource_name << '\n';
 				// The weak ptr was still valid, so we return a shared ptr to the asset
 				return std::dynamic_pointer_cast<T, Resource>(list.find(resource_name)->second.lock());
 			}

@@ -86,14 +86,10 @@ logger::Multiplexer& operator<<(logger::Multiplexer& m, const T& t) {
 }
 
 extern logger::Multiplexer debug;
-extern logger::Multiplexer message;
+extern logger::Multiplexer info;
 extern logger::Multiplexer warning;
 
-#ifndef LOGGER_H
-	#define LOGGER_H
-	#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-	#define debug debug(__FILENAME__, __LINE__)
-	/// @todo This one does not work for whatever reason
-	// #define message message(__FILENAME__, __LINE__)
-	#define warning warning(__FILENAME__, __LINE__)
-#endif
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define debug debug(__FILENAME__, __LINE__)
+#define info info(__FILENAME__, __LINE__)
+#define warning warning(__FILENAME__, __LINE__)

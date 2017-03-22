@@ -58,7 +58,7 @@ namespace flxr {
 				stream.open(m_name, std::ios::out | std::ios::in | std::ios::binary);
 
 				if(!stream.is_open()) {
-					message << "Trying to create: " << m_name << '\n';
+					info << "Trying to create: " << m_name << '\n';
 					stream.open(name, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
 					if(!stream.is_open()) {
 						warning << "Failed to open file: " << m_name << '\n';

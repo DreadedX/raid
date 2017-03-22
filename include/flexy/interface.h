@@ -46,6 +46,6 @@ namespace Progress {
 
 	void finish(uint64 compressed_size) {
 		std::cout << '\n';
-		message << "Final size: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(compressed_size)/1000/1000 << " MB (" << float(compressed_size)/float(total_size)*100 << "%)\n";
+		info << "Final size: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << float(compressed_size)/1000/1000 << " MB (" << float(compressed_size)/float(total_size)*100 << "%)\n";
 	}
 }

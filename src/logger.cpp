@@ -4,16 +4,16 @@
 #include "logger.h"
 #include "typedef.h"
 
+#undef debug
+#undef info
+#undef warning
+
 #if __has_include(<experimental/filesystem>)
 	#include <experimental/filesystem>
 	namespace fs = std::experimental::filesystem;
 #else
 	#pragma message "Compiler does not support experimental/filesystem"
 #endif
-
-#undef debug
-#undef message
-#undef warning
 
 logger::prefixbuf::prefixbuf(std::string const& prefix, std::streambuf* sbuf) : _prefix(prefix), _sbuf(sbuf), need_prefix(true) {}
 
@@ -115,6 +115,6 @@ std::stringstream& get_log_string() {
 
 /// @todo Make this only print prefix when in debug mode
 logger::Multiplexer debug(std::cout, "DEBUG");
-logger::Multiplexer message(std::cout, "");
+logger::Multiplexer info(std::cout, "INFO");
 logger::Multiplexer warning(std::cerr, "WARNING");
 

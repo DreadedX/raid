@@ -28,3 +28,6 @@
 [submodule "vendor/portaudio_opensles"]
 	path = vendor/portaudio_opensles
 	url = https://github.com/Gundersanne/portaudio_opensles.git
+[submodule "vendor/libsndfile"]
+	path = vendor/libsndfile
+	url = https://github.com/erikd/libsndfile.git

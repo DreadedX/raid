@@ -74,7 +74,7 @@ void flxr::Container::check_crc() {
 		delete[] buffer;
 	}
 
-	std::cout << "CRC: " << crc << '\n';
+	debug << "CRC: " << crc << '\n';
 
 	crc32 provided_crc;
 	read(stream, provided_crc);

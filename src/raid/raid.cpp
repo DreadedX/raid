@@ -9,17 +9,18 @@
 #include "typedef.h"
 #include "raid/engine.h"
 #include "raid/asset/texture.h"
+#include "raid/asset/vorbis.h"
 
 #include "flxr/spec.h"
 #include "flxr/binary_helper.h"
 #include "flxr/exceptions.h"
 
-#include "logger.h"
-
 #include "raid/platform/platform.h"
 
+#include "logger.h"
+
 // Test out portaudio
-#include "portaudio.h"
+#include <portaudio.h>
 
 #ifndef FORCE_TOUCHSCREEN
 #define FORCE_TOUCHSCREEN 0
@@ -120,39 +121,6 @@ class Chunk {
 		std::shared_ptr<Shader> _shader;
 };
 //----------------------------------------------
-typedef struct {
-	float left_phase;
-	float right_phase;
-} PaTestData;
-
-static int test_audio_callback(const void*, void* output_buffer,
-                               unsigned long frames_per_second,
-                               const PaStreamCallbackTimeInfo*,
-                               PaStreamCallbackFlags,
-                               void* user_data) {
-	PaTestData* data = (PaTestData*)user_data;
-	float* out = (float*)output_buffer;
-
-	for(unsigned int i=0; i < frames_per_second; ++i) {
-		*out++ = data->left_phase;
-		*out++ = data->right_phase;
-
-		data->left_phase += 0.01f;
-		if (data->left_phase >= 1.0f) {
-			data->left_phase -= 2.0f;
-		}
-		data->right_phase += 0.03f;
-		if (data->right_phase >= 1.0f) {
-			data->right_phase -= 2.0f;
-		}
-	}
-	return 0;
-}
-
-#define SAMPLE_RATE (44100)
-static PaTestData data;
-
-//----------------------------------------------
 ENTRY {
 	Engine::instance().set_platform(std::make_unique<PLATFORM_IMPL>(PLATFORM_ARGS));
 	auto& platform = Engine::instance().get_platform();
@@ -180,25 +148,14 @@ ENTRY {
 
 	auto& timer = Engine::instance().get_timer();
 
+	info << "Engine is starting!\n";
+
 	//----------------------------------------------
 	//-PortAudioTest--------------------------------
 	PaError err = Pa_Initialize();
 	if (err != paNoError) {
-		warning << "PortAudio failed to initialize!";
-		warning << Pa_GetErrorText(err);
-	}
-
-	PaStream* stream;
-	err = Pa_OpenDefaultStream( &stream, 0, 2, paFloat32, SAMPLE_RATE, 256, test_audio_callback, &data);
-	if (err != paNoError) {
-		warning << "PortAudio error!";
-		warning << Pa_GetErrorText(err);
-	}
-
-	err = Pa_StartStream(stream);
-	if (err != paNoError) {
-		warning << "PortAudio error!";
-		warning << Pa_GetErrorText(err);
+		warning << "PortAudio failed to initialize!\n";
+		warning << Pa_GetErrorText(err) << '\n';
 	}
 	//----------------------------------------------
 
@@ -208,7 +165,6 @@ ENTRY {
 
 		if (platform->has_context()) {
 			debug << "Graphics init goes here\n";
-			// LOGI("Graphics init goes here");
 			platform->create_window(1280, 720, "Daidalos Engine");
 			platform->test_setup();
 
@@ -232,6 +188,9 @@ ENTRY {
 
 			auto font = platform->load_font("test/fonts/SourceSansPro-Light.ttf");
 			auto font_shader = platform->load_shader("test/shader/font");
+
+			auto example_vorbis = resource.get<Vorbis>("Example.ogg");
+			example_vorbis->play();
 
 			while(platform->has_context() && !platform->should_window_close()) {
 				timer.start();
@@ -273,7 +232,8 @@ ENTRY {
 
 					static bool test = true;
 					if (platform->test_check_key(32) && test) {
-						debug << "Just a test\n";
+						example_vorbis->stop();
+						example_vorbis->play();
 						test = false;
 					}
 					if (!platform->test_check_key(32)) {
@@ -292,25 +252,18 @@ ENTRY {
 			}
 
 			debug << "Graphics cleanup code goed here\n";
-			// LOGI("Graphics cleanup code goed here");
 			platform->terminate();
 		}
 	}
 	resource.debug_list(debug);
-	// LOGI("Engine cleanup code goed here");
 	debug << "Engine cleanup code goed here\n";
 
 	//----------------------------------------------
 	//-PortAudioTest--------------------------------
-	err = Pa_StopStream(stream);
-	if (err != paNoError) {
-		warning << "PortAudio error!";
-		warning << Pa_GetErrorText(err);
-	}
 	err = Pa_Terminate();
 	if (err != paNoError) {
-		warning << "PortAudio failed to terminate!";
-		warning << Pa_GetErrorText(err);
+		warning << "PortAudio failed to terminate!\n";
+		warning << Pa_GetErrorText(err) << '\n';
 	}
 	//----------------------------------------------
 }
