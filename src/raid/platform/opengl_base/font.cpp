@@ -2,6 +2,8 @@
 
 #include "logger.h"
 
+#include <cassert>
+
 void process(raid::Font* font, FT_Face face, byte c) {
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -23,6 +25,10 @@ void process(raid::Font* font, FT_Face face, byte c) {
 }
 
 void raid::OpenGLFont::load() {
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+	auto main_queue = QueueList::find("main");
+	assert(main_queue);
+	main_queue->add([this]{
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+	}, _uid);
 	load_characters(48, process);
 }

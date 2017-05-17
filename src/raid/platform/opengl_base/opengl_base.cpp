@@ -44,6 +44,9 @@ static GLuint vao;
 static GLuint ubo;
 
 void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, float rotation, std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader, bool foreground) {
+	if (!(texture->is_loaded() && shader->is_loaded())) {
+		return;
+	}
 	GLuint shader_id = std::static_pointer_cast<OpenGLShader, Shader>(shader)->get_program_id();
 
 	glUseProgram(shader_id);
@@ -100,6 +103,9 @@ void raid::OpenGLBase::draw_sprite(float x, float y, float width, float height, 
 }
 
 void raid::OpenGLBase::draw_text(std::string text, std::shared_ptr<Font> font, std::shared_ptr<Shader> shader) {
+	if (!(font->is_loaded() && shader->is_loaded())) {
+		return;
+	}
 	/// @todo We really need to store the internal (and external) resolution
 	int screen_x = 1920;
 	int screen_y = 1080;

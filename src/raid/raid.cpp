@@ -17,10 +17,14 @@
 
 #include "raid/platform/platform.h"
 
+#include "raid/queue.h"
+
 #include "logger.h"
 
 // Test out portaudio
 #include <portaudio.h>
+
+#include <cassert>
 
 #ifndef FORCE_TOUCHSCREEN
 #define FORCE_TOUCHSCREEN 0
@@ -33,6 +37,11 @@ class Dummy : public Resource {
 	public:
 		void load() override {
 			debug << "Dummy asset: " << _resource_name << '\n';
+			auto main_queue = QueueList::find("main");
+			assert(main_queue);
+			main_queue->add([this]{
+				_loaded = true;
+			}, _uid);
 		}
 };
 //----------------------------------------------
@@ -122,6 +131,13 @@ class Chunk {
 };
 //----------------------------------------------
 ENTRY {
+	// @todo We should make the names defines
+	QueueController main_queue("main", false);
+	QueueController io_queue("io", true);
+	std::thread io_thread = io_queue.spawn();
+
+	QueueList::list();
+
 	Engine::instance().set_platform(std::make_unique<PLATFORM_IMPL>(PLATFORM_ARGS));
 	auto& platform = Engine::instance().get_platform();
 
@@ -130,20 +146,25 @@ ENTRY {
 
 	auto& resource = Engine::instance().get_resource();
 
-	auto& data2 = file_manager.get_file("test/hello.txt");
-	debug << data2.get_name() << '\n';
-	std::stringstream stream2;
-	data2.read_data(stream2);
-	debug << stream2.str() << '\n';
-	//----------------------------------------------
-	//-Resources------------------------------------
+	//-IO-test--------------------------------------
+	io_queue.add([] {
+		auto& data2 = Engine::instance().get_file_manager().get_file("test/hello.txt");
+		debug << data2.get_name() << '\n';
+		std::stringstream stream2;
+		data2.read_data(stream2);
+		debug << stream2.str() << '\n';
+	}, 0);
+	//-Resource-test--------------------------------
 	auto texture2 = resource.get<Dummy>("test/hello.txt");
 	{
+		// This crashes because it goes out of scope
 		auto texture3 = resource.get<Dummy>("test/file");
+		auto texture22 = resource.get<Dummy>("test/hello.txt");
+		resource.debug_list(debug);
 	}
 	resource.debug_list(debug);
 	auto texture33 = resource.get<Dummy>("test/file");
-	
+
 	resource.debug_list(debug);
 
 	auto& timer = Engine::instance().get_timer();
@@ -168,9 +189,6 @@ ENTRY {
 			platform->create_window(1280, 720, "Daidalos Engine");
 			platform->test_setup();
 
-			Chunk chunk1(0,0);
-			Chunk chunk2(1,0);
-
 			// We use lambda's to make it easy to assign functions to buttons and to make it easy do the same action with a key
 			static float x = 0;
 			static float y = 0;
@@ -189,14 +207,21 @@ ENTRY {
 			auto font = platform->load_font("test/fonts/SourceSansPro-Light.ttf");
 			auto font_shader = platform->load_shader("test/shader/font");
 
-			auto example_vorbis = resource.get<Vorbis>("test/audio/Example.ogg");
-			example_vorbis->play();
+			// auto example_vorbis = resource.get<Vorbis>("test/audio/Example.ogg");
+			// example_vorbis->play();
+
+			Chunk chunk1(0,0);
+			Chunk chunk2(1,0);
 
 			while(platform->has_context() && !platform->should_window_close()) {
 				timer.start();
 
 				/// @todo This is pretty bad
 				speed = 1000*timer.get_delta();
+
+				io_queue.go();
+				// @todo This should also use go()
+				main_queue.process();
 
 				platform->test_render();
 
@@ -232,8 +257,8 @@ ENTRY {
 
 					static bool test = true;
 					if (platform->test_check_key(32) && test) {
-						example_vorbis->stop();
-						example_vorbis->play();
+						// example_vorbis->stop();
+						// example_vorbis->play();
 						test = false;
 					}
 					if (!platform->test_check_key(32)) {
@@ -255,7 +280,12 @@ ENTRY {
 			platform->terminate();
 		}
 	}
+	
+	io_queue.stop();
+	io_thread.join();
+
 	resource.debug_list(debug);
+	list_valid_ids();
 	debug << "Engine cleanup code goed here\n";
 
 	//----------------------------------------------

@@ -4,6 +4,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "raid/queue.h"
+
 #include "logger.h"
 //----------------------------------------------
 namespace raid {
@@ -11,17 +13,30 @@ namespace raid {
 	/// @todo Allow the reloading of resources
 	class Resource {
 		public:
-			Resource(std::string resource_name) : _resource_name(resource_name) {
+			Resource(std::string resource_name) : _resource_name(resource_name), _uid(new_uid()) {
 				debug << "Resource constructed: " << _resource_name << "\n";
 			}
 
-			virtual ~Resource() {}
+			virtual ~Resource() {
+				delete_uid(_uid);
+			}
 
 			/// All resourcess need this function to load the actual resource.
 			virtual void load() = 0;
 
+			auto loader() {
+				return [this] {
+					load();
+				};
+			}
+			bool is_loaded() { return _loaded; }
+
+			long get_uid() { return _uid; }
+
 		protected:
 			std::string _resource_name;
+			long _uid;
+			bool _loaded = false;
 	};
 	//----------------------------------------------
 	class ResourceManager {
@@ -35,7 +50,9 @@ namespace raid {
 					os << '\t' << resource.first;
 
 					if (!resource.second.expired()) {
-						os << " [valid: " << resource.second.use_count() << "]\n";
+						auto temp = resource.second.lock();
+						// Subtract one from valid count because we have a temp lock
+						os << " [valid: " << resource.second.use_count()-1 << ", loaded: " << temp->is_loaded() << ", uid: " << temp->get_uid() << "]\n";
 					} else {
 						os << " [expired]\n";
 					}
@@ -65,7 +82,9 @@ namespace raid {
 					// Create new shared ptr
 					std::shared_ptr<T> t = std::make_shared<T>(resource_name);
 					// Call the resources load function
-					t->load();
+					// t->load();
+					auto io_queue = QueueList::find("io");
+					io_queue->add(t->loader(), t->get_uid());
 
 					// Create a weak ptr to the resource
 					std::weak_ptr<Resource> ptr = std::static_pointer_cast<Resource, T>(t);

@@ -52,7 +52,7 @@ namespace raid {
 			GLuint get_texture_id() { return texture_id; }
 
 		private:
-			GLuint texture_id;
+			GLuint texture_id = 0;
 	};
 	class OpenGLShader : public Shader {
 		using Shader::Shader;
@@ -62,7 +62,7 @@ namespace raid {
 			GLuint get_program_id() { return program_id; }
 
 		private:
-			GLuint program_id;
+			GLuint program_id = 0;
 	};
 	class OpenGLFont : public Font {
 		using Font::Font;
@@ -73,7 +73,7 @@ namespace raid {
 			auto& get_characters() { return _characters; }
 
 			struct Character {
-				GLuint texture_id;
+				GLuint texture_id = 0;
 				glm::ivec2 size;
 				glm::ivec2 bearing;
 				long advance;
