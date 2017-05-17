@@ -13,7 +13,8 @@ local files = {
 	-- Fonts
 	"fonts/segoeui.ttf",
 	"fonts/SourceSansPro-Light.ttf",
-	-- "file"
+	-- Audio
+	"audio/Example.ogg",
 }
 
 local config = {

@@ -189,7 +189,7 @@ ENTRY {
 			auto font = platform->load_font("test/fonts/SourceSansPro-Light.ttf");
 			auto font_shader = platform->load_shader("test/shader/font");
 
-			auto example_vorbis = resource.get<Vorbis>("Example.ogg");
+			auto example_vorbis = resource.get<Vorbis>("test/audio/Example.ogg");
 			example_vorbis->play();
 
 			while(platform->has_context() && !platform->should_window_close()) {

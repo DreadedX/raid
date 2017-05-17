@@ -128,8 +128,8 @@ void raid::Android::create_window(int, int, std::string) {
     // Check openGL on the system
     auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS};
     for (auto name : opengl_info) {
-        auto info = glGetString(name);
-        warning << "OpenGL Info: " << info << '\n';
+        auto information = glGetString(name);
+        warning << "OpenGL Info: " << information << '\n';
     }
     // Initialize GL state.
     // glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
